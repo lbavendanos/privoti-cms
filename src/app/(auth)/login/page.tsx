@@ -1,14 +1,11 @@
-import { Button } from '@/components/ui/button'
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import { LoginForm } from './_components/login-form'
 
 export default function LoginPage() {
   return (
@@ -17,29 +14,15 @@ export default function LoginPage() {
         <div className="col-span-12 md:col-span-8 md:col-start-3 lg:col-span-6 lg:col-start-4 xl:col-span-4 xl:col-start-5">
           <Card className="w-full">
             <CardHeader>
-              <CardTitle className="text-2xl">Login</CardTitle>
+              <CardTitle className="text-2xl">Iniciar sesión</CardTitle>
               <CardDescription>
-                Enter your email below to login to your account.
+                Introduzca su correo electrónico a continuación para iniciar
+                sesión en su cuenta.
               </CardDescription>
             </CardHeader>
-            <CardContent className="grid gap-4">
-              <div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="m@example.com"
-                  required
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="password">Password</Label>
-                <Input id="password" type="password" required />
-              </div>
+            <CardContent>
+              <LoginForm />
             </CardContent>
-            <CardFooter>
-              <Button className="w-full">Sign in</Button>
-            </CardFooter>
           </Card>
         </div>
       </div>

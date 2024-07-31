@@ -14,6 +14,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { PasswordInput } from '@/components/ui/password-input'
 import { toast } from '@/components/ui/use-toast'
 
 const FormSchema = z.object({
@@ -82,7 +83,11 @@ export function LoginForm() {
             <FormItem>
               <FormLabel>Contraseña</FormLabel>
               <FormControl>
-                <Input type="password" placeholder="********" {...field} />
+                <PasswordInput
+                  placeholder="********"
+                  autoComplete="current-password"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

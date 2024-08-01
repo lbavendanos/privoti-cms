@@ -10,3 +10,13 @@ import { twMerge } from 'tailwind-merge'
 export function cn(...inputs: ClassValue[]): string {
   return twMerge(clsx(inputs))
 }
+
+/**
+ * Generate a url for the application.
+ *
+ * @param {string} path - The path to generate the url for.
+ * @returns {URL} Returns the generated url.
+ */
+export function url(path: string = '/'): URL {
+  return new URL(path, process.env.NEXT_PUBLIC_APP_URL)
+}

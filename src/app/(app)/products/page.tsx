@@ -1,4 +1,9 @@
+import type { Metadata } from 'next'
 import { Button } from '@/components/ui/button'
+
+export const metadata: Metadata = {
+  title: 'Productos',
+}
 
 export default function ProductsPage() {
   return (

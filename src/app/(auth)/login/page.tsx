@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import {
   Card,
   CardContent,
@@ -6,6 +7,10 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { LoginForm } from './_components/login-form'
+
+export const metadata: Metadata = {
+  title: 'Iniciar sesión',
+}
 
 export default function LoginPage() {
   return (

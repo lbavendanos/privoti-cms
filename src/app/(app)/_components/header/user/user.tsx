@@ -1,4 +1,7 @@
+'use client'
+
 import { webUrl } from '@/lib/utils'
+import { useAuth } from '@/core/auth'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -12,6 +15,8 @@ import { CircleUser } from 'lucide-react'
 import { UserLogout } from './user-logout'
 
 export function User() {
+  const { user } = useAuth()
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -21,7 +26,9 @@ export function User() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuLabel>My Account</DropdownMenuLabel>
+        <DropdownMenuLabel>
+          {user ? `${user.first_name} ${user.last_name}` : 'My Account'}
+        </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem>Settings</DropdownMenuItem>
         <DropdownMenuItem>Support</DropdownMenuItem>

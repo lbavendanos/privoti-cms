@@ -39,6 +39,7 @@ export function UserLogout() {
 
   return (
     <DropdownMenuItem
+      className="cursor-pointer"
       aria-disabled={isPending}
       disabled={isPending}
       onSelect={handleLogout}

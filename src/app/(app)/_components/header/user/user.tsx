@@ -1,3 +1,4 @@
+import { webUrl } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -8,6 +9,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { CircleUser } from 'lucide-react'
+import { UserLogout } from './user-logout'
 
 export function User() {
   return (
@@ -24,7 +26,16 @@ export function User() {
         <DropdownMenuItem>Settings</DropdownMenuItem>
         <DropdownMenuItem>Support</DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>Logout</DropdownMenuItem>
+        <DropdownMenuItem>
+          <a
+            href={webUrl().toString()}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Ir a la tienda
+          </a>
+        </DropdownMenuItem>
+        <UserLogout />
       </DropdownMenuContent>
     </DropdownMenu>
   )

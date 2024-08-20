@@ -19,7 +19,7 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { Search } from './search'
-import { User } from './user'
+import { User } from './user/user'
 
 export function Header() {
   return (

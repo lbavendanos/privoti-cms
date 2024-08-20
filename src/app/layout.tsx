@@ -11,13 +11,13 @@ const fontSans = FontSans({
 })
 
 export function generateMetadata(): Metadata {
-  const appName = process.env.NEXT_PUBLIC_APP_NAME
+  const appName = process.env.NEXT_PUBLIC_APP_NAME as string
 
   return {
     metadataBase: url(),
     title: {
-      template: `%s | ${appName} Dashboard`,
-      default: `${appName} Dashboard`,
+      template: `%s | ${appName}`,
+      default: appName,
     },
     description: `${appName} es un dashboard para administrar tus tareas.`,
     robots: {

@@ -20,3 +20,13 @@ export function cn(...inputs: ClassValue[]): string {
 export function url(path: string = '/'): URL {
   return new URL(path, process.env.NEXT_PUBLIC_APP_URL)
 }
+
+/**
+ *  Generate a url for the web application.
+ *
+ * @param {string} [path] - The path to generate the url for.
+ * @returns {URL} Returns the generated url.
+ */
+export function webUrl(path: string = '/'): URL {
+  return new URL(path, process.env.NEXT_PUBLIC_WEB_URL)
+}

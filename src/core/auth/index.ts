@@ -1,12 +1,9 @@
 import type { User, UserResponse } from './user'
-import { useCallback, useEffect, useMemo } from 'react'
-import { useRouter } from 'next/navigation'
+import { useCallback, useMemo } from 'react'
 import { useUser } from './user'
 import { api } from '@/lib/http'
 
 export function useAuth() {
-  const router = useRouter()
-
   const { user, setUser, ...rest } = useUser({
     shouldRetryOnError: false,
     onError: () => {
@@ -52,15 +49,6 @@ export function useAuth() {
       return api.handleError(error)
     }
   }, [setUser])
-
-  useEffect(() => {
-    if (user && user.email === 'abc@abc.com') {
-      router.push('/')
-      return
-    }
-
-    router.push('/login')
-  }, [user])
 
   return {
     user,

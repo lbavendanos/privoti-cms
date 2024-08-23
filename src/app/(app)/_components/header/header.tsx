@@ -22,6 +22,8 @@ import { Search } from './search'
 import { User } from './user/user'
 
 export function Header() {
+  const appName = process.env.NEXT_PUBLIC_APP_NAME
+
   return (
     <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6">
       <Sheet>
@@ -38,7 +40,7 @@ export function Header() {
               className="flex items-center gap-2 text-lg font-semibold"
             >
               <Package2 className="h-6 w-6" />
-              <span className="sr-only">Acme Inc</span>
+              <span className="sr-only">{appName}</span>
             </Link>
             <Link
               href="#"

@@ -1,3 +1,8 @@
+'use client'
+
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { useAuth } from '@/core/auth'
 import {
   Card,
   CardContent,
@@ -8,6 +13,13 @@ import {
 import { LoginForm } from './login-form'
 
 export function Login() {
+  const { check } = useAuth()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (check) router.push('/')
+  }, [check, router])
+
   return (
     <Card className="w-full">
       <CardHeader className="space-y-1">

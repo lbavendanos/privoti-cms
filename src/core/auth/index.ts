@@ -1,10 +1,14 @@
 import type { User, UserResponse } from './user'
 import { useCallback, useMemo } from 'react'
-import { useUser } from './user'
+import { useAdmin } from './admin'
 import { api } from '@/lib/http'
 
 export function useAuth() {
-  const { user, setUser, ...rest } = useUser({
+  const {
+    admin: user,
+    setAdmin: setUser,
+    ...rest
+  } = useAdmin({
     shouldRetryOnError: false,
     onError: () => {
       setUser(null, false)

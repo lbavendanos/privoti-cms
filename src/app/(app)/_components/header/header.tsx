@@ -19,7 +19,7 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { Search } from './search'
-import { User } from './user/user'
+import { User } from './user'
 
 export function Header() {
   const appName = process.env.NEXT_PUBLIC_APP_NAME
@@ -43,7 +43,7 @@ export function Header() {
               <span className="sr-only">{appName}</span>
             </Link>
             <Link
-              href="#"
+              href="/"
               className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
             >
               <Home className="h-5 w-5" />
@@ -60,7 +60,7 @@ export function Header() {
               </Badge>
             </Link>
             <Link
-              href="#"
+              href="/products"
               className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
             >
               <Package className="h-5 w-5" />

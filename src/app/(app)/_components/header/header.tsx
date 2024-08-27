@@ -19,7 +19,7 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { Search } from './search'
-import { User } from './user'
+import { Account } from './account/account'
 
 export function Header() {
   const appName = process.env.NEXT_PUBLIC_APP_NAME
@@ -100,7 +100,7 @@ export function Header() {
         </SheetContent>
       </Sheet>
       <Search />
-      <User />
+      <Account />
     </header>
   )
 }

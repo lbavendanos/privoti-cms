@@ -36,9 +36,63 @@ export function useAdmin(
     [mutate],
   )
 
+  const updateAdmin = useCallback(
+    async (data: {
+      first_name: string
+      last_name: string
+      phone?: string
+      dob?: string
+    }): Promise<AdminResponse> => {
+      try {
+        const {
+          data: { data: admin },
+        } = await api.put<{ data: Admin }>('/auth/admin', data)
+
+        setAdmin(admin)
+
+        return { admin }
+      } catch (error: any) {
+        return api.handleError(error)
+      }
+    },
+    [setAdmin],
+  )
+
+  const updatePassword = useCallback(
+    async (data: {
+      current_password: string
+      password?: string
+    }): Promise<AdminResponse> => {
+      try {
+        await api.post('/auth/admin/password', data)
+
+        return {}
+      } catch (error: any) {
+        return api.handleError(error)
+      }
+    },
+    [],
+  )
+
+  const sendEmailChangeVerificationNotification = useCallback(
+    async (data: { email: string }): Promise<AdminResponse> => {
+      try {
+        await api.post('/auth/admin/email/new/notification', data)
+
+        return {}
+      } catch (error: any) {
+        return api.handleError(error)
+      }
+    },
+    [],
+  )
+
   return {
     isLoading,
     admin,
     setAdmin,
+    updateAdmin,
+    updatePassword,
+    sendEmailChangeVerificationNotification,
   }
 }

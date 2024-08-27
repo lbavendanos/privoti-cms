@@ -7,6 +7,7 @@ export function useAuth() {
   const {
     admin: user,
     setAdmin: setUser,
+    updateAdmin: updateUser,
     ...rest
   } = useAdmin({
     shouldRetryOnError: false,
@@ -56,6 +57,7 @@ export function useAuth() {
 
   return {
     user,
+    updateUser,
     check,
     login,
     logout,

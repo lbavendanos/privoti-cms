@@ -36,7 +36,7 @@ function Unauthenticated() {
                 Si ya tienes una cuenta, por favor{' '}
                 <Button
                   variant="link"
-                  className="h-fit w-fit p-0 text-base"
+                  className="h-fit w-fit p-0 text-base lg:text-lg"
                   asChild
                 >
                   <Link href="/login">inicia sesión</Link>

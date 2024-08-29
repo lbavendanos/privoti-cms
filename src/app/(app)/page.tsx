@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -24,6 +25,7 @@ import {
   Users,
 } from 'lucide-react'
 import Link from 'next/link'
+import { HomeEmailVerifyAlert } from './_components/home/home-email-verify-alert'
 
 export default function HomePage() {
   return (
@@ -281,6 +283,9 @@ export default function HomePage() {
           </CardContent>
         </Card>
       </div>
+      <Suspense fallback={null}>
+        <HomeEmailVerifyAlert />
+      </Suspense>
     </div>
   )
 }

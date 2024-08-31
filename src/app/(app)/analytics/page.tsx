@@ -1,15 +1,14 @@
 import type { Metadata } from 'next'
-import { Button } from '@/components/ui/button'
 
 export const metadata: Metadata = {
-  title: 'Productos',
+  title: 'Estadísticas',
 }
 
-export default function ProductsPage() {
+export default function AnalyticsPage() {
   return (
     <div className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
       <div className="flex items-center">
-        <h1 className="text-lg font-semibold md:text-2xl">Inventario</h1>
+        <h1 className="text-lg font-semibold md:text-2xl">Estadísticas</h1>
       </div>
       <div
         className="flex flex-1 items-center justify-center rounded-lg border border-dashed shadow-sm"
@@ -17,12 +16,11 @@ export default function ProductsPage() {
       >
         <div className="flex flex-col items-center gap-1 text-center">
           <h3 className="text-2xl font-bold tracking-tight">
-            No tienes productos
+            No hay datos disponibles
           </h3>
           <p className="text-sm text-muted-foreground">
-            Puedes comenzar a vender tan pronto como agregues un producto.
+            No hay datos para mostrar en este momento.
           </p>
-          <Button className="mt-4">Agregar Producto</Button>
         </div>
       </div>
     </div>

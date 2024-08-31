@@ -1,6 +1,6 @@
 import { Search } from './search'
 import { Account } from './account/account'
-import { MenuMobile } from './menu/menu-mobile'
+import { MenuMobile } from '../menu/menu-mobile'
 
 export function Header() {
   return (

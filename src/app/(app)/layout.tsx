@@ -1,8 +1,8 @@
 'use client'
 
 import { useAuth } from '@/core/auth'
-import { Header } from './_components/header/header'
-import { Aside } from './_components/aside/aside'
+import { Header } from './_components/app/header/header'
+import { Aside } from './_components/app/aside/aside'
 import { AppLoading } from './_components/app/app-loading'
 import { AppUnauthenticated } from './_components/app/app-unauthenticated'
 import { AppUnverified } from './_components/app/app-unverified'

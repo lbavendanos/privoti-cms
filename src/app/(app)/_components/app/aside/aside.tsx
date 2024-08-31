@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button'
 import { Bell, Package2 } from 'lucide-react'
 import Link from 'next/link'
-import { MenuDesktop } from '../header/menu/menu-desktop'
+import { MenuDesktop } from '../menu/menu-desktop'
 
 export function Aside() {
   const appName = process.env.NEXT_PUBLIC_APP_NAME

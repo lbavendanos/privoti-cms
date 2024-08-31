@@ -30,3 +30,44 @@ export function url(path: string = '/'): URL {
 export function storeUrl(path: string = '/'): URL {
   return new URL(path, process.env.NEXT_PUBLIC_STORE_URL)
 }
+
+/**
+ * Check if a value is a boolean.
+ *
+ * @param {any} value - The value to check.
+ * @returns {boolean} Returns `true` if the value is a boolean, `false` otherwise.
+ */
+export function boolean(value: any): boolean {
+  const type = Object.prototype.toString.call(value)
+
+  if (type === '[object String]')
+    return ['true', 't', 'yes', 'y', 'on', '1'].includes(
+      value.trim().toLowerCase(),
+    )
+
+  if (type === '[object Number]') return value === 1
+
+  if (type === '[object Boolean]') return value
+
+  return false
+}
+
+/**
+ * Check if a value is `true`.
+ *
+ * @param {any} value - The value to check.
+ * @returns {boolean} Returns `true` if the value is `true`, `false` otherwise.
+ */
+export function isTrue(value: any): boolean {
+  return boolean(value)
+}
+
+/**
+ * Check if a value is `false`.
+ *
+ * @param {any} value - The value to check.
+ * @returns {boolean} Returns `true` if the value is `false`, `false` otherwise.
+ */
+export function isFalse(value: any): boolean {
+  return !isTrue(value)
+}

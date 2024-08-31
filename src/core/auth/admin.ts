@@ -74,6 +74,17 @@ export function useAdmin(
     [],
   )
 
+  const sendEmailVerificationNotification =
+    useCallback(async (): Promise<AdminResponse> => {
+      try {
+        await api.post('/auth/admin/email/notification')
+
+        return {}
+      } catch (error: any) {
+        return api.handleError(error)
+      }
+    }, [])
+
   const sendEmailChangeVerificationNotification = useCallback(
     async (data: { email: string }): Promise<AdminResponse> => {
       try {
@@ -93,6 +104,7 @@ export function useAdmin(
     setAdmin,
     updateAdmin,
     updatePassword,
+    sendEmailVerificationNotification,
     sendEmailChangeVerificationNotification,
   }
 }

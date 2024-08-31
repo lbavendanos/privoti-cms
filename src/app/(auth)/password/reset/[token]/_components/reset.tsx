@@ -10,11 +10,9 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { LoginForm } from './login-form'
-import { Button } from '@/components/ui/button'
-import Link from 'next/link'
+import { ResetForm } from './reset-form'
 
-export function Login() {
+export function Reset() {
   const { check } = useAuth()
   const router = useRouter()
 
@@ -25,17 +23,16 @@ export function Login() {
   return (
     <Card>
       <CardHeader className="space-y-1">
-        <CardTitle className="text-center text-2xl">Iniciar sesión</CardTitle>
+        <CardTitle className="text-center text-2xl">
+          Crea tu nueva contraseña
+        </CardTitle>
         <CardDescription className="text-center">
-          Introduzca su correo electrónico a continuación para iniciar sesión en
-          su cuenta.
+          Crea una contraseña nueva. Después de crear tu contraseña,
+          permanecerás conectado.
         </CardDescription>
       </CardHeader>
-      <CardContent className="grid gap-4">
-        <LoginForm />
-        <Button variant="link" className="h-fit p-0" asChild>
-          <Link href="/password/forgot">¿Olvidaste tu contraseña?</Link>
-        </Button>
+      <CardContent>
+        <ResetForm />
       </CardContent>
     </Card>
   )

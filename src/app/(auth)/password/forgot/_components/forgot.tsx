@@ -7,14 +7,14 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { LoginForm } from './login-form'
-import { Button } from '@/components/ui/button'
-import Link from 'next/link'
+import { ForgotForm } from './forgot-form'
+import { LoginFooter } from '@/app/(auth)/login/_components/login-footer'
 
-export function Login() {
+export function Forgot() {
   const { check } = useAuth()
   const router = useRouter()
 
@@ -25,18 +25,20 @@ export function Login() {
   return (
     <Card>
       <CardHeader className="space-y-1">
-        <CardTitle className="text-center text-2xl">Iniciar sesión</CardTitle>
+        <CardTitle className="text-center text-2xl">
+          ¿Olvidaste tu contraseña?
+        </CardTitle>
         <CardDescription className="text-center">
-          Introduzca su correo electrónico a continuación para iniciar sesión en
-          su cuenta.
+          Proporciona la dirección de correo electrónico de tu cuenta para
+          recibir un correo electrónico y restablecer tu contraseña.
         </CardDescription>
       </CardHeader>
-      <CardContent className="grid gap-4">
-        <LoginForm />
-        <Button variant="link" className="h-fit p-0" asChild>
-          <Link href="/password/forgot">¿Olvidaste tu contraseña?</Link>
-        </Button>
+      <CardContent>
+        <ForgotForm />
       </CardContent>
+      <CardFooter className="flex-col justify-center gap-1">
+        <LoginFooter />
+      </CardFooter>
     </Card>
   )
 }

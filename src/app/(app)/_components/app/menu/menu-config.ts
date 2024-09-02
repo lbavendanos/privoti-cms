@@ -1,12 +1,12 @@
 import { Home, LineChart, Package, ShoppingCart, Users } from 'lucide-react'
 
-interface MenuItem {
+export interface MenuItem {
   href: string
   title: string
-  icon: any
+  icon: React.FC<React.SVGProps<SVGSVGElement>>
 }
 
-type MenuItems = MenuItem[]
+export type MenuItems = MenuItem[]
 
 export const MENU_ITEMS: MenuItems = [
   { href: '/', title: 'Inicio', icon: Home },

@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import Link from 'next/link'
 
-interface MenuItemProps extends React.ComponentProps<'a'> {
+interface MenuItemProps extends React.ComponentPropsWithoutRef<'a'> {
   item: MenuItem
   activeClassName: string
   inactiveClassName: string

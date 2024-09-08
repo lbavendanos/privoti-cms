@@ -61,7 +61,7 @@ export default function CreateProductPage() {
         </div>
         <div className="grid gap-4 md:grid-cols-[1fr_250px] lg:grid-cols-3 lg:gap-8">
           <div className="grid auto-rows-max items-start gap-4 lg:col-span-2 lg:gap-8">
-            <Card x-chunk="dashboard-07-chunk-0">
+            <Card>
               <CardHeader>
                 <CardTitle>Product Details</CardTitle>
                 <CardDescription>
@@ -90,7 +90,7 @@ export default function CreateProductPage() {
                 </div>
               </CardContent>
             </Card>
-            <Card x-chunk="dashboard-07-chunk-1">
+            <Card>
               <CardHeader>
                 <CardTitle>Stock</CardTitle>
                 <CardDescription>
@@ -208,7 +208,7 @@ export default function CreateProductPage() {
                 </Button>
               </CardFooter>
             </Card>
-            <Card x-chunk="dashboard-07-chunk-2">
+            <Card>
               <CardHeader>
                 <CardTitle>Product Category</CardTitle>
               </CardHeader>
@@ -248,7 +248,7 @@ export default function CreateProductPage() {
             </Card>
           </div>
           <div className="grid auto-rows-max items-start gap-4 lg:gap-8">
-            <Card x-chunk="dashboard-07-chunk-3">
+            <Card>
               <CardHeader>
                 <CardTitle>Product Status</CardTitle>
               </CardHeader>
@@ -270,7 +270,7 @@ export default function CreateProductPage() {
                 </div>
               </CardContent>
             </Card>
-            <Card className="overflow-hidden" x-chunk="dashboard-07-chunk-4">
+            <Card className="overflow-hidden">
               <CardHeader>
                 <CardTitle>Product Images</CardTitle>
                 <CardDescription>
@@ -313,7 +313,7 @@ export default function CreateProductPage() {
                 </div>
               </CardContent>
             </Card>
-            <Card x-chunk="dashboard-07-chunk-5">
+            <Card>
               <CardHeader>
                 <CardTitle>Archive Product</CardTitle>
                 <CardDescription>

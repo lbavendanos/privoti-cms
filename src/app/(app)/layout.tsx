@@ -19,11 +19,11 @@ export default function AppLayout({
   if (check && !user?.email_verified_at) return <AppUnverified />
 
   return (
-    <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
+    <div className="flex min-h-screen w-full flex-col">
       <Aside />
-      <div className="flex flex-col">
+      <div className="flex grow flex-col md:pl-56 lg:pl-72">
         <Header />
-        <main className="flex grow">{children}</main>
+        <main className="flex grow pt-14 lg:pt-[60px]">{children}</main>
       </div>
     </div>
   )

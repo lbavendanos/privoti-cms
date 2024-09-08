@@ -7,7 +7,7 @@ export function Aside() {
   const appName = process.env.NEXT_PUBLIC_APP_NAME
 
   return (
-    <div className="hidden border-r bg-muted/40 md:block">
+    <aside className="fixed inset-y-0 left-0 z-10 hidden border-r bg-muted/40 md:block md:w-56 lg:w-72">
       <div className="flex h-full max-h-screen flex-col gap-2">
         <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
           <Link href="/" className="flex items-center gap-2 font-semibold">
@@ -23,6 +23,6 @@ export function Aside() {
           <MenuDesktop />
         </div>
       </div>
-    </div>
+    </aside>
   )
 }

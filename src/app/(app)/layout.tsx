@@ -23,7 +23,9 @@ export default function AppLayout({
       <Aside />
       <div className="flex grow flex-col md:pl-56 lg:pl-72">
         <Header />
-        <main className="flex grow pt-14 lg:pt-[60px]">{children}</main>
+        <main className="flex grow bg-muted/40 pt-14 lg:pt-[60px]">
+          {children}
+        </main>
       </div>
     </div>
   )

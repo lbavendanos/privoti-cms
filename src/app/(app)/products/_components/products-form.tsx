@@ -31,30 +31,35 @@ import { Textarea } from '@/components/ui/textarea'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { ChevronLeft, PlusCircle, Upload } from 'lucide-react'
 import Image from 'next/image'
+import Link from 'next/link'
 
 export function ProductsForm() {
   return (
-    <form className="flex flex-col gap-4">
-      <div className="flex items-center gap-4">
-        <Button variant="outline" size="icon" className="h-7 w-7">
-          <ChevronLeft className="h-4 w-4" />
-          <span className="sr-only">Back</span>
-        </Button>
-        <h1 className="flex-1 shrink-0 whitespace-nowrap text-xl font-semibold tracking-tight sm:grow-0">
-          Pro Controller
-        </h1>
-        <Badge variant="outline" className="ml-auto sm:ml-0">
-          In stock
-        </Badge>
-        <div className="hidden items-center gap-2 md:ml-auto md:flex">
-          <Button variant="outline" size="sm">
-            Discard
-          </Button>
-          <Button size="sm">Save Product</Button>
+    <form className="container">
+      <div className="grid grid-cols-12 gap-6">
+        <div className="col-span-12 md:col-span-10 md:col-start-2">
+          <div className="flex items-center gap-4">
+            <Button variant="outline" size="icon" className="h-7 w-7" asChild>
+              <Link href="/products">
+                <ChevronLeft className="h-4 w-4" />
+                <span className="sr-only">Back</span>
+              </Link>
+            </Button>
+            <h1 className="flex-1 shrink-0 whitespace-nowrap text-xl font-semibold tracking-tight sm:grow-0">
+              Pro Controller
+            </h1>
+            <Badge variant="outline" className="ml-auto sm:ml-0">
+              In stock
+            </Badge>
+            <div className="hidden items-center gap-2 md:ml-auto md:flex">
+              <Button variant="outline" size="sm">
+                Discard
+              </Button>
+              <Button size="sm">Save Product</Button>
+            </div>
+          </div>
         </div>
-      </div>
-      <div className="grid grid-cols-10 gap-6">
-        <div className="col-span-10 xl:col-span-7">
+        <div className="col-span-12 md:col-span-10 md:col-start-2 xl:col-span-7 xl:col-start-2">
           <div className="flex flex-col gap-6">
             <Card>
               <CardHeader>
@@ -243,7 +248,7 @@ export function ProductsForm() {
             </Card>
           </div>
         </div>
-        <div className="col-span-10 xl:col-span-3 xl:col-start-8">
+        <div className="col-span-12 md:col-span-10 md:col-start-2 xl:col-span-3 xl:col-start-9">
           <div className="flex flex-col gap-6">
             <Card>
               <CardHeader>
@@ -326,12 +331,14 @@ export function ProductsForm() {
             </Card>
           </div>
         </div>
-      </div>
-      <div className="flex items-center justify-center gap-2 md:hidden">
-        <Button variant="outline" size="sm">
-          Discard
-        </Button>
-        <Button size="sm">Save Product</Button>
+        <div className="col-span-12 md:hidden">
+          <div className="flex items-center justify-center gap-2">
+            <Button variant="outline" size="sm">
+              Discard
+            </Button>
+            <Button size="sm">Save Product</Button>
+          </div>
+        </div>
       </div>
     </form>
   )

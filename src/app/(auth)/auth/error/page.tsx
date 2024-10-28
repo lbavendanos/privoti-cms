@@ -33,11 +33,10 @@ function AuthErrorDescription({ type }: { type: AuthError }) {
   )
 }
 
-export function generateMetadata({
-  searchParams,
-}: {
-  searchParams: { [key: string]: string | string[] | undefined }
-}): Metadata {
+export async function generateMetadata(props: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}): Promise<Metadata> {
+  const searchParams = await props.searchParams
   const type = searchParams.type as AuthError | undefined
 
   if (
@@ -51,11 +50,10 @@ export function generateMetadata({
   }
 }
 
-export default async function AuthErrorPage({
-  searchParams,
-}: {
-  searchParams: { [key: string]: string | string[] | undefined }
+export default async function AuthErrorPage(props: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
+  const searchParams = await props.searchParams
   const type = searchParams.type as AuthError | undefined
 
   if (!type) redirect('/')

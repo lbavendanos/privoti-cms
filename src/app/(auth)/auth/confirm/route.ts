@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { cookies } from 'next/headers'
+import { cookies, type UnsafeUnwrappedCookies } from 'next/headers'
 import { api } from '@/lib/http'
 import { url } from '@/lib/utils'
 
 function confirmFetch(path: string, request: NextRequest) {
-  const cookieStore = cookies()
+  const cookieStore = cookies() as unknown as UnsafeUnwrappedCookies
   const { searchParams } = new URL(request.url)
 
   const expires = searchParams.get('expires')

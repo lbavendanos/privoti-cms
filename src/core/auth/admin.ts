@@ -7,9 +7,13 @@ export interface Admin {
   id: number
   first_name: string
   last_name: string
-  dob?: string
-  phone?: string
+  full_name: string
+  short_name: string
+  initials: string
   email: string
+  avatar?: string
+  phone?: string
+  dob?: string
   email_verified_at?: string
   updated_at?: string
   created_at?: string

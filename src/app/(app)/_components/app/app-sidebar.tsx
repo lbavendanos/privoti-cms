@@ -6,6 +6,7 @@ import {
   BarChart2,
   Command,
   Home,
+  Settings,
   ShoppingCart,
   Tag,
   User,
@@ -22,6 +23,7 @@ import {
   SidebarRail,
 } from '@/components/ui/sidebar'
 import { NavMain } from './nav/nav-main'
+import { NavSecondary } from './nav/nav-secondary'
 import { NavUser } from './nav/nav-user'
 import Link from 'next/link'
 
@@ -33,7 +35,7 @@ export type Item = {
   isActive?: boolean
 }
 
-export const ITEMS: Item[] = [
+export const MAIN_ITEMS: Item[] = [
   {
     title: 'Home',
     url: '/',
@@ -66,42 +68,57 @@ export const ITEMS: Item[] = [
   },
 ]
 
+const SECONDARY_ITEMS: Item[] = [
+  {
+    title: 'Settings',
+    url: '/settings',
+    icon: Settings,
+  },
+]
+
+function generateItems(items: Item[], pathname: string): Item[] {
+  return items.map((item) => {
+    if (item.url === pathname) {
+      return { ...item, isActive: true }
+    }
+
+    if (item.items) {
+      const items = item.items.map((subItem) => {
+        if (subItem.url === pathname) {
+          return { ...subItem, isActive: true }
+        }
+
+        if (
+          subItem.url &&
+          subItem.url !== '/' &&
+          pathname.includes(subItem.url)
+        ) {
+          return { ...subItem, isActive: true }
+        }
+
+        return subItem
+      })
+
+      const isActive = items.some((subItem) => subItem.isActive)
+
+      return { ...item, items, isActive }
+    }
+
+    return item
+  })
+}
+
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const appName = process.env.NEXT_PUBLIC_APP_NAME as string
-
   const pathname = usePathname()
 
   const mainItems = useMemo(
-    () =>
-      ITEMS.map((item) => {
-        if (item.url === pathname) {
-          return { ...item, isActive: true }
-        }
+    () => generateItems(MAIN_ITEMS, pathname),
+    [pathname],
+  )
 
-        if (item.items) {
-          const items = item.items.map((subItem) => {
-            if (subItem.url === pathname) {
-              return { ...subItem, isActive: true }
-            }
-
-            if (
-              subItem.url &&
-              subItem.url !== '/' &&
-              pathname.includes(subItem.url)
-            ) {
-              return { ...subItem, isActive: true }
-            }
-
-            return subItem
-          })
-
-          const isActive = items.some((subItem) => subItem.isActive)
-
-          return { ...item, items, isActive }
-        }
-
-        return item
-      }),
+  const secondaryItems = useMemo(
+    () => generateItems(SECONDARY_ITEMS, pathname),
     [pathname],
   )
 
@@ -126,6 +143,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={mainItems} />
+        <NavSecondary items={secondaryItems} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
         <NavUser />

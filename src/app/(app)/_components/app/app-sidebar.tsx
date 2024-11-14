@@ -1,165 +1,131 @@
 'use client'
 
-import * as React from 'react'
+import { usePathname } from 'next/navigation'
+import React, { useMemo } from 'react'
 import {
-  AudioWaveform,
-  BookOpen,
-  Bot,
+  BarChart2,
   Command,
-  Frame,
-  GalleryVerticalEnd,
-  Map,
-  PieChart,
-  Settings2,
-  SquareTerminal,
+  Home,
+  ShoppingCart,
+  Tag,
+  User,
+  type LucideIcon,
 } from 'lucide-react'
-
-import { NavMain } from './nav/nav-main'
-import { NavProjects } from './nav/nav-projects'
-import { NavUser } from './nav/nav-user'
-import { TeamSwitcher } from './nav/team-switcher'
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
   SidebarRail,
 } from '@/components/ui/sidebar'
+import { NavMain } from './nav/nav-main'
+import { NavUser } from './nav/nav-user'
+import Link from 'next/link'
 
-// This is sample data.
-const data = {
-  teams: [
-    {
-      name: 'Acme Inc',
-      logo: GalleryVerticalEnd,
-      plan: 'Enterprise',
-    },
-    {
-      name: 'Acme Corp.',
-      logo: AudioWaveform,
-      plan: 'Startup',
-    },
-    {
-      name: 'Evil Corp.',
-      logo: Command,
-      plan: 'Free',
-    },
-  ],
-  navMain: [
-    {
-      title: 'Playground',
-      url: '#',
-      icon: SquareTerminal,
-      isActive: true,
-      items: [
-        {
-          title: 'History',
-          url: '#',
-        },
-        {
-          title: 'Starred',
-          url: '#',
-        },
-        {
-          title: 'Settings',
-          url: '#',
-        },
-      ],
-    },
-    {
-      title: 'Models',
-      url: '#',
-      icon: Bot,
-      items: [
-        {
-          title: 'Genesis',
-          url: '#',
-        },
-        {
-          title: 'Explorer',
-          url: '#',
-        },
-        {
-          title: 'Quantum',
-          url: '#',
-        },
-      ],
-    },
-    {
-      title: 'Documentation',
-      url: '#',
-      icon: BookOpen,
-      items: [
-        {
-          title: 'Introduction',
-          url: '#',
-        },
-        {
-          title: 'Get Started',
-          url: '#',
-        },
-        {
-          title: 'Tutorials',
-          url: '#',
-        },
-        {
-          title: 'Changelog',
-          url: '#',
-        },
-      ],
-    },
-    {
-      title: 'Settings',
-      url: '#',
-      icon: Settings2,
-      items: [
-        {
-          title: 'General',
-          url: '#',
-        },
-        {
-          title: 'Team',
-          url: '#',
-        },
-        {
-          title: 'Billing',
-          url: '#',
-        },
-        {
-          title: 'Limits',
-          url: '#',
-        },
-      ],
-    },
-  ],
-  projects: [
-    {
-      name: 'Design Engineering',
-      url: '#',
-      icon: Frame,
-    },
-    {
-      name: 'Sales & Marketing',
-      url: '#',
-      icon: PieChart,
-    },
-    {
-      name: 'Travel',
-      url: '#',
-      icon: Map,
-    },
-  ],
+export type Item = {
+  title: string
+  url?: string
+  icon?: LucideIcon
+  items?: Item[]
+  isActive?: boolean
 }
 
+export const ITEMS: Item[] = [
+  {
+    title: 'Home',
+    url: '/',
+    icon: Home,
+  },
+  {
+    title: 'Orders',
+    url: '/orders',
+    icon: ShoppingCart,
+  },
+  {
+    title: 'Products',
+    icon: Tag,
+    items: [
+      { title: 'All Products', url: '/products' },
+      { title: 'Inventory', url: '/inventory' },
+      { title: 'Collections', url: '/collections' },
+      { title: 'Categories', url: '/categories' },
+    ],
+  },
+  {
+    title: 'Customers',
+    url: '/customers',
+    icon: User,
+  },
+  {
+    title: 'Analytics',
+    url: '/analytics',
+    icon: BarChart2,
+  },
+]
+
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const appName = process.env.NEXT_PUBLIC_APP_NAME as string
+
+  const pathname = usePathname()
+
+  const mainItems = useMemo(
+    () =>
+      ITEMS.map((item) => {
+        if (item.url === pathname) {
+          return { ...item, isActive: true }
+        }
+
+        if (item.items) {
+          const items = item.items.map((subItem) => {
+            if (subItem.url === pathname) {
+              return { ...subItem, isActive: true }
+            }
+
+            if (
+              subItem.url &&
+              subItem.url !== '/' &&
+              pathname.includes(subItem.url)
+            ) {
+              return { ...subItem, isActive: true }
+            }
+
+            return subItem
+          })
+
+          const isActive = items.some((subItem) => subItem.isActive)
+
+          return { ...item, items, isActive }
+        }
+
+        return item
+      }),
+    [pathname],
+  )
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton size="lg" asChild>
+              <Link href="/">
+                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+                  <Command className="size-4" />
+                </div>
+                <div className="grid flex-1 text-left text-sm leading-tight">
+                  <span className="truncate font-semibold">{appName}</span>
+                  <span className="truncate text-xs">Enterprise</span>
+                </div>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
+        <NavMain items={mainItems} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser />

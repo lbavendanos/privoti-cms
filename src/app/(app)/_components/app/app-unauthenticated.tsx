@@ -9,16 +9,16 @@ export function AppUnauthenticated() {
           <div className="col-span-12">
             <div className="flex flex-col gap-4">
               <h1 className="text-center text-3xl font-bold tracking-tight lg:text-4xl">
-                No estás autenticado
+                You are not authenticated
               </h1>
               <p className="text-center text-base text-muted-foreground lg:text-lg">
-                Si ya tienes una cuenta, por favor{' '}
+                If you already have an account, please{' '}
                 <Button
                   variant="link"
                   className="h-fit w-fit p-0 text-base lg:text-lg"
                   asChild
                 >
-                  <Link href="/login">inicia sesión</Link>
+                  <Link href="/login">log in</Link>
                 </Button>
               </p>
             </div>

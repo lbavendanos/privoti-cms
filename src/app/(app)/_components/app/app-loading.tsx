@@ -5,7 +5,7 @@ export function AppLoading() {
         <div className="grid grid-cols-12 gap-6">
           <div className="col-span-12">
             <h1 className="text-center text-base text-muted-foreground">
-              Cargando...
+              Loading...
             </h1>
           </div>
         </div>

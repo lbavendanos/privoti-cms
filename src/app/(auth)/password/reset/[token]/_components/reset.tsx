@@ -24,11 +24,11 @@ export function Reset() {
     <Card>
       <CardHeader className="space-y-1">
         <CardTitle className="text-center text-2xl">
-          Crea tu nueva contraseña
+          Create your new password
         </CardTitle>
         <CardDescription className="text-center">
-          Crea una contraseña nueva. Después de crear tu contraseña,
-          permanecerás conectado.
+          Create a new password. After creating your password, you will remain
+          logged in.
         </CardDescription>
       </CardHeader>
       <CardContent>

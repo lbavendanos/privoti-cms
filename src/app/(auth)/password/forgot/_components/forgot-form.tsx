@@ -21,13 +21,13 @@ import { Loader2 } from 'lucide-react'
 const FormSchema = z.object({
   email: z
     .string({
-      required_error: 'El email es requerido.',
-      invalid_type_error: 'El email debe ser una cadena.',
+      required_error: 'Email is required.',
+      invalid_type_error: 'Email must be a string.',
     })
     .trim()
     .toLowerCase()
-    .min(1, { message: 'Debes introducir un email' })
-    .email({ message: 'Email inválido.' }),
+    .min(1, { message: 'You must enter an email' })
+    .email({ message: 'Invalid email.' }),
 })
 
 type FormValues = z.infer<typeof FormSchema>
@@ -63,10 +63,9 @@ export function ForgotForm(props: ForgotFormProps) {
         }
 
         toast({
-          title:
-            'Se envió un correo electrónico de restablecimiento de contraseña.',
+          title: 'A password reset email has been sent.',
           description:
-            'Verifique su correo electrónico para continuar con el proceso de restablecimiento de contraseña.',
+            'Please check your email to continue the password reset process.',
         })
 
         form.reset()
@@ -88,11 +87,11 @@ export function ForgotForm(props: ForgotFormProps) {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email *</FormLabel>
+                <FormLabel>Email</FormLabel>
                 <FormControl>
                   <Input
                     type="email"
-                    placeholder="m@ejemplo.com"
+                    placeholder="m@example.com"
                     autoComplete="email"
                     {...field}
                   />
@@ -109,7 +108,7 @@ export function ForgotForm(props: ForgotFormProps) {
           disabled={isPending}
         >
           {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Enviar correo electrónico
+          Send email
         </Button>
       </form>
     </Form>

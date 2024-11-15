@@ -4,7 +4,7 @@ import { Reset } from './_components/reset'
 export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
-  title: 'Restablecer contraseña',
+  title: 'Reset password',
 }
 
 export default function ResetPage() {

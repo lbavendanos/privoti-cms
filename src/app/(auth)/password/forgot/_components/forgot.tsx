@@ -26,11 +26,11 @@ export function Forgot() {
     <Card>
       <CardHeader className="space-y-1">
         <CardTitle className="text-center text-2xl">
-          ¿Olvidaste tu contraseña?
+          Forgot your password?
         </CardTitle>
         <CardDescription className="text-center">
-          Proporciona la dirección de correo electrónico de tu cuenta para
-          recibir un correo electrónico y restablecer tu contraseña.
+          Please provide your account email address to receive an email to reset
+          your password.
         </CardDescription>
       </CardHeader>
       <CardContent>

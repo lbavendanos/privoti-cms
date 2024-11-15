@@ -25,16 +25,15 @@ export function Login() {
   return (
     <Card>
       <CardHeader className="space-y-1">
-        <CardTitle className="text-center text-2xl">Iniciar sesión</CardTitle>
+        <CardTitle className="text-center text-2xl">Login</CardTitle>
         <CardDescription className="text-center">
-          Introduzca su correo electrónico a continuación para iniciar sesión en
-          su cuenta.
+          Enter your email below to login to your account
         </CardDescription>
       </CardHeader>
       <CardContent className="grid gap-4">
         <LoginForm />
         <Button variant="link" className="h-fit p-0" asChild>
-          <Link href="/password/forgot">¿Olvidaste tu contraseña?</Link>
+          <Link href="/password/forgot">Forgot your password?</Link>
         </Button>
       </CardContent>
     </Card>

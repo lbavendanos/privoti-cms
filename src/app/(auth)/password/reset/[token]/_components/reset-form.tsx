@@ -24,28 +24,28 @@ const FormSchema = z
   .object({
     email: z
       .string({
-        required_error: 'El email es requerido.',
-        invalid_type_error: 'El email debe ser una cadena.',
+        required_error: 'Email is required.',
+        invalid_type_error: 'Email must be a string.',
       })
       .trim()
       .toLowerCase()
-      .min(1, { message: 'Debes introducir un email' })
-      .email({ message: 'Email inválido.' }),
+      .min(1, { message: 'You must enter an email' })
+      .email({ message: 'Invalid email.' }),
     password: z
       .string({
-        required_error: 'La contraseña es requerida.',
-        invalid_type_error: 'La contraseña debe ser una cadena.',
+        required_error: 'Password is required.',
+        invalid_type_error: 'Password must be a string.',
       })
-      .min(8, { message: 'La contraseña debe tener al menos 8 caracteres.' }),
+      .min(8, { message: 'The password must be at least 8 characters.' }),
     password_confirmation: z
       .string({
-        required_error: 'La contraseña es requerida.',
-        invalid_type_error: 'La contraseña debe ser una cadena.',
+        required_error: 'Password is required.',
+        invalid_type_error: 'Password must be a string.',
       })
       .optional(),
   })
   .refine((data) => data.password === data.password_confirmation, {
-    message: 'Las contraseñas no coinciden.',
+    message: 'The passwords do not match.',
     path: ['password_confirmation'],
   })
 
@@ -91,7 +91,7 @@ export function ResetForm(props: ResetFormProps) {
         }
 
         toast({
-          description: 'Tu contraseña se ha restablecido correctamente.',
+          description: 'Your password has been reset successfully.',
         })
 
         form.reset()
@@ -113,11 +113,11 @@ export function ResetForm(props: ResetFormProps) {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email *</FormLabel>
+              <FormLabel>Email</FormLabel>
               <FormControl>
                 <Input
                   type="email"
-                  placeholder="m@ejemplo.com"
+                  placeholder="m@example.com"
                   autoComplete="email"
                   {...field}
                 />
@@ -131,7 +131,7 @@ export function ResetForm(props: ResetFormProps) {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Contraseña *</FormLabel>
+              <FormLabel>Password</FormLabel>
               <FormControl>
                 <PasswordInput
                   placeholder="********"
@@ -148,7 +148,7 @@ export function ResetForm(props: ResetFormProps) {
           name="password_confirmation"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Confirmar contraseña *</FormLabel>
+              <FormLabel>Confirm Password</FormLabel>
               <FormControl>
                 <PasswordInput
                   placeholder="********"
@@ -167,7 +167,7 @@ export function ResetForm(props: ResetFormProps) {
           disabled={isPending}
         >
           {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Restablecer contraseña
+          Reset password
         </Button>
       </form>
     </Form>

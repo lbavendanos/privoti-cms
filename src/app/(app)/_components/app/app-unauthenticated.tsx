@@ -18,7 +18,7 @@ export function AppUnauthenticated() {
                   className="h-fit w-fit p-0 text-base lg:text-lg"
                   asChild
                 >
-                  <Link href="/login">Login</Link>
+                  <Link href="/login">login</Link>
                 </Button>
               </p>
             </div>

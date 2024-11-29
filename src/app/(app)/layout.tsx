@@ -23,13 +23,13 @@ import { AppUnverified } from './_components/app/app-unverified'
 export default function AppLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  const { check, user, isLoading } = useAuth()
-
-  if (isLoading) return <AppLoading />
-
-  if (!check) return <AppUnauthenticated />
-
-  if (check && !user?.email_verified_at) return <AppUnverified />
+  // const { check, user, isLoading } = useAuth()
+  //
+  // if (isLoading) return <AppLoading />
+  //
+  // if (!check) return <AppUnauthenticated />
+  //
+  // if (check && !user?.email_verified_at) return <AppUnverified />
 
   return (
     <SidebarProvider>

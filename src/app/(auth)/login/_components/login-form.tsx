@@ -1,154 +1,87 @@
 'use client'
 
-import { z } from 'zod'
-import { useCallback, useTransition } from 'react'
-import { useRouter } from 'next/navigation'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
-import { useToast } from '@/components/ui/use-toast'
-import { useAuth } from '@/core/auth'
+import { useActionState, useEffect } from 'react'
+import { cn } from '@/lib/utils'
+import { login } from './login-action'
+import { useToast } from '@/hooks/use-toast'
 import { Button } from '@/components/ui/button'
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { PasswordInput } from '@/components/ui/password-input'
-import { Checkbox } from '@/components/ui/checkbox'
 import { Loader2 } from 'lucide-react'
-
-const FormSchema = z.object({
-  email: z
-    .string({
-      required_error: 'Email is required.',
-      invalid_type_error: 'Email must be a string.',
-    })
-    .trim()
-    .toLowerCase()
-    .min(1, { message: 'You must enter an email' })
-    .email({ message: 'Invalid email.' }),
-  password: z
-    .string({
-      required_error: 'Password is required.',
-      invalid_type_error: 'Password must be a string.',
-    })
-    .min(1, { message: 'You must enter an password' }),
-  remember: z.boolean(),
-})
-
-type FormValues = z.infer<typeof FormSchema>
+import { CircleAlert } from 'lucide-react'
 
 export function LoginForm() {
-  const { login } = useAuth()
+  const [state, formAction, isPending] = useActionState(login, null)
   const { toast } = useToast()
 
-  const router = useRouter()
-
-  const [isPending, startTransition] = useTransition()
-
-  const form = useForm<FormValues>({
-    resolver: zodResolver(FormSchema),
-    defaultValues: {
-      email: '',
-      password: '',
-      remember: false,
-    },
-  })
-
-  const handleSubmit = useCallback(
-    (data: FormValues) => {
-      startTransition(async () => {
-        const { error } = await login(data)
-
-        if (error) {
-          toast({
-            variant: 'destructive',
-            description: error,
-          })
-
-          return
-        }
-
-        form.reset()
-        router.push('/')
+  useEffect(() => {
+    if (!isPending && state?.status !== 422) {
+      toast({
+        variant: 'destructive',
+        description: state?.message,
       })
-    },
-    [form, router, login, toast],
-  )
+    }
+  }, [isPending, state, toast])
 
   return (
-    <Form {...form}>
-      <form
-        className="flex flex-col gap-4"
-        onSubmit={form.handleSubmit(handleSubmit)}
-      >
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Email</FormLabel>
-              <FormControl>
-                <Input
-                  type="email"
-                  placeholder="m@example.com"
-                  autoComplete="email"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Password</FormLabel>
-              <FormControl>
-                <PasswordInput
-                  placeholder="********"
-                  autoComplete="current-password"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="remember"
-          render={({ field }) => (
-            <FormItem className="flex items-center space-x-2 space-y-0">
-              <FormControl>
-                <Checkbox
-                  checked={field.value}
-                  onCheckedChange={(checked) => {
-                    field.onChange(checked)
-                  }}
-                />
-              </FormControl>
-              <FormLabel>Remember account</FormLabel>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button
-          type="submit"
-          className="w-full"
-          aria-disabled={isPending}
-          disabled={isPending}
+    <form action={formAction} className="flex flex-col gap-4">
+      {state?.status === 422 && (
+        <div className="rounded-lg bg-red-400 bg-opacity-20 px-4 py-3 text-red-700 dark:bg-opacity-10 dark:text-red-600">
+          <p className="text-sm">
+            <CircleAlert
+              className="-mt-0.5 me-3 inline-flex opacity-60"
+              size={16}
+              strokeWidth={2}
+              aria-hidden="true"
+            />
+            {state.message}
+          </p>
+        </div>
+      )}
+      <div className="space-y-2">
+        <Label
+          htmlFor="email"
+          className={cn(state?.errors?.email && 'text-destructive')}
         >
-          {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Login
-        </Button>
-      </form>
-    </Form>
+          Email
+        </Label>
+        <Input
+          id="email"
+          type="email"
+          name="email"
+          placeholder="m@example.com"
+          autoComplete="email"
+          defaultValue={state?.payload?.get('email')?.toString()}
+          required
+        />
+      </div>
+      <div className="space-y-2">
+        <Label
+          htmlFor="password"
+          className={cn(state?.errors?.password && 'text-destructive')}
+        >
+          Password
+        </Label>
+        <PasswordInput
+          id="password"
+          type="password"
+          name="password"
+          placeholder="********"
+          autoComplete="current-password"
+          defaultValue={state?.payload?.get('password')?.toString()}
+          required
+        />
+      </div>
+      <Button
+        type="submit"
+        className="w-full"
+        disabled={isPending}
+        aria-disabled={isPending}
+      >
+        {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+        Login
+      </Button>
+    </form>
   )
 }

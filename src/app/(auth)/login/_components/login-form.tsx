@@ -2,14 +2,13 @@
 
 import { useActionState, useEffect } from 'react'
 import { cn } from '@/lib/utils'
-import { login } from './login-action'
+import { login } from '@/core/actions/auth'
 import { useToast } from '@/hooks/use-toast'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { PasswordInput } from '@/components/ui/password-input'
-import { Loader2 } from 'lucide-react'
-import { CircleAlert } from 'lucide-react'
+import { Loader2, CircleAlert } from 'lucide-react'
 
 export function LoginForm() {
   const [state, formAction, isPending] = useActionState(login, null)

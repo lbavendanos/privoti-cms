@@ -114,3 +114,37 @@ export async function logout() {
 
   redirect('/login')
 }
+
+export async function forgotPassword(
+  _: unknown,
+  formData: FormData,
+): Promise<ActionResponse> {
+  const email = formData.get('email')
+
+  try {
+    const response = await api.post<{
+      message: string
+    }>(
+      '/auth/forgot-password',
+      { email },
+      {
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+      },
+    )
+
+    return {
+      status: response.status,
+      message: response.data.message,
+    }
+  } catch (error: any) {
+    return {
+      status: error?.status,
+      message: error?.data?.message,
+      errors: error?.data?.errors || [],
+      payload: formData,
+    }
+  }
+}

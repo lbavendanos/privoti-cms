@@ -1,8 +1,3 @@
-'use client'
-
-import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import { useAuth } from '@/core/auth'
 import {
   Card,
   CardContent,
@@ -15,13 +10,6 @@ import { ForgotForm } from './forgot-form'
 import { LoginFooter } from '@/app/(auth)/login/_components/login-footer'
 
 export function Forgot() {
-  const { check } = useAuth()
-  const router = useRouter()
-
-  useEffect(() => {
-    if (check) router.push('/')
-  }, [check, router])
-
   return (
     <Card>
       <CardHeader className="space-y-1">

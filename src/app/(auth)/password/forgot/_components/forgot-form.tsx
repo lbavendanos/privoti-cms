@@ -1,116 +1,68 @@
 'use client'
 
-import { z } from 'zod'
-import { useCallback, useTransition } from 'react'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
-import { useToast } from '@/components/ui/use-toast'
-import { useAuth } from '@/core/auth'
-import { Button } from '@/components/ui/button'
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form'
+import { useActionState, useEffect } from 'react'
+import { cn } from '@/lib/utils'
+import { useToast } from '@/hooks/use-toast'
+import { forgotPassword } from '@/core/actions/auth'
+import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
-import { Loader2 } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { AlertCircle, CircleCheck, Loader2 } from 'lucide-react'
 
-const FormSchema = z.object({
-  email: z
-    .string({
-      required_error: 'Email is required.',
-      invalid_type_error: 'Email must be a string.',
-    })
-    .trim()
-    .toLowerCase()
-    .min(1, { message: 'You must enter an email' })
-    .email({ message: 'Invalid email.' }),
-})
-
-type FormValues = z.infer<typeof FormSchema>
-
-export interface ForgotFormProps
-  extends React.ComponentPropsWithoutRef<'form'> {}
-
-export function ForgotForm(props: ForgotFormProps) {
-  const { sendResetEmail } = useAuth()
+export function ForgotForm() {
+  const [state, formAction, isPending] = useActionState(forgotPassword, null)
   const { toast } = useToast()
 
-  const [isPending, startTransition] = useTransition()
-
-  const form = useForm<FormValues>({
-    resolver: zodResolver(FormSchema),
-    defaultValues: {
-      email: '',
-    },
-  })
-
-  const handleSubmit = useCallback(
-    (data: FormValues) => {
-      startTransition(async () => {
-        const { error } = await sendResetEmail(data)
-
-        if (error) {
-          toast({
-            variant: 'destructive',
-            description: error,
-          })
-
-          return
-        }
-
-        toast({
-          title: 'A password reset email has been sent.',
-          description:
-            'Please check your email to continue the password reset process.',
-        })
-
-        form.reset()
+  useEffect(() => {
+    if (!isPending && state && state.status !== 200 && state.status !== 422) {
+      toast({
+        variant: 'destructive',
+        description: state?.message,
       })
-    },
-    [form, sendResetEmail, toast],
-  )
+    }
+  }, [isPending, state, toast])
 
   return (
-    <Form {...form}>
-      <form
-        className="flex flex-col gap-2"
-        onSubmit={form.handleSubmit(handleSubmit)}
-        {...props}
-      >
-        <div className="w-full space-y-2">
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input
-                    type="email"
-                    placeholder="m@example.com"
-                    autoComplete="email"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-        <Button
-          type="submit"
-          className="mt-2 w-full"
-          aria-disabled={isPending}
-          disabled={isPending}
+    <form action={formAction} className="flex flex-col gap-4">
+      {state?.status === 200 && (
+        <Alert variant="success">
+          <CircleCheck className="h-4 w-4" />
+          <AlertDescription>{state.message}</AlertDescription>
+        </Alert>
+      )}
+      {state?.status === 422 && (
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>{state.message}</AlertDescription>
+        </Alert>
+      )}
+      <div className="space-y-2">
+        <Label
+          htmlFor="email"
+          className={cn(state?.errors?.email && 'text-destructive')}
         >
-          {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Send email
-        </Button>
-      </form>
-    </Form>
+          Email
+        </Label>
+        <Input
+          id="email"
+          type="email"
+          name="email"
+          placeholder="m@example.com"
+          autoComplete="email"
+          defaultValue={state?.payload?.get('email')?.toString()}
+          required
+        />
+      </div>
+      <Button
+        type="submit"
+        className="mt-2 w-full"
+        aria-disabled={isPending}
+        disabled={isPending}
+      >
+        {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+        Send email
+      </Button>
+    </form>
   )
 }

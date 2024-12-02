@@ -8,14 +8,15 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { PasswordInput } from '@/components/ui/password-input'
-import { Loader2, CircleAlert } from 'lucide-react'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Loader2, AlertCircle } from 'lucide-react'
 
 export function LoginForm() {
   const [state, formAction, isPending] = useActionState(login, null)
   const { toast } = useToast()
 
   useEffect(() => {
-    if (!isPending && state && state.status !== 422) {
+    if (!isPending && state && state.status !== 200 && state.status !== 422) {
       toast({
         variant: 'destructive',
         description: state?.message,
@@ -26,17 +27,10 @@ export function LoginForm() {
   return (
     <form action={formAction} className="flex flex-col gap-4">
       {state?.status === 422 && (
-        <div className="rounded-lg bg-red-400 bg-opacity-20 px-4 py-3 text-red-700 dark:bg-opacity-10 dark:text-red-600">
-          <p className="text-sm">
-            <CircleAlert
-              className="-mt-0.5 me-3 inline-flex opacity-60"
-              size={16}
-              strokeWidth={2}
-              aria-hidden="true"
-            />
-            {state.message}
-          </p>
-        </div>
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>{state.message}</AlertDescription>
+        </Alert>
       )}
       <div className="space-y-2">
         <Label

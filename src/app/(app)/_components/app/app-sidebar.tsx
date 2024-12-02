@@ -24,7 +24,6 @@ import {
 } from '@/components/ui/sidebar'
 import { NavMain } from './nav/nav-main'
 import { NavSecondary } from './nav/nav-secondary'
-import { NavUser } from './nav/nav-user'
 import Link from 'next/link'
 
 export type Item = {
@@ -108,7 +107,11 @@ function generateItems(items: Item[], pathname: string): Item[] {
   })
 }
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
+  footerChildren: React.ReactNode
+}
+
+export function AppSidebar({ footerChildren, ...props }: AppSidebarProps) {
   const appName = process.env.NEXT_PUBLIC_APP_NAME as string
   const pathname = usePathname()
 
@@ -145,9 +148,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavMain items={mainItems} />
         <NavSecondary items={secondaryItems} className="mt-auto" />
       </SidebarContent>
-      <SidebarFooter>
-        <NavUser />
-      </SidebarFooter>
+      <SidebarFooter>{footerChildren}</SidebarFooter>
       <SidebarRail />
     </Sidebar>
   )

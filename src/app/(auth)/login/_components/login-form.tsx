@@ -15,7 +15,7 @@ export function LoginForm() {
   const { toast } = useToast()
 
   useEffect(() => {
-    if (!isPending && state?.status !== 422) {
+    if (!isPending && state && state.status !== 422) {
       toast({
         variant: 'destructive',
         description: state?.message,

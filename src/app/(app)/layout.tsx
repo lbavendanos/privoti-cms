@@ -1,7 +1,4 @@
-'use client'
-
-import { useAuth } from '@/core/auth'
-import { AppSidebar } from './_components/app/app-sidebar'
+import { Suspense } from 'react'
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -16,24 +13,21 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from '@/components/ui/sidebar'
-import { AppLoading } from './_components/app/app-loading'
-import { AppUnauthenticated } from './_components/app/app-unauthenticated'
-import { AppUnverified } from './_components/app/app-unverified'
+import { AppSidebar } from './_components/app/app-sidebar'
+import { NavUser, NavUserSkeleton } from './_components/app/nav/nav-user'
 
 export default function AppLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  // const { check, user, isLoading } = useAuth()
-  //
-  // if (isLoading) return <AppLoading />
-  //
-  // if (!check) return <AppUnauthenticated />
-  //
-  // if (check && !user?.email_verified_at) return <AppUnverified />
-
   return (
     <SidebarProvider>
-      <AppSidebar />
+      <AppSidebar
+        footerChildren={
+          <Suspense fallback={<NavUserSkeleton />}>
+            <NavUser />
+          </Suspense>
+        }
+      />
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
           <div className="flex items-center gap-2 px-4">

@@ -70,6 +70,19 @@ class Api {
       : Promise.reject(responseData)
   }
 
+  async get<TData = any>(
+    url: string | URL,
+    config: ApiRequestConfig = {},
+  ): Promise<ApiResponse<TData>> {
+    const { params, ...rest } = config
+    const init = { ...rest, method: 'GET' }
+    const input = this.#handleURL(url, params)
+
+    return fetch(input, init).then((response) => {
+      return this.#handleResponse(response)
+    })
+  }
+
   async post<TData = any>(
     url: string | URL,
     data: any = {},

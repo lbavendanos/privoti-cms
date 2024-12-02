@@ -1,8 +1,8 @@
 'use client'
 
 import { useCallback, useTransition } from 'react'
-import { useToast } from '@/components/ui/use-toast'
 import { useAuth } from '@/core/auth'
+import { useToast } from '@/hooks/use-toast'
 import { Button } from '@/components/ui/button'
 import { AccountLogoutButton } from './header/account/account-logout-button'
 import { Loader2 } from 'lucide-react'

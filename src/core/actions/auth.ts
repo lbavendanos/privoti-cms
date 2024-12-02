@@ -1,8 +1,14 @@
 'use server'
 
 import { api } from '@/lib/http'
-import { type SessionData, setSession } from '@/lib/session'
+import { cache } from 'react'
 import { redirect } from 'next/navigation'
+import {
+  type SessionData,
+  getSessionToken,
+  removeSession,
+  setSession,
+} from '@/lib/session'
 
 type ActionResponse = {
   status?: number
@@ -10,6 +16,48 @@ type ActionResponse = {
   errors?: Record<string, []>
   payload?: FormData
 }
+
+export type User = {
+  id: number
+  first_name: string
+  last_name: string
+  full_name: string
+  short_name: string
+  initials: string
+  email: string
+  avatar?: string
+  phone?: string
+  dob?: string
+  email_verified_at?: string
+  updated_at?: string
+  created_at?: string
+}
+
+export const me = cache(async () => {
+  const token = await getSessionToken()
+
+  const {
+    data: { data: user },
+  } = await api
+    .get<{
+      data: User
+    }>('/auth/user', {
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    .catch(() => {
+      return { data: { data: null } }
+    })
+
+  if (!user) {
+    redirect('/login')
+  }
+
+  return user
+})
 
 export async function login(
   _: unknown,
@@ -47,4 +95,22 @@ export async function login(
   }
 
   redirect('/')
+}
+
+export async function logout() {
+  const token = await getSessionToken()
+
+  await api
+    .post('/auth/logout', null, {
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    .catch(() => {})
+
+  await removeSession()
+
+  redirect('/login')
 }

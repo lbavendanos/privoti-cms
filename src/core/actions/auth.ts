@@ -148,3 +148,43 @@ export async function forgotPassword(
     }
   }
 }
+
+export async function resetPassword(
+  _: unknown,
+  formData: FormData,
+): Promise<ActionResponse> {
+  const token = formData.get('token')
+  const email = formData.get('email')
+  const password = formData.get('password')
+  const passwordConfirmation = formData.get('password_confirmation')
+
+  try {
+    const {
+      data: { data: authTokenData },
+    } = await api.post<{
+      data: SessionData
+    }>(
+      '/auth/reset-password',
+      { token, email, password, password_confirmation: passwordConfirmation },
+      {
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+      },
+    )
+
+    if (authTokenData) {
+      await setSession(authTokenData)
+    }
+  } catch (error: any) {
+    return {
+      status: error?.status,
+      message: error?.data?.message,
+      errors: error?.data?.errors || [],
+      payload: formData,
+    }
+  }
+
+  redirect('/')
+}

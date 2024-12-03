@@ -1,8 +1,6 @@
 import type { Metadata } from 'next'
 import { Reset } from './_components/reset'
 
-export const dynamic = 'force-dynamic'
-
 export const metadata: Metadata = {
   title: 'Reset password',
 }

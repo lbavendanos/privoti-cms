@@ -1,11 +1,14 @@
-import { NextRequest, NextResponse } from 'next/server'
 import { getSessionToken } from './lib/session'
+import { NextRequest, NextResponse } from 'next/server'
 
-const publicRoutes = ['/login', '/password/forgot']
+const publicRoutes = ['/login', '/password/forgot', '/password/reset']
 
 export default async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname
-  const isPublicRoute = publicRoutes.includes(path)
+
+  const isPublicRoute = publicRoutes.some(
+    (route) => path === route || path.startsWith(`${route}/`),
+  )
 
   const session = await getSessionToken()
 

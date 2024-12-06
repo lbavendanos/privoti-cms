@@ -1,7 +1,8 @@
+import { cn, url } from '@/lib/utils'
 import type { Metadata } from 'next'
 import { Inter as FontSans } from 'next/font/google'
 import { Toaster } from '@/components/ui/toaster'
-import { cn, url } from '@/lib/utils'
+import { NoScriptMessage } from '@/components/ui/no-script-message'
 
 import './globals.css'
 
@@ -42,6 +43,7 @@ export default function RootLayout({
           fontSans.variable,
         )}
       >
+        <NoScriptMessage />
         {children}
         <Toaster />
       </body>

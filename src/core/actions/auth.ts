@@ -187,3 +187,32 @@ export async function sendEmailVerificationNotification(): Promise<ActionRespons
     return handleActionError(error)
   }
 }
+
+export async function verifyEmail(params: {
+  id: string
+  token: string
+  expires: string
+  signature: string
+}): Promise<ActionResponse> {
+  const token = await getSessionToken()
+  const { id, token: hash, expires, signature } = params
+
+  try {
+    const response = await api.get<{
+      message?: string
+    }>(`/auth/user/email/verify/${id}/${hash}`, {
+      params: { expires, signature },
+      headers: {
+        ...DEFAULT_HEADERS,
+        Authorization: `Bearer ${token}`,
+      },
+    })
+
+    return {
+      status: response.status,
+      message: response.data.message,
+    }
+  } catch (error: any) {
+    return handleActionError(error)
+  }
+}

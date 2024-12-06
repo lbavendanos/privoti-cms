@@ -54,7 +54,7 @@ export const me = cache(async () => {
     redirect('/login')
   }
 
-  if (user?.email_verified_at === null) {
+  if (user.email_verified_at === null) {
     redirect('/verify-email')
   }
 

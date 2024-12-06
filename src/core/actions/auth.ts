@@ -3,19 +3,13 @@
 import { api } from '@/lib/http'
 import { cache } from 'react'
 import { redirect } from 'next/navigation'
+import { type ActionResponse, handleActionError } from '.'
 import {
   type SessionData,
   getSessionToken,
   removeSession,
   setSession,
 } from '@/lib/session'
-
-type ActionResponse = {
-  status?: number
-  message?: string
-  errors?: Record<string, []>
-  payload?: FormData
-}
 
 export type User = {
   id: number
@@ -33,6 +27,11 @@ export type User = {
   created_at?: string
 }
 
+const DEFAULT_HEADERS: HeadersInit = {
+  Accept: 'application/json',
+  'Content-Type': 'application/json',
+}
+
 export const me = cache(async () => {
   const token = await getSessionToken()
 
@@ -43,8 +42,7 @@ export const me = cache(async () => {
       data: User
     }>('/auth/user', {
       headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
+        ...DEFAULT_HEADERS,
         Authorization: `Bearer ${token}`,
       },
     })
@@ -54,6 +52,10 @@ export const me = cache(async () => {
 
   if (!user) {
     redirect('/login')
+  }
+
+  if (user?.email_verified_at === null) {
+    redirect('/verify-email')
   }
 
   return user
@@ -75,10 +77,7 @@ export async function login(
       '/auth/login',
       { email, password },
       {
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
+        headers: DEFAULT_HEADERS,
       },
     )
 
@@ -86,12 +85,7 @@ export async function login(
       await setSession(authTokenData)
     }
   } catch (error: any) {
-    return {
-      status: error?.status,
-      message: error?.data?.message,
-      errors: error?.data?.errors || [],
-      payload: formData,
-    }
+    return handleActionError(error, formData)
   }
 
   redirect('/')
@@ -103,8 +97,7 @@ export async function logout() {
   await api
     .post('/auth/logout', null, {
       headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
+        ...DEFAULT_HEADERS,
         Authorization: `Bearer ${token}`,
       },
     })
@@ -123,15 +116,12 @@ export async function forgotPassword(
 
   try {
     const response = await api.post<{
-      message: string
+      message?: string
     }>(
       '/auth/forgot-password',
       { email },
       {
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
+        headers: DEFAULT_HEADERS,
       },
     )
 
@@ -140,12 +130,7 @@ export async function forgotPassword(
       message: response.data.message,
     }
   } catch (error: any) {
-    return {
-      status: error?.status,
-      message: error?.data?.message,
-      errors: error?.data?.errors || [],
-      payload: formData,
-    }
+    return handleActionError(error, formData)
   }
 }
 
@@ -167,10 +152,7 @@ export async function resetPassword(
       '/auth/reset-password',
       { token, email, password, password_confirmation: passwordConfirmation },
       {
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
+        headers: DEFAULT_HEADERS,
       },
     )
 
@@ -178,13 +160,30 @@ export async function resetPassword(
       await setSession(authTokenData)
     }
   } catch (error: any) {
-    return {
-      status: error?.status,
-      message: error?.data?.message,
-      errors: error?.data?.errors || [],
-      payload: formData,
-    }
+    return handleActionError(error, formData)
   }
 
   redirect('/')
+}
+
+export async function sendEmailVerificationNotification(): Promise<ActionResponse> {
+  const token = await getSessionToken()
+
+  try {
+    const response = await api.post<{
+      message?: string
+    }>('/auth/user/email/notification', null, {
+      headers: {
+        ...DEFAULT_HEADERS,
+        Authorization: `Bearer ${token}`,
+      },
+    })
+
+    return {
+      status: response.status,
+      message: response.data.message,
+    }
+  } catch (error: any) {
+    return handleActionError(error)
+  }
 }

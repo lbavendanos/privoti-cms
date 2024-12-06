@@ -59,7 +59,7 @@ class Api {
     const type = this.#getResponseType(response.headers)
 
     const responseData = {
-      data: (type ? await response[type]() : null) as TData,
+      data: (type ? await response[type]() : {}) as TData,
       status: response.status,
       statusText: response.statusText,
       headers: response.headers,

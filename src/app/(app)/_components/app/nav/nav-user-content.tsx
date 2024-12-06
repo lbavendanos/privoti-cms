@@ -1,7 +1,7 @@
 'use client'
 
 import { useSidebar } from '@/components/ui/sidebar'
-import { logout, type User } from '@/core/actions/auth'
+import { type User, logout } from '@/core/actions/auth'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
   DropdownMenuContent,

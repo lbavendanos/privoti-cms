@@ -81,7 +81,7 @@ export async function GET(request: NextRequest) {
       // await verifyNewEmail(request)
     }
   } catch (error: any) {
-    return NextResponse.redirect(url(`/auth/error?type=${type}`))
+    return NextResponse.redirect(url('/auth/error'))
   }
 
   return NextResponse.redirect(url(next))

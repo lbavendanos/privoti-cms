@@ -5,12 +5,12 @@ import { useParams, useSearchParams } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import { useToast } from '@/hooks/use-toast'
 import { resetPassword } from '@/core/actions/auth'
-import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { PasswordInput } from '@/components/ui/password-input'
+import { LoadingButton } from '@/components/ui/loading-button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { AlertCircle, Loader2 } from 'lucide-react'
+import { AlertCircle } from 'lucide-react'
 
 export function ResetForm() {
   const [state, formAction, isPending] = useActionState(resetPassword, null)
@@ -96,15 +96,9 @@ export function ResetForm() {
           required
         />
       </div>
-      <Button
-        type="submit"
-        className="mt-2 w-full"
-        aria-disabled={isPending}
-        disabled={isPending}
-      >
-        {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+      <LoadingButton type="submit" className="mt-2 w-full" loading={isPending}>
         Reset password
-      </Button>
+      </LoadingButton>
     </form>
   )
 }

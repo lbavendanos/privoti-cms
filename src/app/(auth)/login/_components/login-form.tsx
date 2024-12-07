@@ -4,12 +4,12 @@ import { useActionState, useEffect } from 'react'
 import { cn } from '@/lib/utils'
 import { login } from '@/core/actions/auth'
 import { useToast } from '@/hooks/use-toast'
-import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { PasswordInput } from '@/components/ui/password-input'
+import { LoadingButton } from '@/components/ui/loading-button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Loader2, AlertCircle } from 'lucide-react'
+import { AlertCircle } from 'lucide-react'
 
 export function LoginForm() {
   const [state, formAction, isPending] = useActionState(login, null)
@@ -66,15 +66,9 @@ export function LoginForm() {
           required
         />
       </div>
-      <Button
-        type="submit"
-        className="w-full"
-        disabled={isPending}
-        aria-disabled={isPending}
-      >
-        {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+      <LoadingButton type="submit" className="w-full" loading={isPending}>
         Login
-      </Button>
+      </LoadingButton>
     </form>
   )
 }

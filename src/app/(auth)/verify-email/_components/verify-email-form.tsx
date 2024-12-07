@@ -3,8 +3,8 @@
 import { useActionState, useEffect } from 'react'
 import { sendEmailVerificationNotification } from '@/core/actions/auth'
 import { useToast } from '@/hooks/use-toast'
-import { Button } from '@/components/ui/button'
-import { CircleCheck, Loader2 } from 'lucide-react'
+import { LoadingButton } from '@/components/ui/loading-button'
+import { CircleCheck } from 'lucide-react'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 
 export function VerifyEmailForm() {
@@ -34,16 +34,14 @@ export function VerifyEmailForm() {
           </AlertDescription>
         </Alert>
       )}
-      <Button
+      <LoadingButton
         type="submit"
         size="lg"
         className="w-full"
-        disabled={isPending}
-        aria-disabled={isPending}
+        loading={isPending}
       >
-        {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
         Resend verification email
-      </Button>
+      </LoadingButton>
     </form>
   )
 }

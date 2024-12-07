@@ -6,9 +6,9 @@ import { useToast } from '@/hooks/use-toast'
 import { forgotPassword } from '@/core/actions/auth'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
+import { LoadingButton } from '@/components/ui/loading-button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { AlertCircle, CircleCheck, Loader2 } from 'lucide-react'
+import { AlertCircle, CircleCheck } from 'lucide-react'
 
 export function ForgotForm() {
   const [state, formAction, isPending] = useActionState(forgotPassword, null)
@@ -54,15 +54,9 @@ export function ForgotForm() {
           required
         />
       </div>
-      <Button
-        type="submit"
-        className="mt-2 w-full"
-        aria-disabled={isPending}
-        disabled={isPending}
-      >
-        {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+      <LoadingButton type="submit" className="mt-2 w-full" loading={isPending}>
         Send email
-      </Button>
+      </LoadingButton>
     </form>
   )
 }

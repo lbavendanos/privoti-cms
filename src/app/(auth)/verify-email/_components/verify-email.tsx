@@ -1,6 +1,7 @@
 import { logout } from '@/core/actions/auth'
 import { Button } from '@/components/ui/button'
 import { VerifyEmailForm } from './verify-email-form'
+import Link from 'next/link'
 
 export function VerifyEmail() {
   return (
@@ -21,6 +22,12 @@ export function VerifyEmail() {
           </Button>
         </form>
       </div>
+      <p className="mt-2 text-center text-sm text-muted-foreground">
+        If you have already verified your email, you can back to{' '}
+        <Button variant="link" className="h-fit w-fit p-0" asChild>
+          <Link href="/">home</Link>
+        </Button>
+      </p>
     </div>
   )
 }

@@ -31,16 +31,14 @@ export function HomeEmailVerifyAlert() {
     <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>
-            ¡Verificación de correo electronico exitosa!
-          </AlertDialogTitle>
+          <AlertDialogTitle>Email verification successful!</AlertDialogTitle>
           <AlertDialogDescription>
-            Se ha verficado tu correo electronico correctamente y ya puedes
-            disfrutar de todas las funcionalidades de la plataforma.
+            Your email has been verified successfully and you can now enjoy all
+            the platform&apos;s features.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogAction onClick={handleClick}>Continuar</AlertDialogAction>
+          <AlertDialogAction onClick={handleClick}>Continue</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

@@ -1,5 +1,4 @@
 import { me } from '@/core/actions/auth'
-import { ChevronsUpDown } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
   DropdownMenu,
@@ -10,10 +9,11 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar'
-import { NavUserContent } from './nav-user-content'
 import { Skeleton } from '@/components/ui/skeleton'
+import { AppSidebarUserContent } from './app-sidebar-user-content'
+import { ChevronsUpDown } from 'lucide-react'
 
-export async function NavUser() {
+export async function AppSidebarUser() {
   const user = await me()
 
   return (
@@ -40,14 +40,14 @@ export async function NavUser() {
               <ChevronsUpDown className="ml-auto size-4" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
-          <NavUserContent user={user} />
+          <AppSidebarUserContent user={user} />
         </DropdownMenu>
       </SidebarMenuItem>
     </SidebarMenu>
   )
 }
 
-export function NavUserSkeleton() {
+export function AppSidebarUserSkeleton() {
   return (
     <div className="flex items-center space-x-2 p-1.5">
       <Skeleton className="h-8 w-8 shrink-0 rounded-full" />

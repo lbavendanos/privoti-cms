@@ -1,4 +1,3 @@
-import { Suspense } from 'react'
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -13,24 +12,14 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from '@/components/ui/sidebar'
-import { AppSidebar } from './_components/app/app-sidebar'
-import {
-  AppSidebarUser,
-  AppSidebarUserSkeleton,
-} from './_components/app/app-sidebar-user'
+import { SettingsSidebar } from './_components/seetings-sidebar'
 
-export default function AppLayout({
+export default function SettingsLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <SidebarProvider>
-      <AppSidebar
-        footerChildren={
-          <Suspense fallback={<AppSidebarUserSkeleton />}>
-            <AppSidebarUser />
-          </Suspense>
-        }
-      />
+      <SettingsSidebar />
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
           <div className="flex items-center gap-2 px-4">

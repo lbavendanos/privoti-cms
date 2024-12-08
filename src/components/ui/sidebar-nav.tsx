@@ -1,8 +1,6 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import type { Item } from '../app-sidebar'
-import { ChevronRight } from 'lucide-react'
 import {
   Collapsible,
   CollapsibleContent,
@@ -10,6 +8,7 @@ import {
 } from '@/components/ui/collapsible'
 import {
   SidebarGroup,
+  SidebarGroupContent,
   SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
@@ -19,8 +18,17 @@ import {
   SidebarMenuSubItem,
 } from '@/components/ui/sidebar'
 import Link from 'next/link'
+import { ChevronRight, type LucideIcon } from 'lucide-react'
 
-function NavMainItems({ item }: { item: Item }) {
+export type Item = {
+  title: string
+  url?: string
+  icon?: LucideIcon
+  items?: Item[]
+  isActive?: boolean
+}
+
+function SidebarNavItems({ item }: { item: Item }) {
   const [isActive, setIsActive] = useState(item.isActive)
 
   useEffect(() => {
@@ -63,7 +71,7 @@ function NavMainItems({ item }: { item: Item }) {
   )
 }
 
-function NavMainItem({ item }: { item: Item }) {
+function SidebarNavItem({ item }: { item: Item }) {
   return (
     <SidebarMenuItem>
       {item.url && (
@@ -82,19 +90,27 @@ function NavMainItem({ item }: { item: Item }) {
   )
 }
 
-export function NavMain({ items }: { items: Item[] }) {
+interface SidebarNavProps
+  extends React.ComponentPropsWithoutRef<typeof SidebarGroup> {
+  label?: string
+  items: Item[]
+}
+
+export function SidebarNav({ label, items, ...props }: SidebarNavProps) {
   return (
-    <SidebarGroup>
-      <SidebarGroupLabel>Platform</SidebarGroupLabel>
-      <SidebarMenu>
-        {items.map((item) =>
-          item.items && item.items.length > 0 ? (
-            <NavMainItems key={item.title} item={item} />
-          ) : (
-            <NavMainItem key={item.title} item={item} />
-          ),
-        )}
-      </SidebarMenu>
+    <SidebarGroup {...props}>
+      {label && <SidebarGroupLabel>{label}</SidebarGroupLabel>}
+      <SidebarGroupContent>
+        <SidebarMenu>
+          {items.map((item) =>
+            item.items && item.items.length > 0 ? (
+              <SidebarNavItems key={item.title} item={item} />
+            ) : (
+              <SidebarNavItem key={item.title} item={item} />
+            ),
+          )}
+        </SidebarMenu>
+      </SidebarGroupContent>
     </SidebarGroup>
   )
 }

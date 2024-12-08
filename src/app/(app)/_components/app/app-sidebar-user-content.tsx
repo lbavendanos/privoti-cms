@@ -10,9 +10,10 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu'
-import { BadgeCheck, Bell, LogOut } from 'lucide-react'
+import Link from 'next/link'
+import { User as UserIcon, Bell, LogOut } from 'lucide-react'
 
-export function NavUserContent({ user }: { user: User }) {
+export function AppSidebarUserContent({ user }: { user: User }) {
   const { isMobile } = useSidebar()
 
   return (
@@ -38,13 +39,17 @@ export function NavUserContent({ user }: { user: User }) {
       </DropdownMenuLabel>
       <DropdownMenuSeparator />
       <DropdownMenuGroup>
-        <DropdownMenuItem>
-          <BadgeCheck />
-          Account
+        <DropdownMenuItem className="cursor-pointer" asChild>
+          <Link href="/settings/profile">
+            <UserIcon />
+            Profile
+          </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem>
-          <Bell />
-          Notifications
+        <DropdownMenuItem className="cursor-pointer" asChild>
+          <Link href="/settings/notifications">
+            <Bell />
+            Notifications
+          </Link>
         </DropdownMenuItem>
       </DropdownMenuGroup>
       <DropdownMenuSeparator />

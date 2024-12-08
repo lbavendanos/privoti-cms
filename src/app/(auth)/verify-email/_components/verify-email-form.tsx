@@ -15,7 +15,7 @@ export function VerifyEmailForm() {
   const { toast } = useToast()
 
   useEffect(() => {
-    if (!isPending && state && state.status !== 204 && state.status !== 422) {
+    if (!isPending && state && state.isServerError) {
       toast({
         variant: 'destructive',
         description: state?.message,
@@ -25,7 +25,7 @@ export function VerifyEmailForm() {
 
   return (
     <form action={formAction} className="flex flex-col gap-4">
-      {state?.status === 204 && (
+      {state?.isSuccess && (
         <Alert variant="success">
           <CircleCheck className="h-4 w-4" />
           <AlertDescription>

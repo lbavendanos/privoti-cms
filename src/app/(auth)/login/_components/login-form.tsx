@@ -16,7 +16,7 @@ export function LoginForm() {
   const { toast } = useToast()
 
   useEffect(() => {
-    if (!isPending && state && state.status !== 200 && state.status !== 422) {
+    if (!isPending && state && state.isServerError) {
       toast({
         variant: 'destructive',
         description: state?.message,
@@ -26,7 +26,7 @@ export function LoginForm() {
 
   return (
     <form action={formAction} className="flex flex-col gap-4">
-      {state?.status === 422 && (
+      {state?.isClientError && (
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>{state.message}</AlertDescription>

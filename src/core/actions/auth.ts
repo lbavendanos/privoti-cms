@@ -3,7 +3,7 @@
 import { api } from '@/lib/http'
 import { cache } from 'react'
 import { redirect } from 'next/navigation'
-import { type ActionResponse, handleActionError } from '.'
+import { type ActionResponse, handleActionError, handleActionSuccess } from '.'
 import {
   type SessionData,
   getSessionToken,
@@ -125,10 +125,7 @@ export async function forgotPassword(
       },
     )
 
-    return {
-      status: response.status,
-      message: response.data.message,
-    }
+    return handleActionSuccess(response)
   } catch (error: any) {
     return handleActionError(error, formData)
   }
@@ -179,10 +176,7 @@ export async function sendEmailVerificationNotification(): Promise<ActionRespons
       },
     })
 
-    return {
-      status: response.status,
-      message: response.data.message,
-    }
+    return handleActionSuccess(response)
   } catch (error: any) {
     return handleActionError(error)
   }
@@ -208,10 +202,7 @@ export async function verifyEmail(params: {
       },
     })
 
-    return {
-      status: response.status,
-      message: response.data.message,
-    }
+    return handleActionSuccess(response)
   } catch (error: any) {
     return handleActionError(error)
   }

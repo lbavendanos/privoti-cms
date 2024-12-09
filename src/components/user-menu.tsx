@@ -10,10 +10,10 @@ import {
   SidebarMenuItem,
 } from '@/components/ui/sidebar'
 import { Skeleton } from '@/components/ui/skeleton'
-import { AppSidebarUserContent } from './app-sidebar-user-content'
+import { UserMenuContent } from './user-menu-content'
 import { ChevronsUpDown } from 'lucide-react'
 
-export async function AppSidebarUser() {
+export async function UserMenu() {
   const user = await me()
 
   return (
@@ -40,14 +40,14 @@ export async function AppSidebarUser() {
               <ChevronsUpDown className="ml-auto size-4" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
-          <AppSidebarUserContent user={user} />
+          <UserMenuContent user={user} />
         </DropdownMenu>
       </SidebarMenuItem>
     </SidebarMenu>
   )
 }
 
-export function AppSidebarUserSkeleton() {
+export function UserMenuSkeleton() {
   return (
     <div className="flex items-center space-x-2 p-1.5">
       <Skeleton className="h-8 w-8 shrink-0 rounded-full" />

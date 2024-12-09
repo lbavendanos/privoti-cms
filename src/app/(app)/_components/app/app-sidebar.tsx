@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useMemo } from 'react'
+import React from 'react'
 import {
   BarChart2,
   Home,
@@ -60,7 +60,7 @@ const FOOTER_ITEMS: Item[] = [
 ]
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
-  footerChildren: React.ReactNode
+  footerChildren?: React.ReactNode
 }
 
 export function AppSidebar({ footerChildren, ...props }: AppSidebarProps) {
@@ -71,7 +71,7 @@ export function AppSidebar({ footerChildren, ...props }: AppSidebarProps) {
         <SidebarNav label="Platform" items={PLATFORM_ITEMS} />
         <SidebarNav items={FOOTER_ITEMS} className="mt-auto" />
       </SidebarContent>
-      <SidebarFooter>{footerChildren}</SidebarFooter>
+      {footerChildren && <SidebarFooter>{footerChildren}</SidebarFooter>}
       <SidebarRail />
     </Sidebar>
   )

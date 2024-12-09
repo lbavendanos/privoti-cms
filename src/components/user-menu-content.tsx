@@ -13,7 +13,7 @@ import {
 import Link from 'next/link'
 import { User as UserIcon, Bell, LogOut } from 'lucide-react'
 
-export function AppSidebarUserContent({ user }: { user: User }) {
+export function UserMenuContent({ user }: { user: User }) {
   const { isMobile } = useSidebar()
 
   return (

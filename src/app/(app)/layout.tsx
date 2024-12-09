@@ -13,11 +13,8 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from '@/components/ui/sidebar'
+import { UserMenu, UserMenuSkeleton } from '@/components/user-menu'
 import { AppSidebar } from './_components/app/app-sidebar'
-import {
-  AppSidebarUser,
-  AppSidebarUserSkeleton,
-} from './_components/app/app-sidebar-user'
 
 export default function AppLayout({
   children,
@@ -26,8 +23,8 @@ export default function AppLayout({
     <SidebarProvider>
       <AppSidebar
         footerChildren={
-          <Suspense fallback={<AppSidebarUserSkeleton />}>
-            <AppSidebarUser />
+          <Suspense fallback={<UserMenuSkeleton />}>
+            <UserMenu />
           </Suspense>
         }
       />

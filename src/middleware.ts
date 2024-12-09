@@ -16,6 +16,10 @@ export default async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL('/login', req.nextUrl))
   }
 
+  if (path === '/settings') {
+    return NextResponse.redirect(new URL('/settings/store', req.nextUrl))
+  }
+
   return NextResponse.next()
 }
 

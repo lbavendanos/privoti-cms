@@ -1,12 +1,4 @@
 import { Suspense } from 'react'
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb'
 import { Separator } from '@/components/ui/separator'
 import {
   SidebarInset,
@@ -14,7 +6,8 @@ import {
   SidebarTrigger,
 } from '@/components/ui/sidebar'
 import { UserMenu, UserMenuSkeleton } from '@/components/user-menu'
-import { SettingsSidebar } from './_components/seetings-sidebar'
+import { SettingsSidebar } from './_components/settings-sidebar'
+import { NavPath } from '@/components/nav-path'
 
 export default function SettingsLayout({
   children,
@@ -33,19 +26,7 @@ export default function SettingsLayout({
           <div className="flex items-center gap-2 px-4">
             <SidebarTrigger className="-ml-1" />
             <Separator orientation="vertical" className="mr-2 h-4" />
-            <Breadcrumb>
-              <BreadcrumbList>
-                <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="#">
-                    Building Your Application
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator className="hidden md:block" />
-                <BreadcrumbItem>
-                  <BreadcrumbPage>Data Fetching</BreadcrumbPage>
-                </BreadcrumbItem>
-              </BreadcrumbList>
-            </Breadcrumb>
+            <NavPath />
           </div>
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">{children}</div>

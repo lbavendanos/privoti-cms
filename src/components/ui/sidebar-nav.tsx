@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { usePathname } from 'next/navigation'
 import {
   Collapsible,
   CollapsibleContent,
@@ -26,6 +27,38 @@ export type Item = {
   icon?: LucideIcon
   items?: Item[]
   isActive?: boolean
+}
+
+function generateItems(items: Item[], pathname: string): Item[] {
+  return items.map((item) => {
+    if (item.url === pathname) {
+      return { ...item, isActive: true }
+    }
+
+    if (item.items) {
+      const items = item.items.map((subItem) => {
+        if (subItem.url === pathname) {
+          return { ...subItem, isActive: true }
+        }
+
+        if (
+          subItem.url &&
+          subItem.url !== '/' &&
+          pathname.includes(subItem.url)
+        ) {
+          return { ...subItem, isActive: true }
+        }
+
+        return subItem
+      })
+
+      const isActive = items.some((subItem) => subItem.isActive)
+
+      return { ...item, items, isActive }
+    }
+
+    return item
+  })
 }
 
 function SidebarNavItems({ item }: { item: Item }) {
@@ -96,7 +129,14 @@ interface SidebarNavProps
   items: Item[]
 }
 
-export function SidebarNav({ label, items, ...props }: SidebarNavProps) {
+export function SidebarNav({
+  label,
+  items: itemsProp,
+  ...props
+}: SidebarNavProps) {
+  const pathname = usePathname()
+  const items = generateItems(itemsProp, pathname)
+
   return (
     <SidebarGroup {...props}>
       {label && <SidebarGroupLabel>{label}</SidebarGroupLabel>}

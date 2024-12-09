@@ -1,26 +1,17 @@
 'use client'
 
-import { usePathname } from 'next/navigation'
-import React, { useMemo } from 'react'
+import React from 'react'
 import {
   Sidebar,
   SidebarContent,
   SidebarHeader,
   SidebarRail,
 } from '@/components/ui/sidebar'
-import { SidebarNav } from '@/components/ui/sidebar-nav'
+import { Item, SidebarNav } from '@/components/ui/sidebar-nav'
 import { SettingsSidebarHeader } from './settings-sidebar-header'
-import { type LucideIcon, ArrowLeft, Bell, User } from 'lucide-react'
+import { ArrowLeft, Bell, Store, User, Users } from 'lucide-react'
 
-export type Item = {
-  title: string
-  url?: string
-  icon?: LucideIcon
-  items?: Item[]
-  isActive?: boolean
-}
-
-export const MAIN_ITEMS: Item[] = [
+const ACCOUNT_ITEMS: Item[] = [
   {
     title: 'Profile',
     url: '/settings/profile',
@@ -33,7 +24,20 @@ export const MAIN_ITEMS: Item[] = [
   },
 ]
 
-const SECONDARY_ITEMS: Item[] = [
+const GENERAL_ITEMS: Item[] = [
+  {
+    title: 'Store',
+    url: '/settings/store',
+    icon: Store,
+  },
+  {
+    title: 'Users',
+    url: '/settings/users',
+    icon: Users,
+  },
+]
+
+const FOOTER_ITEMS: Item[] = [
   {
     title: 'Back to Home',
     url: '/',
@@ -41,56 +45,16 @@ const SECONDARY_ITEMS: Item[] = [
   },
 ]
 
-function generateItems(items: Item[], pathname: string): Item[] {
-  return items.map((item) => {
-    if (item.url === pathname) {
-      return { ...item, isActive: true }
-    }
-
-    if (item.items) {
-      const items = item.items.map((subItem) => {
-        if (subItem.url === pathname) {
-          return { ...subItem, isActive: true }
-        }
-
-        if (
-          subItem.url &&
-          subItem.url !== '/' &&
-          pathname.includes(subItem.url)
-        ) {
-          return { ...subItem, isActive: true }
-        }
-
-        return subItem
-      })
-
-      const isActive = items.some((subItem) => subItem.isActive)
-
-      return { ...item, items, isActive }
-    }
-
-    return item
-  })
-}
-
-export function SettingsSidebar({
-  ...props
-}: React.ComponentProps<typeof Sidebar>) {
-  const pathname = usePathname()
-
-  const mainItems = useMemo(
-    () => generateItems(MAIN_ITEMS, pathname),
-    [pathname],
-  )
-
+export function SettingsSidebar(props: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
         <SettingsSidebarHeader />
       </SidebarHeader>
       <SidebarContent>
-        <SidebarNav label="General" items={mainItems} />
-        <SidebarNav items={SECONDARY_ITEMS} className="mt-auto" />
+        <SidebarNav label="Account" items={ACCOUNT_ITEMS} />
+        <SidebarNav label="General" items={GENERAL_ITEMS} />
+        <SidebarNav items={FOOTER_ITEMS} className="mt-auto" />
       </SidebarContent>
       <SidebarRail />
     </Sidebar>

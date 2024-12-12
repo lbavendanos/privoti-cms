@@ -1,6 +1,12 @@
 import { me } from '@/core/actions/auth'
+import type { Metadata } from 'next'
 import { Separator } from '@/components/ui/separator'
 import { Button } from '@/components/ui/button'
+import { ProfileName } from './_components/profile-name'
+
+export const metadata: Metadata = {
+  title: 'Profile',
+}
 
 export default async function ProfilePage() {
   const user = await me()
@@ -22,12 +28,10 @@ export default async function ProfilePage() {
                 <div className="space-y-2">
                   <p className="text-sm font-medium leading-none">Name</p>
                   <p className="text-base text-muted-foreground md:text-sm">
-                    {user.first_name}
+                    {user.name}
                   </p>
                 </div>
-                <Button variant="outline" className="w-fit">
-                  Change name
-                </Button>
+                <ProfileName user={user} />
               </div>
               <div className="flex flex-col gap-2 md:flex-row md:justify-between">
                 <div className="space-y-2">

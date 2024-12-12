@@ -97,6 +97,20 @@ class Api {
     })
   }
 
+  async put<TData = any>(
+    url: string | URL,
+    data: any = {},
+    config: ApiRequestConfig = {},
+  ): Promise<ApiResponse<TData>> {
+    const { params, ...rest } = config
+    const init = { ...rest, method: 'PUT', body: this.#handleBody(data) }
+    const input = this.#handleURL(url, params)
+
+    return fetch(input, init).then((response) => {
+      return this.#handleResponse(response)
+    })
+  }
+
   static create() {
     return new Api()
   }

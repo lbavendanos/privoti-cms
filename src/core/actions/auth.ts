@@ -13,11 +13,7 @@ import {
 
 export type User = {
   id: number
-  first_name: string
-  last_name: string
-  full_name: string
-  short_name: string
-  initials: string
+  name: string
   email: string
   avatar?: string
   phone?: string
@@ -205,5 +201,32 @@ export async function verifyEmail(params: {
     return handleActionSuccess(response)
   } catch (error: any) {
     return handleActionError(error)
+  }
+}
+
+export async function updateUser(
+  _: unknown,
+  formData: FormData,
+): Promise<ActionResponse> {
+  const token = await getSessionToken()
+  const name = formData.get('name')
+
+  try {
+    const response = await api.put<{
+      data: User
+    }>(
+      '/auth/user',
+      { name },
+      {
+        headers: {
+          ...DEFAULT_HEADERS,
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    )
+
+    return handleActionSuccess(response)
+  } catch (error: any) {
+    return handleActionError(error, formData)
   }
 }

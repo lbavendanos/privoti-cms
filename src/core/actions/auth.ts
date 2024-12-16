@@ -10,18 +10,7 @@ import {
   removeSession,
   setSession,
 } from '@/lib/session'
-
-export type User = {
-  id: number
-  name: string
-  email: string
-  avatar?: string
-  phone?: string
-  dob?: string
-  email_verified_at?: string
-  updated_at?: string
-  created_at?: string
-}
+import { type User } from '../types'
 
 const DEFAULT_HEADERS: HeadersInit = {
   Accept: 'application/json',

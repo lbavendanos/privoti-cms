@@ -4,20 +4,17 @@ import { useActionState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import { useToast } from '@/hooks/use-toast'
-import { updateUser, type User } from '@/core/actions/auth'
+import { updateUser } from '@/core/actions/auth'
+import { useProfile } from './profile-context'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { LoadingButton } from '@/components/ui/loading-button'
 
-export function ProfileNameForm({
-  user,
-  onSuccess,
-}: {
-  user: User
-  onSuccess?: () => void
-}) {
-  const [state, formAction, isPending] = useActionState(updateUser, null)
+export function ProfileNameForm({ onSuccess }: { onSuccess?: () => void }) {
+  const { user } = useProfile()
   const { toast } = useToast()
+
+  const [state, formAction, isPending] = useActionState(updateUser, null)
 
   const router = useRouter()
 

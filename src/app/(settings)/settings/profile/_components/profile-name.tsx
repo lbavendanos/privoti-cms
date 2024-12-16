@@ -11,9 +11,8 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 import { ProfileNameForm } from './profile-name-form'
-import { type User } from '@/core/actions/auth'
 
-export function ProfileName({ user }: { user: User }) {
+export function ProfileName() {
   const [open, setOpen] = useState(false)
 
   return (
@@ -30,7 +29,7 @@ export function ProfileName({ user }: { user: User }) {
             Make changes to your name here. Click save when you&apos;re done.
           </DialogDescription>
         </DialogHeader>
-        <ProfileNameForm user={user} onSuccess={() => setOpen(false)} />
+        <ProfileNameForm onSuccess={() => setOpen(false)} />
       </DialogContent>
     </Dialog>
   )

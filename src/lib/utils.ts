@@ -38,16 +38,19 @@ export function storeUrl(path: string = '/'): URL {
  * @returns {boolean} Returns `true` if the value is a boolean, `false` otherwise.
  */
 export function boolean(value: any): boolean {
-  const type = Object.prototype.toString.call(value)
-
-  if (type === '[object String]')
+  if (typeof value === 'string') {
     return ['true', 't', 'yes', 'y', 'on', '1'].includes(
       value.trim().toLowerCase(),
     )
+  }
 
-  if (type === '[object Number]') return value === 1
+  if (typeof value === 'number') {
+    return value === 1
+  }
 
-  if (type === '[object Boolean]') return value
+  if (typeof value === 'boolean') {
+    return value
+  }
 
   return false
 }

@@ -1,10 +1,10 @@
 'use client'
 
 import { useProfile } from './profile-context'
-import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { ProfileName } from './profile-name'
 import { ProfileEmail } from './profile-email'
+import { ProfilePassword } from './profile-password'
 
 export function ProfileContent() {
   const { user } = useProfile()
@@ -47,9 +47,7 @@ export function ProfileContent() {
                     Change your password to login to your account.
                   </p>
                 </div>
-                <Button variant="outline" className="w-fit">
-                  Change password
-                </Button>
+                <ProfilePassword />
               </div>
             </div>
           </div>

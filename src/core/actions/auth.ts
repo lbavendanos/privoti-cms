@@ -78,6 +78,33 @@ export async function updateUser(
   }
 }
 
+export async function updatePassword(_: unknown, formData: FormData) {
+  const token = await getSessionToken()
+  const currentPassword = formData.get('current_password')
+  const password = formData.get('password')
+
+  try {
+    const response = await api.post<{
+      message?: string
+    }>(
+      '/auth/user/password',
+      { current_password: currentPassword, password },
+      {
+        headers: {
+          ...DEFAULT_HEADERS,
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    )
+
+    revalidateTag(TAG_AUTH_USER)
+
+    return handleActionSuccess(response)
+  } catch (error: any) {
+    return handleActionError(error, formData)
+  }
+}
+
 export async function login(
   _: unknown,
   formData: FormData,

@@ -25,7 +25,7 @@ export function ProfileNameForm({ onSuccess }: { onSuccess?: () => void }) {
 
     if (!isPending && state && state.isSuccess) {
       toast({
-        description: 'Name updated successfully.',
+        description: 'Your name has been updated.',
       })
       onSuccess?.()
     }

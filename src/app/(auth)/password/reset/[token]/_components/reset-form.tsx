@@ -1,10 +1,10 @@
 'use client'
 
-import { useActionState, useEffect } from 'react'
-import { useParams, useSearchParams } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import { useToast } from '@/hooks/use-toast'
 import { resetPassword } from '@/core/actions/auth'
+import { useActionState, useEffect } from 'react'
+import { useParams, useSearchParams } from 'next/navigation'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { PasswordInput } from '@/components/ui/password-input'

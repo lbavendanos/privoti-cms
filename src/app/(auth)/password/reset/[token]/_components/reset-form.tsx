@@ -67,7 +67,6 @@ export function ResetForm() {
         </Label>
         <PasswordInput
           id="password"
-          type="password"
           name="password"
           placeholder="********"
           autoComplete="current-password"
@@ -86,7 +85,6 @@ export function ResetForm() {
         </Label>
         <PasswordInput
           id="password_confirmation"
-          type="password"
           name="password_confirmation"
           placeholder="********"
           autoComplete="current-password"

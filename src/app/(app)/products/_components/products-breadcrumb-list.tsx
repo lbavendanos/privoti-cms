@@ -8,10 +8,9 @@ import {
 } from '@/components/ui/breadcrumb'
 import Link from 'next/link'
 
-interface ProductsBreadcrumbListProps
-  extends React.ComponentPropsWithoutRef<'nav'> {}
-
-export function ProductsBreadcrumbList(props: ProductsBreadcrumbListProps) {
+export function ProductsBreadcrumbList(
+  props: React.ComponentPropsWithoutRef<'nav'>,
+) {
   return (
     <div className="container">
       <div className="grid grid-cols-12 gap-6">

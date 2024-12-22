@@ -141,12 +141,16 @@ export async function logout() {
   const token = await getSessionToken()
 
   await api
-    .post('/auth/logout', null, {
-      headers: {
-        ...DEFAULT_HEADERS,
-        Authorization: `Bearer ${token}`,
+    .post(
+      '/auth/logout',
+      {},
+      {
+        headers: {
+          ...DEFAULT_HEADERS,
+          Authorization: `Bearer ${token}`,
+        },
       },
-    })
+    )
     .catch(() => {})
 
   await removeSession()
@@ -217,12 +221,16 @@ export async function sendEmailVerificationNotification(): Promise<ActionRespons
   try {
     const response = await api.post<{
       message?: string
-    }>('/auth/user/email/notification', null, {
-      headers: {
-        ...DEFAULT_HEADERS,
-        Authorization: `Bearer ${token}`,
+    }>(
+      '/auth/user/email/notification',
+      {},
+      {
+        headers: {
+          ...DEFAULT_HEADERS,
+          Authorization: `Bearer ${token}`,
+        },
       },
-    })
+    )
 
     return handleActionSuccess(response)
   } catch (error: any) {

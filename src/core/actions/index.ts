@@ -1,5 +1,4 @@
 import 'server-only'
-import { ApiResponse } from '@/lib/http'
 
 export type ActionResponse = {
   code?: number
@@ -64,12 +63,12 @@ function createActionResponse(
   }
 }
 
-export function handleActionSuccess(response: ApiResponse): ActionResponse {
+export function handleActionSuccess(response: any): ActionResponse {
   return createActionResponse(response.status, response.data.message)
 }
 
 export function handleActionError(
-  error: ApiResponse,
+  error: any,
   payload?: FormData,
 ): ActionResponse {
   const defaultMessage =

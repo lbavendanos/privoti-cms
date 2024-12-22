@@ -24,7 +24,9 @@ export function HomeEmailVerifyAlert() {
   }, [router])
 
   useEffect(() => {
-    searchParams.has('verified') && setOpen(true)
+    if (searchParams.has('verified')) {
+      setOpen(true)
+    }
   }, [searchParams])
 
   return (

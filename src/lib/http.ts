@@ -2,7 +2,7 @@ interface ApiRequestConfig extends RequestInit {
   params?: Record<string, string>
 }
 
-export interface ApiResponse<TData = any> {
+interface ApiResponse<TData = any> {
   data: TData
   status: number
   statusText: string

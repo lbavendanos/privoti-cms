@@ -58,7 +58,6 @@ export function LoginForm() {
         </Label>
         <PasswordInput
           id="password"
-          type="password"
           name="password"
           placeholder="********"
           autoComplete="current-password"

@@ -1,8 +1,8 @@
 'use server'
 
 import { api } from '@/lib/http'
-import { cache } from 'react'
 import { redirect } from 'next/navigation'
+import { unstable_cacheTag as cacheTag, revalidateTag } from 'next/cache'
 import { type ActionResponse, handleActionError, handleActionSuccess } from '.'
 import {
   type SessionData,
@@ -17,8 +17,11 @@ const DEFAULT_HEADERS: HeadersInit = {
   'Content-Type': 'application/json',
 }
 
-export const me = cache(async () => {
-  const token = await getSessionToken()
+const TAG_AUTH_USER = 'auth-user'
+
+export async function getUser(token: string) {
+  'use cache'
+  cacheTag(TAG_AUTH_USER)
 
   const {
     data: { data: user },
@@ -44,7 +47,7 @@ export const me = cache(async () => {
   }
 
   return user
-})
+}
 
 export async function login(
   _: unknown,
@@ -213,6 +216,8 @@ export async function updateUser(
         },
       },
     )
+
+    revalidateTag(TAG_AUTH_USER)
 
     return handleActionSuccess(response)
   } catch (error: any) {

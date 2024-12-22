@@ -1,4 +1,5 @@
-import { me } from '@/core/actions/auth'
+import { getUser } from '@/core/actions/auth'
+import { getSessionToken } from '@/lib/session'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
   DropdownMenu,
@@ -14,7 +15,8 @@ import { UserMenuContent } from './user-menu-content'
 import { ChevronsUpDown } from 'lucide-react'
 
 export async function UserMenu() {
-  const user = await me()
+  const token = await getSessionToken()
+  const user = await getUser(token!)
 
   return (
     <SidebarMenu>

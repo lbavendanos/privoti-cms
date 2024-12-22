@@ -1,11 +1,10 @@
 'use client'
 
-import { useActionState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import { useToast } from '@/hooks/use-toast'
 import { updateUser } from '@/core/actions/auth'
 import { useProfile } from './profile-context'
+import { useActionState, useEffect } from 'react'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { LoadingButton } from '@/components/ui/loading-button'
@@ -15,8 +14,6 @@ export function ProfileNameForm({ onSuccess }: { onSuccess?: () => void }) {
   const { toast } = useToast()
 
   const [state, formAction, isPending] = useActionState(updateUser, null)
-
-  const router = useRouter()
 
   useEffect(() => {
     if (!isPending && state && state.isServerError) {
@@ -31,9 +28,8 @@ export function ProfileNameForm({ onSuccess }: { onSuccess?: () => void }) {
         description: 'Name updated successfully.',
       })
       onSuccess?.()
-      router.refresh()
     }
-  }, [isPending, state, onSuccess, toast, router])
+  }, [isPending, state, onSuccess, toast])
 
   return (
     <form action={formAction} className="flex flex-col gap-4">

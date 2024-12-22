@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -14,6 +14,10 @@ import { ProfileNameForm } from './profile-name-form'
 
 export function ProfileName() {
   const [open, setOpen] = useState(false)
+
+  const handleSuccess = useCallback(() => {
+    setOpen(false)
+  }, [])
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -29,7 +33,7 @@ export function ProfileName() {
             Make changes to your name here. Click save when you&apos;re done.
           </DialogDescription>
         </DialogHeader>
-        <ProfileNameForm onSuccess={() => setOpen(false)} />
+        <ProfileNameForm onSuccess={handleSuccess} />
       </DialogContent>
     </Dialog>
   )

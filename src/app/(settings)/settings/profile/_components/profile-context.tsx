@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useMemo } from 'react'
+import { createContext, use, useContext, useMemo } from 'react'
 import { type User } from '@/core/types'
 
 type ProfileContextType = {
@@ -20,12 +20,13 @@ export function useProfile() {
 }
 
 export function ProfileProvider({
-  user,
+  userPromise,
   children,
 }: {
-  user: User
+  userPromise: Promise<User>
   children: React.ReactNode
 }) {
+  const user = use(userPromise)
   const value = useMemo(
     () => ({
       user,

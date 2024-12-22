@@ -1,5 +1,6 @@
 'use client'
 
+import { useProfile } from './profile-context'
 import { useCallback, useState } from 'react'
 import {
   Dialog,
@@ -10,9 +11,10 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
-import { ProfileNameForm } from './profile-name-form'
+import { ProfileEmailForm } from './profile-email-form'
 
-export function ProfileName() {
+export function ProfileEmail() {
+  const { user } = useProfile()
   const [open, setOpen] = useState(false)
 
   const handleSuccess = useCallback(() => {
@@ -23,17 +25,18 @@ export function ProfileName() {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="outline" className="w-fit">
-          Change name
+          Change email
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Edit name</DialogTitle>
+          <DialogTitle>Change email</DialogTitle>
           <DialogDescription>
-            Make changes to your name here. Click save when you&apos;re done.
+            Your current email address is <strong>{user.email}</strong>. Please
+            enter a new email and we will send you a verification link.
           </DialogDescription>
         </DialogHeader>
-        <ProfileNameForm onSuccess={handleSuccess} />
+        <ProfileEmailForm onSuccess={handleSuccess} />
       </DialogContent>
     </Dialog>
   )

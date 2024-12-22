@@ -4,6 +4,7 @@ import { useProfile } from './profile-context'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { ProfileName } from './profile-name'
+import { ProfileEmail } from './profile-email'
 
 export function ProfileContent() {
   const { user } = useProfile()
@@ -37,9 +38,7 @@ export function ProfileContent() {
                     {user.email}
                   </p>
                 </div>
-                <Button variant="outline" className="w-fit">
-                  Change email
-                </Button>
+                <ProfileEmail />
               </div>
               <div className="flex flex-col gap-2 md:flex-row md:justify-between">
                 <div className="space-y-2">

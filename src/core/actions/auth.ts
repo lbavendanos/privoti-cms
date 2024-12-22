@@ -49,6 +49,35 @@ export async function getUser(token: string) {
   return user
 }
 
+export async function updateUser(
+  _: unknown,
+  formData: FormData,
+): Promise<ActionResponse> {
+  const token = await getSessionToken()
+  const name = formData.get('name')
+
+  try {
+    const response = await api.put<{
+      data: User
+    }>(
+      '/auth/user',
+      { name },
+      {
+        headers: {
+          ...DEFAULT_HEADERS,
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    )
+
+    revalidateTag(TAG_AUTH_USER)
+
+    return handleActionSuccess(response)
+  } catch (error: any) {
+    return handleActionError(error, formData)
+  }
+}
+
 export async function login(
   _: unknown,
   formData: FormData,
@@ -71,6 +100,8 @@ export async function login(
 
     if (authTokenData) {
       await setSession(authTokenData)
+
+      revalidateTag(TAG_AUTH_USER)
     }
   } catch (error: any) {
     return handleActionError(error, formData)
@@ -92,6 +123,8 @@ export async function logout() {
     .catch(() => {})
 
   await removeSession()
+
+  revalidateTag(TAG_AUTH_USER)
 
   redirect('/login')
 }
@@ -190,25 +223,27 @@ export async function verifyEmail(params: {
       },
     })
 
+    revalidateTag(TAG_AUTH_USER)
+
     return handleActionSuccess(response)
   } catch (error: any) {
     return handleActionError(error)
   }
 }
 
-export async function updateUser(
+export async function sendEmailChangeVerificationNotification(
   _: unknown,
   formData: FormData,
 ): Promise<ActionResponse> {
   const token = await getSessionToken()
-  const name = formData.get('name')
+  const email = formData.get('email')
 
   try {
-    const response = await api.put<{
-      data: User
+    const response = await api.post<{
+      message?: string
     }>(
-      '/auth/user',
-      { name },
+      '/auth/user/email/new/notification',
+      { email },
       {
         headers: {
           ...DEFAULT_HEADERS,
@@ -217,10 +252,37 @@ export async function updateUser(
       },
     )
 
+    return handleActionSuccess(response)
+  } catch (error: any) {
+    return handleActionError(error, formData)
+  }
+}
+
+export async function verifyNewEmail(params: {
+  id: string
+  email: string
+  token: string
+  expires: string
+  signature: string
+}): Promise<ActionResponse> {
+  const token = await getSessionToken()
+  const { id, email, token: hash, expires, signature } = params
+
+  try {
+    const response = await api.get<{
+      message?: string
+    }>(`/auth/user/email/new/verify/${id}/${email}/${hash}`, {
+      params: { expires, signature },
+      headers: {
+        ...DEFAULT_HEADERS,
+        Authorization: `Bearer ${token}`,
+      },
+    })
+
     revalidateTag(TAG_AUTH_USER)
 
     return handleActionSuccess(response)
   } catch (error: any) {
-    return handleActionError(error, formData)
+    return handleActionError(error)
   }
 }

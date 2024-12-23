@@ -6,6 +6,7 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { ResetForm } from './reset-form'
+import { Suspense } from 'react'
 
 export function Reset() {
   return (
@@ -20,7 +21,9 @@ export function Reset() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <ResetForm />
+        <Suspense fallback={null}>
+          <ResetForm />
+        </Suspense>
       </CardContent>
     </Card>
   )

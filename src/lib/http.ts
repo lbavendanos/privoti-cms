@@ -2,7 +2,7 @@ interface ApiRequestConfig extends RequestInit {
   params?: Record<string, string>
 }
 
-interface ApiResponse<TData = any> {
+export interface ApiResponse<TData = any> {
   data: TData
   status: number
   statusText: string
@@ -18,7 +18,7 @@ class Api {
       : `${this.#baseURL}/`
 
     url =
-      typeof url === 'string' || url instanceof String
+      typeof url === 'string'
         ? url.startsWith('/')
           ? url.substring(1)
           : url
@@ -26,19 +26,15 @@ class Api {
 
     const input = new URL(url, baseURL)
 
-    Object.entries(params).forEach(([key, value]) => {
-      input.searchParams.append(key, value as string)
-    })
+    Object.entries(params).forEach(([key, value]) =>
+      input.searchParams.append(key, value),
+    )
 
     return input
   }
 
   #handleBody(data: any) {
-    if (data instanceof FormData) {
-      return data
-    }
-
-    return JSON.stringify(data)
+    return data instanceof FormData ? data : JSON.stringify(data)
   }
 
   #getResponseType(headers: Headers) {
@@ -46,9 +42,9 @@ class Api {
 
     if (!contentType) return null
 
-    if (contentType?.includes('application/json')) return 'json'
-    if (contentType?.includes('text')) return 'text'
-    if (contentType?.includes('blob')) return 'blob'
+    if (contentType.includes('application/json')) return 'json'
+    if (contentType.includes('text')) return 'text'
+    if (contentType.includes('blob')) return 'blob'
 
     throw new Error(`Fetch does not support content-type ${contentType} yet`)
   }
@@ -57,9 +53,10 @@ class Api {
     response: Response,
   ): Promise<ApiResponse<TData>> {
     const type = this.#getResponseType(response.headers)
+    const data = type ? await response[type]() : {}
 
     const responseData = {
-      data: (type ? await response[type]() : {}) as TData,
+      data: data as TData,
       status: response.status,
       statusText: response.statusText,
       headers: response.headers,
@@ -78,9 +75,7 @@ class Api {
     const init = { ...rest, method: 'GET' }
     const input = this.#handleURL(url, params)
 
-    return fetch(input, init).then((response) => {
-      return this.#handleResponse(response)
-    })
+    return fetch(input, init).then(this.#handleResponse.bind(this))
   }
 
   async post<TData = any>(
@@ -92,9 +87,7 @@ class Api {
     const init = { ...rest, method: 'POST', body: this.#handleBody(data) }
     const input = this.#handleURL(url, params)
 
-    return fetch(input, init).then((response) => {
-      return this.#handleResponse(response)
-    })
+    return fetch(input, init).then(this.#handleResponse.bind(this))
   }
 
   async put<TData = any>(
@@ -106,9 +99,7 @@ class Api {
     const init = { ...rest, method: 'PUT', body: this.#handleBody(data) }
     const input = this.#handleURL(url, params)
 
-    return fetch(input, init).then((response) => {
-      return this.#handleResponse(response)
-    })
+    return fetch(input, init).then(this.#handleResponse.bind(this))
   }
 
   static create() {

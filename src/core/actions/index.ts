@@ -1,4 +1,5 @@
 import 'server-only'
+import { type ApiResponse } from '@/lib/http'
 
 export type ActionResponse = {
   code?: number
@@ -10,7 +11,7 @@ export type ActionResponse = {
   isServerError?: boolean
   isUnknown?: boolean
   message?: string
-  errors?: Record<string, []>
+  errors?: Record<string, unknown[]>
   payload?: FormData
 }
 
@@ -43,7 +44,7 @@ export function getCodeType(code: number): string {
 function createActionResponse(
   code: number | undefined,
   message: string,
-  errors?: Record<string, []>,
+  errors?: Record<string, unknown[]>,
   payload?: FormData,
 ): ActionResponse {
   const codeType = getCodeType(code ?? 0)
@@ -63,12 +64,12 @@ function createActionResponse(
   }
 }
 
-export function handleActionSuccess(response: any): ActionResponse {
+export function handleActionSuccess(response: ApiResponse): ActionResponse {
   return createActionResponse(response.status, response.data.message)
 }
 
 export function handleActionError(
-  error: any,
+  error: ApiResponse,
   payload?: FormData,
 ): ActionResponse {
   const defaultMessage =

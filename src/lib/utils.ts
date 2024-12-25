@@ -34,23 +34,17 @@ export function storeUrl(path: string = '/'): URL {
 /**
  * Check if a value is a boolean.
  *
- * @param {any} value - The value to check.
+ * @param {boolean | number | string} value - The value to check.
  * @returns {boolean} Returns `true` if the value is a boolean, `false` otherwise.
  */
-export function boolean(value: unknown): boolean {
-  if (typeof value === 'string') {
+export function boolean(value: boolean | number | string): boolean {
+  if (typeof value === 'boolean') return value
+  if (typeof value === 'number') return value === 1
+
+  if (typeof value === 'string')
     return ['true', 't', 'yes', 'y', 'on', '1'].includes(
       value.trim().toLowerCase(),
     )
-  }
-
-  if (typeof value === 'number') {
-    return value === 1
-  }
-
-  if (typeof value === 'boolean') {
-    return value
-  }
 
   return false
 }
@@ -58,20 +52,20 @@ export function boolean(value: unknown): boolean {
 /**
  * Check if a value is `true`.
  *
- * @param {any} value - The value to check.
+ * @param {boolean | number | string} value - The value to check.
  * @returns {boolean} Returns `true` if the value is `true`, `false` otherwise.
  */
-export function isTrue(value: unknown): boolean {
+export function isTrue(value: boolean | number | string): boolean {
   return boolean(value)
 }
 
 /**
  * Check if a value is `false`.
  *
- * @param {any} value - The value to check.
+ * @param {boolean | number | string} value - The value to check.
  * @returns {boolean} Returns `true` if the value is `false`, `false` otherwise.
  */
-export function isFalse(value: unknown): boolean {
+export function isFalse(value: boolean | number | string): boolean {
   return !isTrue(value)
 }
 

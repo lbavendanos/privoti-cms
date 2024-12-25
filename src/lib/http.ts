@@ -1,3 +1,5 @@
+import 'server-only'
+
 interface ApiRequestConfig extends RequestInit {
   params?: Record<string, string>
 }

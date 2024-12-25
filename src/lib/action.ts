@@ -1,5 +1,5 @@
 import 'server-only'
-import { type ApiResponse } from '@/lib/http'
+import { type ApiResponse } from './http'
 
 export type ActionResponse = {
   code?: number
@@ -11,7 +11,7 @@ export type ActionResponse = {
   isServerError?: boolean
   isUnknown?: boolean
   message?: string
-  errors?: Record<string, unknown[]>
+  errors?: Record<string, string[]>
   payload?: FormData
 }
 
@@ -44,7 +44,7 @@ export function getCodeType(code: number): string {
 function createActionResponse(
   code: number | undefined,
   message: string,
-  errors?: Record<string, unknown[]>,
+  errors?: Record<string, string[]>,
   payload?: FormData,
 ): ActionResponse {
   const codeType = getCodeType(code ?? 0)

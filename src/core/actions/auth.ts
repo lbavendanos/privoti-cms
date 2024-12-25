@@ -3,7 +3,11 @@
 import { api } from '@/lib/http'
 import { redirect } from 'next/navigation'
 import { unstable_cacheTag as cacheTag, revalidateTag } from 'next/cache'
-import { type ActionResponse, handleActionError, handleActionSuccess } from '.'
+import {
+  type ActionResponse,
+  handleActionError,
+  handleActionSuccess,
+} from '@/lib/action'
 import {
   type SessionData,
   getSessionToken,

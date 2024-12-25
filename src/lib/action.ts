@@ -42,7 +42,7 @@ export function getCodeType(code: number): string {
 }
 
 function createActionResponse(
-  code: number | undefined,
+  code: number,
   message: string,
   errors?: Record<string, string[]>,
   payload?: FormData,
@@ -64,12 +64,23 @@ function createActionResponse(
   }
 }
 
-export function handleActionSuccess(response: ApiResponse): ActionResponse {
-  return createActionResponse(response.status, response.data.message)
+export function handleActionSuccess(
+  response: ApiResponse<{ message?: string; [key: string]: unknown }>,
+): ActionResponse {
+  const defaultMessage = 'The action was successful.'
+
+  return createActionResponse(
+    response.status,
+    response.data.message || defaultMessage,
+  )
 }
 
 export function handleActionError(
-  error: ApiResponse,
+  error: ApiResponse<{
+    message?: string
+    errors: Record<string, string[]>
+    [key: string]: unknown
+  }>,
   payload?: FormData,
 ): ActionResponse {
   const defaultMessage =

@@ -4,7 +4,7 @@ interface ApiRequestConfig extends RequestInit {
   params?: Record<string, string>
 }
 
-export interface ApiResponse<TData = any> {
+export interface ApiResponse<TData> {
   data: TData
   status: number
   statusText: string
@@ -35,7 +35,7 @@ class Api {
     return input
   }
 
-  #handleBody(data: any) {
+  #handleBody(data: unknown) {
     return data instanceof FormData ? data : JSON.stringify(data)
   }
 
@@ -51,14 +51,14 @@ class Api {
     throw new Error(`Fetch does not support content-type ${contentType} yet`)
   }
 
-  async #handleResponse<TData = any>(
+  async #handleResponse<TData>(
     response: Response,
   ): Promise<ApiResponse<TData>> {
     const type = this.#getResponseType(response.headers)
-    const data = type ? await response[type]() : {}
+    const data: TData = type ? await response[type]() : {}
 
-    const responseData = {
-      data: data as TData,
+    const responseData: ApiResponse<TData> = {
+      data,
       status: response.status,
       statusText: response.statusText,
       headers: response.headers,
@@ -69,7 +69,7 @@ class Api {
       : Promise.reject(responseData)
   }
 
-  async get<TData = any>(
+  async get<TData>(
     url: string | URL,
     config: ApiRequestConfig = {},
   ): Promise<ApiResponse<TData>> {
@@ -77,31 +77,37 @@ class Api {
     const init = { ...rest, method: 'GET' }
     const input = this.#handleURL(url, params)
 
-    return fetch(input, init).then(this.#handleResponse.bind(this))
+    return fetch(input, init).then((response) =>
+      this.#handleResponse<TData>(response),
+    )
   }
 
-  async post<TData = any>(
+  async post<TData>(
     url: string | URL,
-    data: any = {},
+    data: object = {},
     config: ApiRequestConfig = {},
   ): Promise<ApiResponse<TData>> {
     const { params, ...rest } = config
     const init = { ...rest, method: 'POST', body: this.#handleBody(data) }
     const input = this.#handleURL(url, params)
 
-    return fetch(input, init).then(this.#handleResponse.bind(this))
+    return fetch(input, init).then((response) =>
+      this.#handleResponse<TData>(response),
+    )
   }
 
-  async put<TData = any>(
+  async put<TData>(
     url: string | URL,
-    data: any = {},
+    data: object = {},
     config: ApiRequestConfig = {},
   ): Promise<ApiResponse<TData>> {
     const { params, ...rest } = config
     const init = { ...rest, method: 'PUT', body: this.#handleBody(data) }
     const input = this.#handleURL(url, params)
 
-    return fetch(input, init).then(this.#handleResponse.bind(this))
+    return fetch(input, init).then((response) =>
+      this.#handleResponse<TData>(response),
+    )
   }
 
   static create() {

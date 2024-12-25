@@ -1,5 +1,5 @@
 import 'server-only'
-import { type ApiResponse } from './http'
+import { isApiError, type ApiResponse } from './http'
 
 export type ActionResponse = {
   code?: number
@@ -76,20 +76,32 @@ export function handleActionSuccess(
 }
 
 export function handleActionError(
-  error: ApiResponse<{
-    message?: string
-    errors: Record<string, string[]>
-    [key: string]: unknown
-  }>,
+  error: unknown,
   payload?: FormData,
 ): ActionResponse {
   const defaultMessage =
     'There was a problem with the server. Please try again.'
 
+  if (
+    isApiError<{
+      message?: string
+      errors?: Record<string, string[]>
+    }>(error)
+  ) {
+    const { response } = error
+
+    return createActionResponse(
+      response.status,
+      response.data.message || defaultMessage,
+      response.data.errors || {},
+      payload,
+    )
+  }
+
   return createActionResponse(
-    error?.status,
-    error?.data?.message || defaultMessage,
-    error?.data?.errors || [],
+    0,
+    error instanceof Error ? error.message : defaultMessage,
+    {},
     payload,
   )
 }

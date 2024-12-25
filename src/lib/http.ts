@@ -11,6 +11,17 @@ export interface ApiResponse<TData> {
   headers: Headers
 }
 
+class ApiError<TData> extends Error {
+  response: ApiResponse<TData>
+
+  constructor(message: string, response: ApiResponse<TData>) {
+    super(message)
+
+    this.name = 'ApiError'
+    this.response = response
+  }
+}
+
 class Api {
   #baseURL = process.env.NEXT_PUBLIC_API_URL || ''
 
@@ -57,16 +68,16 @@ class Api {
     const type = this.#getResponseType(response.headers)
     const data: TData = type ? await response[type]() : {}
 
-    const responseData: ApiResponse<TData> = {
+    const apiResponse: ApiResponse<TData> = {
       data,
       status: response.status,
       statusText: response.statusText,
       headers: response.headers,
     }
 
-    return response.ok
-      ? Promise.resolve(responseData)
-      : Promise.reject(responseData)
+    if (!response.ok) throw new ApiError(response.statusText, apiResponse)
+
+    return apiResponse
   }
 
   async get<TData>(
@@ -109,12 +120,10 @@ class Api {
       this.#handleResponse<TData>(response),
     )
   }
-
-  static create() {
-    return new Api()
-  }
 }
 
-const api = Api.create()
+export function isApiError<TData>(error: unknown): error is ApiError<TData> {
+  return error instanceof ApiError
+}
 
-export { api }
+export const api = new Api()

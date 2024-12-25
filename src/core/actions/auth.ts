@@ -77,7 +77,7 @@ export async function updateUser(
     revalidateTag(TAG_AUTH_USER)
 
     return handleActionSuccess(response)
-  } catch (error: any) {
+  } catch (error) {
     return handleActionError(error, formData)
   }
 }
@@ -104,7 +104,7 @@ export async function updatePassword(_: unknown, formData: FormData) {
     revalidateTag(TAG_AUTH_USER)
 
     return handleActionSuccess(response)
-  } catch (error: any) {
+  } catch (error) {
     return handleActionError(error, formData)
   }
 }
@@ -134,7 +134,7 @@ export async function login(
 
       revalidateTag(TAG_AUTH_USER)
     }
-  } catch (error: any) {
+  } catch (error) {
     return handleActionError(error, formData)
   }
 
@@ -182,7 +182,7 @@ export async function forgotPassword(
     )
 
     return handleActionSuccess(response)
-  } catch (error: any) {
+  } catch (error) {
     return handleActionError(error, formData)
   }
 }
@@ -212,7 +212,7 @@ export async function resetPassword(
     if (authTokenData) {
       await setSession(authTokenData)
     }
-  } catch (error: any) {
+  } catch (error) {
     return handleActionError(error, formData)
   }
 
@@ -237,7 +237,7 @@ export async function sendEmailVerificationNotification(): Promise<ActionRespons
     )
 
     return handleActionSuccess(response)
-  } catch (error: any) {
+  } catch (error) {
     return handleActionError(error)
   }
 }
@@ -265,7 +265,7 @@ export async function verifyEmail(params: {
     revalidateTag(TAG_AUTH_USER)
 
     return handleActionSuccess(response)
-  } catch (error: any) {
+  } catch (error) {
     return handleActionError(error)
   }
 }
@@ -292,7 +292,7 @@ export async function sendEmailChangeVerificationNotification(
     )
 
     return handleActionSuccess(response)
-  } catch (error: any) {
+  } catch (error) {
     return handleActionError(error, formData)
   }
 }
@@ -321,7 +321,7 @@ export async function verifyNewEmail(params: {
     revalidateTag(TAG_AUTH_USER)
 
     return handleActionSuccess(response)
-  } catch (error: any) {
+  } catch (error) {
     return handleActionError(error)
   }
 }

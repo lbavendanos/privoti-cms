@@ -35,7 +35,7 @@ import Link from 'next/link'
 
 export function ProductsForm() {
   return (
-    <form className="container">
+    <form className="container my-4 lg:my-6">
       <div className="grid grid-cols-12 gap-6">
         <div className="col-span-12 md:col-span-10 md:col-start-2">
           <div className="flex items-center gap-4">

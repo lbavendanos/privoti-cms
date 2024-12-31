@@ -1,6 +1,17 @@
 import React from 'react'
-import { DndContext, DragEndEvent, closestCenter } from '@dnd-kit/core'
-import { SortableContext, arrayMove, useSortable } from '@dnd-kit/sortable'
+import {
+  DndContext,
+  DragEndEvent,
+  MeasuringStrategy,
+  closestCenter,
+} from '@dnd-kit/core'
+import {
+  AnimateLayoutChanges,
+  SortableContext,
+  arrayMove,
+  defaultAnimateLayoutChanges,
+  useSortable,
+} from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { GripVertical, Upload, X } from 'lucide-react'
 import { Button } from './button'
@@ -92,7 +103,15 @@ export function SortableFileInput({
 
   return (
     <div className="flex flex-col gap-y-4">
-      <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+      <DndContext
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+        measuring={{
+          droppable: {
+            strategy: MeasuringStrategy.Always,
+          },
+        }}
+      >
         <SortableContext items={value.map((file) => file.id)}>
           {value.length > 0 && (
             <ul className="grid grid-cols-3 gap-4">
@@ -144,9 +163,22 @@ type SortableItemProps = {
   onDelete: (id: string) => void
 }
 
+const animateLayoutChanges: AnimateLayoutChanges = (args) => {
+  const { isSorting, wasDragging } = args
+
+  if (isSorting || wasDragging) {
+    return defaultAnimateLayoutChanges(args)
+  }
+
+  return true
+}
+
 const SortableItem: React.FC<SortableItemProps> = ({ id, file, onDelete }) => {
   const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id })
+    useSortable({
+      animateLayoutChanges,
+      id,
+    })
 
   const style = {
     transform: CSS.Transform.toString(transform),

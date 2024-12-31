@@ -114,7 +114,7 @@ export function SortableFileInput({
       >
         <SortableContext items={value.map((file) => file.id)}>
           {value.length > 0 && (
-            <ul className="grid grid-cols-3 gap-4">
+            <ul className="grid grid-cols-2 gap-4 md:grid-cols-3">
               {value.map((file) => (
                 <SortableItem
                   key={file.id}
@@ -189,13 +189,13 @@ const SortableItem: React.FC<SortableItemProps> = ({ id, file, onDelete }) => {
     <li
       ref={setNodeRef}
       style={style}
-      className="group relative flex flex-col items-center rounded border"
+      className="group relative flex touch-none flex-col items-center rounded border"
     >
       {file.file.type.startsWith('image/') && (
         <img
           src={file.url}
           alt={file.file.name}
-          className="h-52 w-full object-cover"
+          className="h-40 w-full object-cover md:h-52"
         />
       )}
       {file.file.type.startsWith('video/') && (
@@ -207,7 +207,7 @@ const SortableItem: React.FC<SortableItemProps> = ({ id, file, onDelete }) => {
         <Button
           type="button"
           variant="ghost"
-          className="w-4 opacity-0 transition-opacity group-hover:opacity-100"
+          className="w-4 md:opacity-0 md:transition-opacity md:group-hover:opacity-100"
           onClick={() => onDelete(file.id)}
         >
           <X />

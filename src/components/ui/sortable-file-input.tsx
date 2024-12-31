@@ -1,3 +1,4 @@
+import { CSS } from '@dnd-kit/utilities'
 import React from 'react'
 import {
   DndContext,
@@ -12,9 +13,8 @@ import {
   defaultAnimateLayoutChanges,
   useSortable,
 } from '@dnd-kit/sortable'
-import { CSS } from '@dnd-kit/utilities'
-import { GripVertical, Upload, X } from 'lucide-react'
 import { Button } from './button'
+import { GripVertical, Upload, X } from 'lucide-react'
 
 export type FileItem = {
   id: string

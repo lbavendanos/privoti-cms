@@ -1,6 +1,6 @@
 'use client'
 
-import { Badge } from '@/components/ui/badge'
+import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -20,6 +20,10 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import {
+  type FileItem,
+  SortableFileInput,
+} from '@/components/ui/sortable-file-input'
+import {
   Table,
   TableBody,
   TableCell,
@@ -32,8 +36,12 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { ChevronLeft, PlusCircle, Upload } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { CurrencyInput } from '@/components/ui/currency-input'
+import { Separator } from '@/components/ui/separator'
 
 export function ProductsForm() {
+  const [files, setFiles] = useState<FileItem[]>([])
+
   return (
     <form className="container my-4 lg:my-6">
       <div className="grid grid-cols-12 gap-6">
@@ -46,11 +54,11 @@ export function ProductsForm() {
               </Link>
             </Button>
             <h1 className="flex-1 shrink-0 whitespace-nowrap text-xl font-semibold tracking-tight sm:grow-0">
-              Pro Controller
+              Create Product
             </h1>
-            <Badge variant="outline" className="ml-auto sm:ml-0">
-              In stock
-            </Badge>
+            {/* <Badge variant="outline" className="ml-auto sm:ml-0"> */}
+            {/*   In stock */}
+            {/* </Badge> */}
             <div className="hidden items-center gap-2 md:ml-auto md:flex">
               <Button variant="outline" size="sm">
                 Discard
@@ -63,28 +71,44 @@ export function ProductsForm() {
           <div className="flex flex-col gap-6">
             <Card>
               <CardHeader>
-                <CardTitle>Product Details</CardTitle>
+                <CardTitle>Details</CardTitle>
                 <CardDescription>
-                  Lipsum dolor sit amet, consectetur adipiscing elit
+                  Provide detailed information about the product, including
+                  specifications, features, and other relevant details.
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="grid gap-6">
                   <div className="grid gap-3">
-                    <Label htmlFor="name">Name</Label>
+                    <Label htmlFor="title">Title</Label>
                     <Input
-                      id="name"
+                      id="title"
                       type="text"
                       className="w-full"
-                      defaultValue="Gamer Gear Pro Controller"
+                      placeholder="Winter Jacket"
                     />
                   </div>
                   <div className="grid gap-3">
-                    <Label htmlFor="description">Description</Label>
+                    <Label htmlFor="subtitle">
+                      Subtitle{' '}
+                      <span className="text-muted-foreground">(optional)</span>
+                    </Label>
+                    <Input
+                      id="subtitle"
+                      type="text"
+                      className="w-full"
+                      placeholder="Comfortable, warm, and stylish"
+                    />
+                  </div>
+                  <div className="grid gap-3">
+                    <Label htmlFor="description">
+                      Description{' '}
+                      <span className="text-muted-foreground">(optional)</span>
+                    </Label>
                     <Textarea
                       id="description"
-                      defaultValue="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl nec ultricies ultricies, nunc nisl ultricies nunc, nec ultricies nunc nisl nec nunc."
                       className="min-h-32"
+                      placeholder="This winter jacket is perfect for cold weather. It's comfortable, warm, and stylish."
                     />
                   </div>
                 </div>
@@ -92,10 +116,88 @@ export function ProductsForm() {
             </Card>
             <Card>
               <CardHeader>
-                <CardTitle>Stock</CardTitle>
+                <CardTitle>Media</CardTitle>
                 <CardDescription>
-                  Lipsum dolor sit amet, consectetur adipiscing elit
+                  Add images and videos to showcase the product.
                 </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid gap-6">
+                  <div className="grid gap-3">
+                    <SortableFileInput
+                      id="media"
+                      name="media"
+                      value={files}
+                      onChange={setFiles}
+                    />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle>Pricing</CardTitle>
+                <CardDescription>
+                  Set the price and tax information for the product.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="col-span-2 grid gap-3 md:col-span-1">
+                    <Label htmlFor="price">Price</Label>
+                    <CurrencyInput id="price" name="price" className="w-full" />
+                  </div>
+                  <div className="col-span-2 grid gap-3 md:col-span-1">
+                    <Label htmlFor="comparePrice">
+                      Compare at price{' '}
+                      <span className="text-muted-foreground">(optional)</span>
+                    </Label>
+                    <CurrencyInput
+                      id="comparePrice"
+                      name="comparePrice"
+                      className="w-full"
+                    />
+                  </div>
+                  <Separator className="col-span-2" />
+                  <div className="col-span-2 grid gap-3">
+                    <Label htmlFor="cost">
+                      Cost per item{' '}
+                      <span className="text-muted-foreground">(optional)</span>
+                    </Label>
+                    <CurrencyInput id="cost" name="cost" className="w-full" />
+                    <p className="text-sm text-muted-foreground">
+                      Custome won&apos;t see this
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle>Options</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {/* <div className="grid gap-6"> */}
+                {/*   <div className="grid gap-3"> */}
+                {/*     <Label htmlFor="name">Name</Label> */}
+                {/*     <Input id="name" type="text" className="w-full" /> */}
+                {/*   </div> */}
+                {/*   <div className="grid gap-3"> */}
+                {/*     <Label htmlFor="description">Description</Label> */}
+                {/*     <Textarea id="description" className="min-h-32" /> */}
+                {/*   </div> */}
+                {/* </div> */}
+              </CardContent>
+              <CardFooter className="justify-center border-t p-4">
+                <Button size="sm" variant="ghost" className="gap-1">
+                  <PlusCircle className="h-3.5 w-3.5" />
+                  Add Option
+                </Button>
+              </CardFooter>
+            </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle>Stock</CardTitle>
               </CardHeader>
               <CardContent>
                 <Table>

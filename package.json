@@ -35,7 +35,8 @@
     "react-dom": "19.0.0",
     "server-only": "^0.0.1",
     "tailwind-merge": "^2.6.0",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "use-mask-input": "^3.4.2"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",

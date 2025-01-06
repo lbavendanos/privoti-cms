@@ -36,11 +36,11 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { ChevronLeft, PlusCircle, Upload } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { CurrencyInput } from '@/components/ui/currency-input'
-import { Separator } from '@/components/ui/separator'
+import { type OptionItem, ProductsOptionsInput } from './products-options-input'
 
 export function ProductsForm() {
   const [files, setFiles] = useState<FileItem[]>([])
+  const [options, setOptions] = useState<OptionItem[]>([])
 
   return (
     <form className="container my-4 lg:my-6">
@@ -79,7 +79,7 @@ export function ProductsForm() {
               </CardHeader>
               <CardContent>
                 <div className="grid gap-6">
-                  <div className="grid gap-3">
+                  <div className="space-y-2">
                     <Label htmlFor="title">Title</Label>
                     <Input
                       id="title"
@@ -88,7 +88,7 @@ export function ProductsForm() {
                       placeholder="Winter Jacket"
                     />
                   </div>
-                  <div className="grid gap-3">
+                  <div className="space-y-2">
                     <Label htmlFor="subtitle">
                       Subtitle{' '}
                       <span className="text-muted-foreground">(optional)</span>
@@ -100,7 +100,7 @@ export function ProductsForm() {
                       placeholder="Comfortable, warm, and stylish"
                     />
                   </div>
-                  <div className="grid gap-3">
+                  <div className="space-y-2">
                     <Label htmlFor="description">
                       Description{' '}
                       <span className="text-muted-foreground">(optional)</span>
@@ -123,77 +123,25 @@ export function ProductsForm() {
               </CardHeader>
               <CardContent>
                 <div className="grid gap-6">
-                  <div className="grid gap-3">
-                    <SortableFileInput
-                      id="media"
-                      name="media"
-                      value={files}
-                      onChange={setFiles}
-                    />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardTitle>Pricing</CardTitle>
-                <CardDescription>
-                  Set the price and tax information for the product.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 gap-6">
-                  <div className="col-span-2 grid gap-3 md:col-span-1">
-                    <Label htmlFor="price">Price</Label>
-                    <CurrencyInput id="price" name="price" className="w-full" />
-                  </div>
-                  <div className="col-span-2 grid gap-3 md:col-span-1">
-                    <Label htmlFor="comparePrice">
-                      Compare at price{' '}
-                      <span className="text-muted-foreground">(optional)</span>
-                    </Label>
-                    <CurrencyInput
-                      id="comparePrice"
-                      name="comparePrice"
-                      className="w-full"
-                    />
-                  </div>
-                  <Separator className="col-span-2" />
-                  <div className="col-span-2 grid gap-3">
-                    <Label htmlFor="cost">
-                      Cost per item{' '}
-                      <span className="text-muted-foreground">(optional)</span>
-                    </Label>
-                    <CurrencyInput id="cost" name="cost" className="w-full" />
-                    <p className="text-sm text-muted-foreground">
-                      Custome won&apos;t see this
-                    </p>
-                  </div>
+                  <SortableFileInput
+                    id="media"
+                    name="media"
+                    value={files}
+                    onChange={setFiles}
+                  />
                 </div>
               </CardContent>
             </Card>
             <Card>
               <CardHeader>
                 <CardTitle>Options</CardTitle>
+                <CardDescription>
+                  Add options to the product, such as size, color, or material.
+                </CardDescription>
               </CardHeader>
               <CardContent>
-                {/* <div className="grid gap-6"> */}
-                {/*   <div className="grid gap-3"> */}
-                {/*     <Label htmlFor="name">Name</Label> */}
-                {/*     <Input id="name" type="text" className="w-full" /> */}
-                {/*   </div> */}
-                {/*   <div className="grid gap-3"> */}
-                {/*     <Label htmlFor="description">Description</Label> */}
-                {/*     <Textarea id="description" className="min-h-32" /> */}
-                {/*   </div> */}
-                {/* </div> */}
+                <ProductsOptionsInput value={options} onChange={setOptions} />
               </CardContent>
-              <CardFooter className="justify-center border-t p-4">
-                <Button size="sm" variant="ghost" className="gap-1">
-                  <PlusCircle className="h-3.5 w-3.5" />
-                  Add Option
-                </Button>
-              </CardFooter>
             </Card>
             <Card>
               <CardHeader>

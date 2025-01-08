@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ProductsOptionsDialog } from './products-options-dialog'
+import { ProductsOptionsSheet } from './products-options-sheet'
 import {
   Table,
   TableBody,
@@ -94,7 +94,7 @@ export function ProductsOptionsInput({
           Add Option
         </Button>
       </div>
-      <ProductsOptionsDialog
+      <ProductsOptionsSheet
         value={
           selectedOption || { id: Date.now().toString(), name: '', values: [] }
         }

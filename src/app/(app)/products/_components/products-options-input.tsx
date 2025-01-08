@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { ProductsOptionsSheet } from './products-options-sheet'
 import {
   Table,
   TableBody,
@@ -8,10 +7,17 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
-import { Pencil, PlusCircle, X } from 'lucide-react'
+import { ProductsOptionsSheet } from './products-options-sheet'
+import { Ellipsis, Pencil, PlusCircle, Trash2 } from 'lucide-react'
 
 export type OptionItem = {
   id: string
@@ -37,9 +43,9 @@ export function ProductsOptionsInput({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-2/12">Title</TableHead>
-              <TableHead className="w-7/12">Variant</TableHead>
-              <TableHead className="w-3/12">Action</TableHead>
+              <TableHead className="w-2/12 md:w-3/12">Title</TableHead>
+              <TableHead className="w-9/12 md:w-8/12">Variant</TableHead>
+              <TableHead className="w-1/12">Action</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -54,27 +60,44 @@ export function ProductsOptionsInput({
                   ))}
                 </TableCell>
                 <TableCell>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => {
-                      setSelectedOption(option)
-                      setOpen(true)
-                    }}
-                  >
-                    <Pencil />
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => {
-                      onChange(value.filter((item) => item.id !== option.id))
-                    }}
-                  >
-                    <X />
-                  </Button>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="rounded-full shadow-none"
+                        aria-label="Open edit menu"
+                      >
+                        <Ellipsis
+                          size={16}
+                          strokeWidth={2}
+                          aria-hidden="true"
+                        />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                      <DropdownMenuItem
+                        className="cursor-pointer"
+                        onClick={() => {
+                          setSelectedOption(option)
+                          setOpen(true)
+                        }}
+                      >
+                        <Pencil /> Edit
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        className="cursor-pointer"
+                        onClick={() =>
+                          onChange(
+                            value.filter((item) => item.id !== option.id),
+                          )
+                        }
+                      >
+                        <Trash2 />
+                        Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </TableCell>
               </TableRow>
             ))}
@@ -88,7 +111,10 @@ export function ProductsOptionsInput({
           size="sm"
           variant="ghost"
           className="gap-1"
-          onClick={() => setOpen(true)}
+          onClick={() => {
+            setSelectedOption(null)
+            setOpen(true)
+          }}
         >
           <PlusCircle className="h-3.5 w-3.5" />
           Add Option

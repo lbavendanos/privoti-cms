@@ -1,17 +1,40 @@
-import { useEffect, useState } from 'react'
+import { z } from 'zod'
+import { useForm } from 'react-hook-form'
+import { useEffect } from 'react'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { type OptionItem } from './products-options-input'
 import {
   Sheet,
+  SheetClose,
   SheetContent,
   SheetDescription,
   SheetFooter,
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet'
-import { Button } from '@/components/ui/button'
-import { Label } from '@/components/ui/label'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
 import { TagInput } from '@/components/ui/tag-input'
+
+const formSchema = z.object({
+  id: z.string().min(1, {
+    message: 'Please provide a valid ID.',
+  }),
+  name: z.string().nonempty({
+    message: 'Please provide a valid title.',
+  }),
+  values: z.array(z.string()).nonempty({
+    message: 'Please provide at least one variant.',
+  }),
+})
 
 type ProductsOptionsSheetProps = {
   value: OptionItem
@@ -26,20 +49,27 @@ export function ProductsOptionsSheet({
   onChange,
   onOpenChange,
 }: ProductsOptionsSheetProps) {
-  const [id, setId] = useState(option.id)
-  const [title, setTitle] = useState(option.name)
-  const [variants, setVariants] = useState(option.values)
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      id: option.id,
+      name: option.name,
+      values: option.values,
+    },
+  })
 
-  const handleSave = () => {
-    onChange({ id, name: title, values: variants })
+  const handleSubmit = (values: z.infer<typeof formSchema>) => {
+    onChange(values)
     onOpenChange(false)
   }
 
   useEffect(() => {
-    setId(option.id)
-    setTitle(option.name)
-    setVariants(option.values)
-  }, [option])
+    form.reset({
+      id: option.id,
+      name: option.name,
+      values: option.values,
+    })
+  }, [option, form])
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -50,34 +80,46 @@ export function ProductsOptionsSheet({
             Create a new option for your product.
           </SheetDescription>
         </SheetHeader>
-        <div className="flex flex-col gap-4 py-4">
-          <div className="space-y-2">
-            <Label htmlFor="optionTitle">Option title</Label>
-            <Input
-              id="optionTitle"
-              name="optionTitle"
-              type="text"
-              placeholder="Size, Color, etc."
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="optionVariants">Variations (comma-separated)</Label>
-            <TagInput
-              id="optionVariants"
-              name="optionVariants"
-              placeholder="Add variant"
-              value={variants}
-              onChange={setVariants}
-            />
-          </div>
-        </div>
-        <SheetFooter>
-          <Button type="button" onClick={handleSave}>
-            Save
-          </Button>
-        </SheetFooter>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(handleSubmit)}>
+            <div className="flex flex-col gap-4 py-4">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Title</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Size, Color, etc." {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="values"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Variations (comma-separated)</FormLabel>
+                    <FormControl>
+                      <TagInput placeholder="Add variant" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <SheetFooter>
+              <SheetClose asChild>
+                <Button type="button" variant="secondary">
+                  Cancel
+                </Button>
+              </SheetClose>
+              <Button type="submit">Save</Button>
+            </SheetFooter>
+          </form>
+        </Form>
       </SheetContent>
     </Sheet>
   )

@@ -52,7 +52,7 @@ export function ProductsVariantsInput({
       {value.length > 0 && (
         <Table>
           <TableHeader>
-            <TableRow className="group relative">
+            <TableRow className="relative">
               {options.map((option) => (
                 <TableHead key={option.id} className="w-2/12">
                   {option.name}
@@ -60,14 +60,14 @@ export function ProductsVariantsInput({
               ))}
               <TableHead className="w-3/12">Price</TableHead>
               <TableHead className="w-3/12">Quantity</TableHead>
-              <TableHead className="sticky right-0 z-10 w-1/12 bg-white after:absolute after:inset-y-0 after:left-0 after:h-full after:w-px after:bg-border after:content-[''] group-hover:bg-muted">
+              <TableHead className="sticky right-0 z-10 w-1/12 bg-white after:absolute after:inset-y-0 after:left-0 after:h-full after:w-px after:bg-border after:content-['']">
                 Action
               </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {value.map((option) => (
-              <TableRow key={option.id} className="group relative">
+              <TableRow key={option.id} className="relative">
                 {option.options.map((opt) => (
                   <TableCell key={opt.id} className="w-2/12">
                     <Badge variant="secondary">{opt.value}</Badge>
@@ -80,7 +80,7 @@ export function ProductsVariantsInput({
                   }).format(option.price)}
                 </TableCell>
                 <TableCell>{option.quantity}</TableCell>
-                <TableCell className="sticky right-0 z-10 bg-white after:absolute after:inset-y-0 after:left-0 after:h-full after:w-px after:bg-border after:content-[''] group-hover:bg-muted">
+                <TableCell className="sticky right-0 z-10 bg-white after:absolute after:inset-y-0 after:left-0 after:h-full after:w-px after:bg-border after:content-['']">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button

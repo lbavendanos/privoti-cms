@@ -42,17 +42,17 @@ export function ProductsOptionsInput({
       {value.length > 0 && (
         <Table>
           <TableHeader>
-            <TableRow className="group relative">
+            <TableRow className="relative">
               <TableHead className="w-2/12 md:w-3/12">Title</TableHead>
               <TableHead className="w-9/12 md:w-8/12">Variant</TableHead>
-              <TableHead className="sticky right-0 z-10 w-1/12 bg-white after:absolute after:inset-y-0 after:left-0 after:h-full after:w-px after:bg-border after:content-[''] group-hover:bg-muted">
+              <TableHead className="sticky right-0 z-10 w-1/12 bg-white after:absolute after:inset-y-0 after:left-0 after:h-full after:w-px after:bg-border after:content-['']">
                 Action
               </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {value.map((option) => (
-              <TableRow key={option.id} className="group relative">
+              <TableRow key={option.id} className="relative">
                 <TableCell>{option.name}</TableCell>
                 <TableCell className="space-x-1 space-y-1">
                   {option.values.map((value) => (
@@ -61,7 +61,7 @@ export function ProductsOptionsInput({
                     </Badge>
                   ))}
                 </TableCell>
-                <TableCell className="sticky right-0 z-10 bg-white after:absolute after:inset-y-0 after:left-0 after:h-full after:w-px after:bg-border after:content-[''] group-hover:bg-muted">
+                <TableCell className="sticky right-0 z-10 bg-white after:absolute after:inset-y-0 after:left-0 after:h-full after:w-px after:bg-border after:content-['']">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button

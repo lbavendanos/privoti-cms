@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import {
   Card,
   CardContent,
@@ -10,13 +11,6 @@ import {
 } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import {
   type FileItem,
   SortableFileInput,
@@ -28,14 +22,32 @@ import {
   ProductsVariantsInput,
 } from './products-variants-input'
 import { Button } from '@/components/ui/button'
-import Image from 'next/image'
-import Link from 'next/link'
-import { ChevronLeft, Upload } from 'lucide-react'
+import { ChevronLeft } from 'lucide-react'
+import MultipleSelector, { Option } from '@/components/ui/multiple-selector'
+import { MultipleTag } from '@/components/ui/multiple-tag'
+
+const CATEGORIES: Option[] = [
+  { label: 'Shirts', value: 'shirts' },
+  { label: 'Pants', value: 'pants' },
+  { label: 'Jackets', value: 'jackets' },
+  { label: 'Shoes', value: 'shoes' },
+  { label: 'Accessories', value: 'accessories' },
+  { label: 'Hats', value: 'hats' },
+]
+
+const COLLECTIONS: Option[] = [
+  { label: 'Latest Drops', value: 'latest-drops' },
+  { label: 'Best Sellers', value: 'best-sellers' },
+  { label: 'Sale', value: 'sale' },
+  { label: 'Summer Collection', value: 'summer-collection' },
+  { label: 'Winter Collection', value: 'winter-collection' },
+]
 
 export function ProductsForm() {
   const [files, setFiles] = useState<FileItem[]>([])
   const [options, setOptions] = useState<OptionItem[]>([])
   const [variants, setVariants] = useState<VariantItem[]>([])
+  const [tags, setTags] = useState<string[]>([])
 
   return (
     <form className="container my-4 lg:my-6">
@@ -117,14 +129,12 @@ export function ProductsForm() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="grid gap-6">
-                  <SortableFileInput
-                    id="media"
-                    name="media"
-                    value={files}
-                    onChange={setFiles}
-                  />
-                </div>
+                <SortableFileInput
+                  id="media"
+                  name="media"
+                  value={files}
+                  onChange={setFiles}
+                />
               </CardContent>
             </Card>
             <Card>
@@ -156,109 +166,89 @@ export function ProductsForm() {
                 </CardContent>
               </Card>
             )}
-            <Card>
-              <CardHeader>
-                <CardTitle>Product Category</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid gap-6 sm:grid-cols-3">
-                  <div className="grid gap-3">
-                    <Label htmlFor="category">Category</Label>
-                    <Select>
-                      <SelectTrigger id="category" aria-label="Select category">
-                        <SelectValue placeholder="Select category" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="clothing">Clothing</SelectItem>
-                        <SelectItem value="electronics">Electronics</SelectItem>
-                        <SelectItem value="accessories">Accessories</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="grid gap-3">
-                    <Label htmlFor="subcategory">Subcategory (optional)</Label>
-                    <Select>
-                      <SelectTrigger
-                        id="subcategory"
-                        aria-label="Select subcategory"
-                      >
-                        <SelectValue placeholder="Select subcategory" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="t-shirts">T-Shirts</SelectItem>
-                        <SelectItem value="hoodies">Hoodies</SelectItem>
-                        <SelectItem value="sweatshirts">Sweatshirts</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
           </div>
         </div>
         <div className="col-span-12 md:col-span-10 md:col-start-2 xl:col-span-3 xl:col-start-9">
           <div className="flex flex-col gap-6">
+            {/* <Card> */}
+            {/*   <CardHeader> */}
+            {/*     <CardTitle>Product Status</CardTitle> */}
+            {/*   </CardHeader> */}
+            {/*   <CardContent> */}
+            {/*     <div className="grid gap-6"> */}
+            {/*       <div className="grid gap-3"> */}
+            {/*         <Label htmlFor="status">Status</Label> */}
+            {/*         <Select> */}
+            {/*           <SelectTrigger id="status" aria-label="Select status"> */}
+            {/*             <SelectValue placeholder="Select status" /> */}
+            {/*           </SelectTrigger> */}
+            {/*           <SelectContent> */}
+            {/*             <SelectItem value="draft">Draft</SelectItem> */}
+            {/*             <SelectItem value="published">Active</SelectItem> */}
+            {/*             <SelectItem value="archived">Archived</SelectItem> */}
+            {/*           </SelectContent> */}
+            {/*         </Select> */}
+            {/*       </div> */}
+            {/*     </div> */}
+            {/*   </CardContent> */}
+            {/* </Card> */}
             <Card>
               <CardHeader>
-                <CardTitle>Product Status</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid gap-6">
-                  <div className="grid gap-3">
-                    <Label htmlFor="status">Status</Label>
-                    <Select>
-                      <SelectTrigger id="status" aria-label="Select status">
-                        <SelectValue placeholder="Select status" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="draft">Draft</SelectItem>
-                        <SelectItem value="published">Active</SelectItem>
-                        <SelectItem value="archived">Archived</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="overflow-hidden">
-              <CardHeader>
-                <CardTitle>Product Images</CardTitle>
+                <CardTitle>Organize</CardTitle>
                 <CardDescription>
-                  Lipsum dolor sit amet, consectetur adipiscing elit
+                  Categorize the product to make it easier to find.
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="grid gap-2">
-                  <Image
-                    alt="Product image"
-                    className="aspect-square w-full rounded-md object-cover"
-                    height="300"
-                    src="/placeholder.svg"
-                    width="300"
-                  />
-                  <div className="grid grid-cols-3 gap-2">
-                    <button>
-                      <Image
-                        alt="Product image"
-                        className="aspect-square w-full rounded-md object-cover"
-                        height="84"
-                        src="/placeholder.svg"
-                        width="84"
-                      />
-                    </button>
-                    <button>
-                      <Image
-                        alt="Product image"
-                        className="aspect-square w-full rounded-md object-cover"
-                        height="84"
-                        src="/placeholder.svg"
-                        width="84"
-                      />
-                    </button>
-                    <button className="flex aspect-square w-full items-center justify-center rounded-md border border-dashed">
-                      <Upload className="h-4 w-4 text-muted-foreground" />
-                      <span className="sr-only">Upload</span>
-                    </button>
+                <div className="grid gap-6">
+                  <div className="space-y-2">
+                    <Label>
+                      Categories{' '}
+                      <span className="text-muted-foreground">(optional)</span>
+                    </Label>
+                    <MultipleSelector
+                      defaultOptions={CATEGORIES}
+                      badgeVariant="secondary"
+                      commandProps={{
+                        label: 'Jackets',
+                      }}
+                      placeholder="Jackets"
+                      emptyIndicator={
+                        <p className="text-center text-sm">No results found</p>
+                      }
+                      hidePlaceholderWhenSelected
+                      hideClearAllButton
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>
+                      Collections{' '}
+                      <span className="text-muted-foreground">(optional)</span>
+                    </Label>
+                    <MultipleSelector
+                      defaultOptions={COLLECTIONS}
+                      badgeVariant="secondary"
+                      commandProps={{
+                        label: 'Select collections',
+                      }}
+                      placeholder="Winter Collection"
+                      emptyIndicator={
+                        <p className="text-center text-sm">No results found</p>
+                      }
+                      hidePlaceholderWhenSelected
+                      hideClearAllButton
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>
+                      Tags{' '}
+                      <span className="text-muted-foreground">(optional)</span>
+                    </Label>
+                    <MultipleTag
+                      value={tags}
+                      onChange={setTags}
+                      placeholder="Winter, Jacket, Warm, Stylish"
+                    />
                   </div>
                 </div>
               </CardContent>

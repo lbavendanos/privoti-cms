@@ -12,6 +12,7 @@ type MultipleTagProps = Omit<InputProps, 'value' | 'onChange'> & {
 export function MultipleTag({
   value,
   className,
+  placeholder,
   onChange,
   ...props
 }: MultipleTagProps) {
@@ -60,6 +61,7 @@ export function MultipleTag({
       <input
         className="flex-1 outline-none placeholder:text-neutral-500 dark:placeholder:text-neutral-400"
         value={pendingDataPoint}
+        placeholder={value.length === 0 ? placeholder : ''}
         onChange={(e) => setPendingDataPoint(e.target.value)}
         onKeyDown={(e) => {
           if (e.key === 'Enter' || e.key === ',') {

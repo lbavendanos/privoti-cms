@@ -90,7 +90,7 @@ export function ProductsOptionsSheet({
                   <FormItem>
                     <FormLabel>Title</FormLabel>
                     <FormControl>
-                      <Input placeholder="Size, Color, etc." {...field} />
+                      <Input placeholder="Color" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -103,7 +103,7 @@ export function ProductsOptionsSheet({
                   <FormItem>
                     <FormLabel>Variations (comma-separated)</FormLabel>
                     <FormControl>
-                      <MultipleTag placeholder="Add variant" {...field} />
+                      <MultipleTag placeholder="Red, Blue, Green" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

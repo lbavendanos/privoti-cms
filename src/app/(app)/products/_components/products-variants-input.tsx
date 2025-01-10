@@ -52,26 +52,27 @@ export function ProductsVariantsInput({
       {value.length > 0 && (
         <Table>
           <TableHeader>
-            <TableRow className="relative">
-              <TableHead className="w-5/12">Variant</TableHead>
+            <TableRow className="group relative">
+              {options.map((option) => (
+                <TableHead key={option.id} className="w-2/12">
+                  {option.name}
+                </TableHead>
+              ))}
               <TableHead className="w-3/12">Price</TableHead>
               <TableHead className="w-3/12">Quantity</TableHead>
-              <TableHead className="sticky right-0 w-1/12 bg-white">
+              <TableHead className="sticky right-0 z-10 w-1/12 bg-white after:absolute after:inset-y-0 after:left-0 after:h-full after:w-px after:bg-border after:content-[''] group-hover:bg-muted">
                 Action
               </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {value.map((option) => (
-              <TableRow key={option.id} className="relative">
-                <TableCell className="space-x-1 space-y-1">
-                  {option.options.map((opt, index) => (
-                    <React.Fragment key={opt.id}>
-                      <Badge variant="secondary">{opt.value}</Badge>
-                      {index < option.options.length - 1 ? ' /' : ''}
-                    </React.Fragment>
-                  ))}
-                </TableCell>
+              <TableRow key={option.id} className="group relative">
+                {option.options.map((opt) => (
+                  <TableCell key={opt.id} className="w-2/12">
+                    <Badge variant="secondary">{opt.value}</Badge>
+                  </TableCell>
+                ))}
                 <TableCell>
                   {new Intl.NumberFormat(appLocale, {
                     style: 'currency',
@@ -79,7 +80,7 @@ export function ProductsVariantsInput({
                   }).format(option.price)}
                 </TableCell>
                 <TableCell>{option.quantity}</TableCell>
-                <TableCell className="sticky right-0 bg-white">
+                <TableCell className="sticky right-0 z-10 bg-white after:absolute after:inset-y-0 after:left-0 after:h-full after:w-px after:bg-border after:content-[''] group-hover:bg-muted">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button

@@ -110,7 +110,7 @@ export function ProductsOptionsSheet({
                 )}
               />
             </div>
-            <SheetFooter>
+            <SheetFooter className="gap-y-2">
               <SheetClose asChild>
                 <Button type="button" variant="secondary">
                   Cancel

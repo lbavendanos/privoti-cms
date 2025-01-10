@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import React from 'react'
+import { type OptionItem } from './products-options-input'
 import {
   Table,
   TableBody,
@@ -16,25 +18,33 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
-import { ProductsOptionsSheet } from './products-options-sheet'
+import { ProductsVariantsSheet } from './products-variants-sheet'
 import { Ellipsis, Pencil, PlusCircle, Trash2 } from 'lucide-react'
 
-export type OptionItem = {
+export type VariantItem = {
   id: string
-  name: string
-  values: string[]
+  options: { id: string; value: string }[]
+  price: number
+  quantity: number
 }
 
-type ProductsOptionsInputProps = {
-  value: OptionItem[]
-  onChange: React.Dispatch<React.SetStateAction<OptionItem[]>>
+type ProductsVariantsInputProps = {
+  options: OptionItem[]
+  value: VariantItem[]
+  onChange: React.Dispatch<React.SetStateAction<VariantItem[]>>
 }
 
-export function ProductsOptionsInput({
+export function ProductsVariantsInput({
+  options,
   value,
   onChange,
-}: ProductsOptionsInputProps) {
-  const [selectedOption, setSelectedOption] = useState<OptionItem | null>(null)
+}: ProductsVariantsInputProps) {
+  const appLocale = process.env.NEXT_PUBLIC_APP_LOCALE
+  const appCurrency = process.env.NEXT_PUBLIC_APP_CURRENCY
+
+  const [selectedVariant, setSelectedVariant] = useState<VariantItem | null>(
+    null,
+  )
   const [open, setOpen] = useState(false)
 
   return (
@@ -43,8 +53,9 @@ export function ProductsOptionsInput({
         <Table>
           <TableHeader>
             <TableRow className="relative">
-              <TableHead className="w-2/12 md:w-3/12">Title</TableHead>
-              <TableHead className="w-9/12 md:w-8/12">Variant</TableHead>
+              <TableHead className="w-5/12">Variant</TableHead>
+              <TableHead className="w-3/12">Price</TableHead>
+              <TableHead className="w-3/12">Quantity</TableHead>
               <TableHead className="sticky right-0 w-1/12 bg-white">
                 Action
               </TableHead>
@@ -53,14 +64,21 @@ export function ProductsOptionsInput({
           <TableBody>
             {value.map((option) => (
               <TableRow key={option.id} className="relative">
-                <TableCell>{option.name}</TableCell>
                 <TableCell className="space-x-1 space-y-1">
-                  {option.values.map((value) => (
-                    <Badge key={value} variant="secondary">
-                      {value}
-                    </Badge>
+                  {option.options.map((opt, index) => (
+                    <React.Fragment key={opt.id}>
+                      <Badge variant="secondary">{opt.value}</Badge>
+                      {index < option.options.length - 1 ? ' /' : ''}
+                    </React.Fragment>
                   ))}
                 </TableCell>
+                <TableCell>
+                  {new Intl.NumberFormat(appLocale, {
+                    style: 'currency',
+                    currency: appCurrency,
+                  }).format(option.price)}
+                </TableCell>
+                <TableCell>{option.quantity}</TableCell>
                 <TableCell className="sticky right-0 bg-white">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -81,7 +99,7 @@ export function ProductsOptionsInput({
                       <DropdownMenuItem
                         className="cursor-pointer"
                         onClick={() => {
-                          setSelectedOption(option)
+                          setSelectedVariant(option)
                           setOpen(true)
                         }}
                       >
@@ -114,30 +132,41 @@ export function ProductsOptionsInput({
           variant="ghost"
           className="gap-1"
           onClick={() => {
-            setSelectedOption(null)
+            setSelectedVariant(null)
             setOpen(true)
           }}
         >
           <PlusCircle className="h-3.5 w-3.5" />
-          Add Option
+          Add Variant
         </Button>
       </div>
-      <ProductsOptionsSheet
+      <ProductsVariantsSheet
+        options={options}
         value={
-          selectedOption || { id: Date.now().toString(), name: '', values: [] }
+          selectedVariant || {
+            id: Date.now().toString(),
+            options: options.map((opt) => ({
+              id: opt.id,
+              value: '',
+            })),
+            price: 0,
+            quantity: 0,
+          }
         }
-        onChange={(option) => {
-          if (selectedOption) {
+        onChange={(variant) => {
+          if (selectedVariant) {
             onChange(
               value.map((item) =>
-                item.id === selectedOption.id ? (option as OptionItem) : item,
+                item.id === selectedVariant.id
+                  ? (variant as VariantItem)
+                  : item,
               ),
             )
           } else {
-            onChange([...value, option as OptionItem])
+            onChange([...value, variant as VariantItem])
           }
 
-          setSelectedOption(null)
+          setSelectedVariant(null)
         }}
         open={open}
         onOpenChange={setOpen}

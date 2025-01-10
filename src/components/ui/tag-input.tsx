@@ -2,7 +2,6 @@ import { cn } from '@/lib/utils'
 import { useEffect, useState } from 'react'
 import { type InputProps } from './input'
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
 import { X } from 'lucide-react'
 
 type TagInputProps = Omit<InputProps, 'value' | 'onChange'> & {
@@ -47,17 +46,15 @@ export function TagInput({
       {value.map((item) => (
         <Badge key={item} variant="secondary">
           {item}
-          <Button
+          <button
             type="button"
-            variant="ghost"
-            size="icon"
-            className="ml-2 h-3 w-3"
+            className="ml-1 rounded-full outline-none ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2"
             onClick={() => {
               onChange(value.filter((i) => i !== item))
             }}
           >
-            <X className="w-3" />
-          </Button>
+            <X className="h-3 w-3 text-muted-foreground hover:text-foreground" />
+          </button>
         </Badge>
       ))}
       <input
@@ -82,4 +79,3 @@ export function TagInput({
     </div>
   )
 }
-// )

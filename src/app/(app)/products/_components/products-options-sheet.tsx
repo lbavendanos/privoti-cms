@@ -22,7 +22,7 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { TagInput } from '@/components/ui/tag-input'
+import { MultipleTag } from '@/components/ui/multiple-tag'
 
 const formSchema = z.object({
   id: z.string().min(1, {
@@ -103,7 +103,7 @@ export function ProductsOptionsSheet({
                   <FormItem>
                     <FormLabel>Variations (comma-separated)</FormLabel>
                     <FormControl>
-                      <TagInput placeholder="Add variant" {...field} />
+                      <MultipleTag placeholder="Add variant" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

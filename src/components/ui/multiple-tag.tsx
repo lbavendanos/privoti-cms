@@ -4,17 +4,17 @@ import { type InputProps } from './input'
 import { Badge } from '@/components/ui/badge'
 import { X } from 'lucide-react'
 
-type TagInputProps = Omit<InputProps, 'value' | 'onChange'> & {
+type MultipleTagProps = Omit<InputProps, 'value' | 'onChange'> & {
   value: string[]
   onChange: React.Dispatch<React.SetStateAction<string[]>>
 }
 
-export function TagInput({
+export function MultipleTag({
   value,
   className,
   onChange,
   ...props
-}: TagInputProps) {
+}: MultipleTagProps) {
   const [pendingDataPoint, setPendingDataPoint] = useState('')
 
   const addPendingDataPoint = () => {

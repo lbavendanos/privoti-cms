@@ -25,6 +25,13 @@ import { Button } from '@/components/ui/button'
 import { ChevronLeft } from 'lucide-react'
 import MultipleSelector, { Option } from '@/components/ui/multiple-selector'
 import { MultipleTag } from '@/components/ui/multiple-tag'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 
 const CATEGORIES: Option[] = [
   { label: 'Shirts', value: 'shirts' },
@@ -42,6 +49,22 @@ const COLLECTIONS: Option[] = [
   { label: 'Summer Collection', value: 'summer-collection' },
   { label: 'Winter Collection', value: 'winter-collection' },
 ]
+
+function StatusDot({ className }: { className?: string }) {
+  return (
+    <svg
+      width="8"
+      height="8"
+      fill="currentColor"
+      viewBox="0 0 8 8"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      aria-hidden="true"
+    >
+      <circle cx="4" cy="4" r="4" />
+    </svg>
+  )
+}
 
 export function ProductsForm() {
   const [files, setFiles] = useState<FileItem[]>([])
@@ -170,28 +193,41 @@ export function ProductsForm() {
           </div>
           <div className="col-span-12 md:col-span-10 md:col-start-2 xl:col-span-3 xl:col-start-9">
             <div className="flex flex-col gap-6">
-              {/* <Card> */}
-              {/*   <CardHeader> */}
-              {/*     <CardTitle>Product Status</CardTitle> */}
-              {/*   </CardHeader> */}
-              {/*   <CardContent> */}
-              {/*     <div className="grid gap-6"> */}
-              {/*       <div className="grid gap-3"> */}
-              {/*         <Label htmlFor="status">Status</Label> */}
-              {/*         <Select> */}
-              {/*           <SelectTrigger id="status" aria-label="Select status"> */}
-              {/*             <SelectValue placeholder="Select status" /> */}
-              {/*           </SelectTrigger> */}
-              {/*           <SelectContent> */}
-              {/*             <SelectItem value="draft">Draft</SelectItem> */}
-              {/*             <SelectItem value="published">Active</SelectItem> */}
-              {/*             <SelectItem value="archived">Archived</SelectItem> */}
-              {/*           </SelectContent> */}
-              {/*         </Select> */}
-              {/*       </div> */}
-              {/*     </div> */}
-              {/*   </CardContent> */}
-              {/* </Card> */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Status</CardTitle>
+                  <CardDescription>
+                    Set the status of the product to manage its visibility.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Select defaultValue="1">
+                    <SelectTrigger className="[&>span]:flex [&>span]:items-center [&>span]:gap-2 [&>span_svg]:shrink-0">
+                      <SelectValue placeholder="Select status" />
+                    </SelectTrigger>
+                    <SelectContent className="[&_*[role=option]>span>svg]:shrink-0 [&_*[role=option]>span>svg]:text-muted-foreground/80 [&_*[role=option]>span]:end-2 [&_*[role=option]>span]:start-auto [&_*[role=option]>span]:flex [&_*[role=option]>span]:items-center [&_*[role=option]>span]:gap-2 [&_*[role=option]]:pe-8 [&_*[role=option]]:ps-2">
+                      <SelectItem value="1">
+                        <span className="flex items-center gap-2">
+                          <StatusDot className="text-amber-500" />
+                          <span className="truncate">Draft</span>
+                        </span>
+                      </SelectItem>
+                      <SelectItem value="2">
+                        <span className="flex items-center gap-2">
+                          <StatusDot className="text-emerald-600" />
+                          <span className="truncate">Active</span>
+                        </span>
+                      </SelectItem>
+                      <SelectItem value="3">
+                        <span className="flex items-center gap-2">
+                          <StatusDot className="text-gray-500" />
+                          <span className="truncate">Archived</span>
+                        </span>
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </CardContent>
+              </Card>
               <Card>
                 <CardHeader>
                   <CardTitle>Organize</CardTitle>

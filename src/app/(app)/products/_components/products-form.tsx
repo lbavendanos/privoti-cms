@@ -281,13 +281,13 @@ export function ProductsForm() {
           </div>
         </div>
       </div>
-      <div className="sticky bottom-0 border-t bg-white">
+      <div className="sticky bottom-0 -mx-4 border-t bg-white">
         <div className="container py-4">
           <div className="grid grid-cols-12 gap-6">
             <div className="col-span-12 md:col-span-10 md:col-start-2">
-              <div className="flex justify-end gap-2">
-                <Button type="button" variant="outline">
-                  Discard
+              <div className="flex justify-end gap-2 px-4">
+                <Button variant="outline" asChild>
+                  <Link href="/products">Discard</Link>
                 </Button>
                 <Button type="submit">Save Product</Button>
               </div>

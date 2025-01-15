@@ -59,7 +59,7 @@ export function MultipleTag({
         </Badge>
       ))}
       <input
-        className="flex-1 outline-none placeholder:text-neutral-500 dark:placeholder:text-neutral-400"
+        className="flex-1 text-base outline-none placeholder:text-neutral-500 dark:placeholder:text-neutral-400 md:text-sm"
         value={pendingDataPoint}
         placeholder={value.length === 0 ? placeholder : ''}
         onChange={(e) => setPendingDataPoint(e.target.value)}

@@ -13,7 +13,7 @@ export default function ProductsPage() {
         <div className="col-span-12 md:col-span-10 md:col-start-2">
           <div className="flex h-full flex-col gap-4">
             <h1 className="text-lg font-semibold md:text-2xl">Products</h1>
-            <div className="flex grow flex-col items-center justify-center gap-1 rounded-lg border border-dashed bg-white shadow-sm">
+            <div className="flex grow flex-col items-center justify-center gap-1 rounded-lg border border-dashed bg-white p-4 shadow-sm">
               <h3 className="text-2xl font-bold tracking-tight">
                 You have no products
               </h3>

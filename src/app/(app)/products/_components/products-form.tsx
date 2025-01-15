@@ -87,9 +87,6 @@ export function ProductsForm() {
               <h1 className="flex-1 shrink-0 whitespace-nowrap text-xl font-semibold tracking-tight sm:grow-0">
                 Create Product
               </h1>
-              {/* <Badge variant="outline" className="ml-auto sm:ml-0"> */}
-              {/*   In stock */}
-              {/* </Badge> */}
             </div>
           </div>
           <div className="col-span-12 md:col-span-10 md:col-start-2 xl:col-span-7 xl:col-start-2">
@@ -299,29 +296,15 @@ export function ProductsForm() {
                   </div>
                 </CardContent>
               </Card>
-              {/* <Card> */}
-              {/*   <CardHeader> */}
-              {/*     <CardTitle>Archive Product</CardTitle> */}
-              {/*     <CardDescription> */}
-              {/*       Lipsum dolor sit amet, consectetur adipiscing elit. */}
-              {/*     </CardDescription> */}
-              {/*   </CardHeader> */}
-              {/*   <CardContent> */}
-              {/*     <div></div> */}
-              {/*     <Button size="sm" variant="secondary"> */}
-              {/*       Archive Product */}
-              {/*     </Button> */}
-              {/*   </CardContent> */}
-              {/* </Card> */}
             </div>
           </div>
         </div>
       </div>
-      <div className="sticky bottom-0 -mx-4 border-t bg-white">
+      <div className="sticky bottom-0 border-t bg-white">
         <div className="container py-4">
           <div className="grid grid-cols-12 gap-6">
             <div className="col-span-12 md:col-span-10 md:col-start-2">
-              <div className="flex justify-end gap-2 px-4">
+              <div className="flex justify-end gap-2">
                 <Button variant="outline" asChild>
                   <Link href="/products">Discard</Link>
                 </Button>

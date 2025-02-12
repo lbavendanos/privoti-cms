@@ -23,9 +23,9 @@ import { Ellipsis, Pencil, PlusCircle, Trash2 } from 'lucide-react'
 
 export type VariantItem = {
   id: string
-  options: { id: string; value: string }[]
   price: number
   quantity: number
+  options: { id: string; value: string }[]
 }
 
 type ProductsVariantsInputProps = {

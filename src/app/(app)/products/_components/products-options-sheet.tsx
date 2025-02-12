@@ -28,7 +28,7 @@ const formSchema = z.object({
   id: z.string().min(1, {
     message: 'Please provide a valid ID.',
   }),
-  name: z.string().nonempty({
+  name: z.string().min(1, {
     message: 'Please provide a valid title.',
   }),
   values: z.array(z.string()).nonempty({

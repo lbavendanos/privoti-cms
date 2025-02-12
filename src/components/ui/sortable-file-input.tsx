@@ -18,7 +18,7 @@ import { GripVertical, Upload, X } from 'lucide-react'
 
 export type FileItem = {
   id: string
-  file: File
+  file?: File
   url: string
   position: number
 }
@@ -27,7 +27,7 @@ type SortableFileInputProps = {
   id?: string
   name?: string
   value: FileItem[]
-  onChange: (files: FileItem[]) => void
+  onChange: React.Dispatch<React.SetStateAction<FileItem[]>>
 }
 
 export function SortableFileInput({
@@ -135,8 +135,8 @@ export function SortableFileInput({
       >
         <input
           id={id}
-          type="file"
           name={name}
+          type="file"
           className="hidden"
           accept="image/*,video/*"
           onChange={handleFileSelect}
@@ -191,16 +191,16 @@ const SortableItem: React.FC<SortableItemProps> = ({ id, file, onDelete }) => {
       style={style}
       className="group relative flex touch-none flex-col items-center rounded border"
     >
-      {file.file.type.startsWith('image/') && (
+      {file.file?.type.startsWith('image/') && (
         <img
           src={file.url}
-          alt={file.file.name}
+          alt={file.file?.name}
           className="h-40 w-full object-cover md:h-52"
         />
       )}
-      {file.file.type.startsWith('video/') && (
+      {file.file?.type.startsWith('video/') && (
         <video controls className="h-52 w-full object-cover">
-          <source src={file.url} type={file.file.type} />
+          <source src={file.url} type={file.file?.type} />
         </video>
       )}
       <div className="absolute right-2 top-2 flex">

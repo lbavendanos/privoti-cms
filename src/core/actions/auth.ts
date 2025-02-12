@@ -21,11 +21,11 @@ const DEFAULT_HEADERS: HeadersInit = {
   'Content-Type': 'application/json',
 }
 
-const TAG_AUTH_USER = 'auth-user'
+const AUTH_USER_TAG = 'auth-user'
 
 export async function getUser(token: string) {
   'use cache'
-  cacheTag(TAG_AUTH_USER)
+  cacheTag(AUTH_USER_TAG)
 
   const {
     data: { data: user },
@@ -74,7 +74,7 @@ export async function updateUser(
       },
     )
 
-    revalidateTag(TAG_AUTH_USER)
+    revalidateTag(AUTH_USER_TAG)
 
     return handleActionSuccess(response)
   } catch (error) {
@@ -101,7 +101,7 @@ export async function updatePassword(_: unknown, formData: FormData) {
       },
     )
 
-    revalidateTag(TAG_AUTH_USER)
+    revalidateTag(AUTH_USER_TAG)
 
     return handleActionSuccess(response)
   } catch (error) {
@@ -132,7 +132,7 @@ export async function login(
     if (authTokenData) {
       await setSession(authTokenData)
 
-      revalidateTag(TAG_AUTH_USER)
+      revalidateTag(AUTH_USER_TAG)
     }
   } catch (error) {
     return handleActionError(error, formData)
@@ -159,7 +159,7 @@ export async function logout() {
 
   await removeSession()
 
-  revalidateTag(TAG_AUTH_USER)
+  revalidateTag(AUTH_USER_TAG)
 
   redirect('/login')
 }
@@ -262,7 +262,7 @@ export async function verifyEmail(params: {
       },
     })
 
-    revalidateTag(TAG_AUTH_USER)
+    revalidateTag(AUTH_USER_TAG)
 
     return handleActionSuccess(response)
   } catch (error) {
@@ -318,7 +318,7 @@ export async function verifyNewEmail(params: {
       },
     })
 
-    revalidateTag(TAG_AUTH_USER)
+    revalidateTag(AUTH_USER_TAG)
 
     return handleActionSuccess(response)
   } catch (error) {

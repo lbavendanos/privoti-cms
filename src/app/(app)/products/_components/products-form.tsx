@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form'
 import { useToast } from '@/hooks/use-toast'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { createProduct } from '@/core/actions/product'
-import { startTransition, useActionState, useEffect, useState } from 'react'
+import { useState, useTransition } from 'react'
 import Link from 'next/link'
 import {
   Card,
@@ -39,8 +39,22 @@ import { SortableFileInput } from '@/components/ui/sortable-file-input'
 import { MultipleSelector, Option } from '@/components/ui/multiple-selector'
 import { ProductsOptionsInput } from './products-options-input'
 import { ProductsVariantsInput } from './products-variants-input'
-import { AlertCircle, ChevronLeft } from 'lucide-react'
-import { Alert, AlertDescription } from '@/components/ui/alert'
+import { ChevronLeft } from 'lucide-react'
+
+function getDirtyFields<T extends Record<string, unknown>>(
+  dirtyFields: Partial<Record<keyof T, unknown>>,
+  values: T,
+): Partial<T> {
+  return Object.keys(dirtyFields).reduce((dirtyValues, key) => {
+    const typedKey = key as keyof T
+
+    if (dirtyFields[typedKey]) {
+      dirtyValues[typedKey] = values[typedKey]
+    }
+
+    return dirtyValues
+  }, {} as Partial<T>)
+}
 
 const CATEGORIES: Option[] = [
   { label: 'Shirts', value: 'shirts' },
@@ -93,9 +107,7 @@ const formSchema = z.object({
       ),
     }),
   ),
-  status: z.string().min(1, {
-    message: 'Please select a valid status.',
-  }),
+  status: z.enum(['draft', 'active', 'archived']),
 })
 
 function StatusDot({ className }: { className?: string }) {
@@ -115,7 +127,7 @@ function StatusDot({ className }: { className?: string }) {
 }
 
 export function ProductsForm() {
-  const [state, formAction, isPending] = useActionState(createProduct, null)
+  const [isPending, startTransition] = useTransition()
   const { toast } = useToast()
 
   const [tags, setTags] = useState<string[]>([])
@@ -129,67 +141,88 @@ export function ProductsForm() {
       media: [],
       options: [],
       variants: [],
-      status: '1',
+      status: 'draft',
     },
   })
 
   const handleSubmit = (values: z.infer<typeof formSchema>) => {
-    const { title, subtitle, description, media, options, variants, status } =
-      values
+    const dirtyValues = getDirtyFields<typeof formSchema._type>(
+      form.formState.dirtyFields,
+      values,
+    )
     const formData = new FormData()
 
-    formData.append('title', title)
-    formData.append('subtitle', subtitle || '')
-    formData.append('description', description || '')
-    formData.append('status', status)
+    Object.keys(dirtyValues).forEach((key) => {
+      const typedKey = key as keyof typeof dirtyValues
 
-    media.forEach((file, index) => {
-      formData.append(`media[${index}][id]`, file.id)
-      formData.append(`media[${index}][file]`, file.file)
-      formData.append(`media[${index}][url]`, file.url)
-      formData.append(`media[${index}][position]`, file.position.toString())
-    })
-
-    options.forEach((option, index) => {
-      formData.append(`options[${index}][id]`, option.id)
-      formData.append(`options[${index}][name]`, option.name)
-      option.values.forEach((value, valueIndex) => {
-        formData.append(`options[${index}][values][${valueIndex}]`, value)
-      })
-    })
-
-    variants.forEach((variant, index) => {
-      formData.append(`variants[${index}][id]`, variant.id)
-      formData.append(`variants[${index}][price]`, variant.price.toString())
       formData.append(
-        `variants[${index}][quantity]`,
-        variant.quantity.toString(),
+        key,
+        dirtyValues[typedKey] ? String(dirtyValues[typedKey]) : '',
       )
-      variant.options.forEach((option, optionIndex) => {
-        formData.append(
-          `variants[${index}][options][${optionIndex}][id]`,
-          option.id,
-        )
-        formData.append(
-          `variants[${index}][options][${optionIndex}][value]`,
-          option.value,
-        )
-      })
     })
 
-    startTransition(() => {
-      formAction(formData)
+    // const { title, subtitle, description, media, options, variants, status } =
+    //   dirtyValues
+    // const formData = new FormData()
+    //
+    // formData.append('title', title)
+    // formData.append('subtitle', subtitle || '')
+    // formData.append('description', description || '')
+    // formData.append('status', status)
+    //
+    // media.forEach((file, index) => {
+    //   formData.append(`media[${index}][id]`, file.id)
+    //   formData.append(`media[${index}][file]`, file.file)
+    //   formData.append(`media[${index}][url]`, file.url)
+    //   formData.append(`media[${index}][position]`, file.position.toString())
+    // })
+    //
+    // options.forEach((option, index) => {
+    //   formData.append(`options[${index}][id]`, option.id)
+    //   formData.append(`options[${index}][name]`, option.name)
+    //   option.values.forEach((value, valueIndex) => {
+    //     formData.append(`options[${index}][values][${valueIndex}]`, value)
+    //   })
+    // })
+    //
+    // variants.forEach((variant, index) => {
+    //   formData.append(`variants[${index}][id]`, variant.id)
+    //   formData.append(`variants[${index}][price]`, variant.price.toString())
+    //   formData.append(
+    //     `variants[${index}][quantity]`,
+    //     variant.quantity.toString(),
+    //   )
+    //   variant.options.forEach((option, optionIndex) => {
+    //     formData.append(
+    //       `variants[${index}][options][${optionIndex}][id]`,
+    //       option.id,
+    //     )
+    //     formData.append(
+    //       `variants[${index}][options][${optionIndex}][value]`,
+    //       option.value,
+    //     )
+    //   })
+    // })
+
+    startTransition(async () => {
+      const state = await createProduct(null, formData)
+
+      if (!state.isSuccess) {
+        toast({
+          variant: 'destructive',
+          description: state.message,
+        })
+      }
+
+      if (state.isSuccess) {
+        toast({
+          description: 'Product created successfully.',
+        })
+
+        form.reset()
+      }
     })
   }
-
-  useEffect(() => {
-    if (!isPending && state && state.isServerError) {
-      toast({
-        variant: 'destructive',
-        description: state?.message,
-      })
-    }
-  }, [isPending, state, toast])
 
   return (
     <Form {...form}>
@@ -214,14 +247,6 @@ export function ProductsForm() {
                 </h1>
               </div>
             </div>
-            {state?.isClientError && (
-              <div className="col-span-12 md:col-span-10 md:col-start-2">
-                <Alert variant="destructive">
-                  <AlertCircle className="h-4 w-4" />
-                  <AlertDescription>{state.message}</AlertDescription>
-                </Alert>
-              </div>
-            )}
             <div className="col-span-12 md:col-span-10 md:col-start-2 xl:col-span-7 xl:col-start-2">
               <div className="flex flex-col gap-6">
                 <Card>
@@ -400,19 +425,19 @@ export function ProductsForm() {
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent className="[&_*[role=option]>span>svg]:shrink-0 [&_*[role=option]>span>svg]:text-muted-foreground/80 [&_*[role=option]>span]:end-2 [&_*[role=option]>span]:start-auto [&_*[role=option]>span]:flex [&_*[role=option]>span]:items-center [&_*[role=option]>span]:gap-2 [&_*[role=option]]:pe-8 [&_*[role=option]]:ps-2">
-                              <SelectItem value="1">
+                              <SelectItem value="draft">
                                 <span className="flex items-center gap-2">
                                   <StatusDot className="text-amber-500" />
                                   <span className="truncate">Draft</span>
                                 </span>
                               </SelectItem>
-                              <SelectItem value="2">
+                              <SelectItem value="active">
                                 <span className="flex items-center gap-2">
                                   <StatusDot className="text-emerald-600" />
                                   <span className="truncate">Active</span>
                                 </span>
                               </SelectItem>
-                              <SelectItem value="3">
+                              <SelectItem value="archived">
                                 <span className="flex items-center gap-2">
                                   <StatusDot className="text-gray-500" />
                                   <span className="truncate">Archived</span>

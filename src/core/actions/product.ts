@@ -6,19 +6,27 @@ import {
   handleActionError,
   handleActionSuccess,
 } from '@/lib/action'
+import { getSessionToken } from '@/lib/session'
+
+const DEFAULT_HEADERS: HeadersInit = {
+  Accept: 'application/json',
+}
 
 export async function createProduct(
   _: unknown,
   formData: FormData,
 ): Promise<ActionResponse> {
-  const values = Object.fromEntries(formData.entries())
-
-  console.log('Creating product with values:', values)
+  const token = await getSessionToken()
 
   try {
     const response = await api.post<{
       message?: string
-    }>('/products', formData)
+    }>('/products', formData, {
+      headers: {
+        ...DEFAULT_HEADERS,
+        Authorization: `Bearer ${token}`,
+      },
+    })
 
     return handleActionSuccess(response)
   } catch (error) {

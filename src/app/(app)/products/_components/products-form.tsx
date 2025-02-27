@@ -84,7 +84,7 @@ const formSchema = z.object({
       id: z.string(),
       file: z.any(),
       url: z.string(),
-      position: z.number(),
+      rank: z.number(),
     }),
   ),
   options: z.array(
@@ -154,6 +154,18 @@ export function ProductsForm() {
 
     Object.keys(dirtyValues).forEach((key) => {
       const typedKey = key as keyof typeof dirtyValues
+
+      if (typedKey === 'media') {
+        const media = dirtyValues[typedKey]
+
+        media?.forEach((file, index) => {
+          formData.append(`media[${index}][id]`, file.id)
+          formData.append(`media[${index}][file]`, file.file)
+          formData.append(`media[${index}][rank]`, file.rank.toString())
+        })
+
+        return
+      }
 
       formData.append(
         key,

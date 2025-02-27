@@ -1,5 +1,6 @@
 import { CSS } from '@dnd-kit/utilities'
 import React from 'react'
+import Image from 'next/image'
 import {
   DndContext,
   DragEndEvent,
@@ -16,11 +17,11 @@ import {
 import { Button } from './button'
 import { GripVertical, Upload, X } from 'lucide-react'
 
-export type FileItem = {
+type FileItem = {
   id: string
   file?: File
   url: string
-  position: number
+  rank: number
 }
 
 type SortableFileInputProps = {
@@ -48,7 +49,7 @@ export function SortableFileInput({
         id: `${file.name}-${file.size}-${Date.now()}`,
         file,
         url: URL.createObjectURL(file),
-        position: value.length + index,
+        rank: value.length + index,
       }))
 
     onChange([...value, ...newFiles])
@@ -68,7 +69,7 @@ export function SortableFileInput({
         id: `${file.name}-${file.size}-${Date.now()}`,
         file,
         url: URL.createObjectURL(file),
-        position: value.length + index,
+        rank: value.length + index,
       }))
 
     onChange([...value, ...newFiles])
@@ -96,7 +97,7 @@ export function SortableFileInput({
   const updatePositions = (files: FileItem[]) => {
     const updatedFiles = files.map((file, index) => ({
       ...file,
-      position: index,
+      rank: index,
     }))
     onChange(updatedFiles)
   }
@@ -192,10 +193,12 @@ const SortableItem: React.FC<SortableItemProps> = ({ id, file, onDelete }) => {
       className="group relative flex touch-none flex-col items-center rounded border"
     >
       {file.file?.type.startsWith('image/') && (
-        <img
+        <Image
           src={file.url}
           alt={file.file?.name}
-          className="h-40 w-full object-cover md:h-52"
+          width={200}
+          height={200}
+          className="w-full object-cover"
         />
       )}
       {file.file?.type.startsWith('video/') && (

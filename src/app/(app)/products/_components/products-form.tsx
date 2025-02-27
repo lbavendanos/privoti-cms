@@ -167,36 +167,27 @@ export function ProductsForm() {
         return
       }
 
-      formData.append(
-        key,
-        dirtyValues[typedKey] ? String(dirtyValues[typedKey]) : '',
-      )
+      if (typedKey === 'options') {
+        const options = dirtyValues[typedKey]
+
+        options?.forEach((option, optionIndex) => {
+          formData.append(`options[${optionIndex}][id]`, option.id)
+          formData.append(`options[${optionIndex}][name]`, option.name)
+
+          option.values?.forEach((value, valueIndex) => {
+            formData.append(
+              `options[${optionIndex}][values][${valueIndex}]`,
+              value,
+            )
+          })
+        })
+
+        return
+      }
+
+      formData.append(key, dirtyValues[typedKey] as string)
     })
 
-    // const { title, subtitle, description, media, options, variants, status } =
-    //   dirtyValues
-    // const formData = new FormData()
-    //
-    // formData.append('title', title)
-    // formData.append('subtitle', subtitle || '')
-    // formData.append('description', description || '')
-    // formData.append('status', status)
-    //
-    // media.forEach((file, index) => {
-    //   formData.append(`media[${index}][id]`, file.id)
-    //   formData.append(`media[${index}][file]`, file.file)
-    //   formData.append(`media[${index}][url]`, file.url)
-    //   formData.append(`media[${index}][position]`, file.position.toString())
-    // })
-    //
-    // options.forEach((option, index) => {
-    //   formData.append(`options[${index}][id]`, option.id)
-    //   formData.append(`options[${index}][name]`, option.name)
-    //   option.values.forEach((value, valueIndex) => {
-    //     formData.append(`options[${index}][values][${valueIndex}]`, value)
-    //   })
-    // })
-    //
     // variants.forEach((variant, index) => {
     //   formData.append(`variants[${index}][id]`, variant.id)
     //   formData.append(`variants[${index}][price]`, variant.price.toString())
@@ -219,7 +210,7 @@ export function ProductsForm() {
     startTransition(async () => {
       const state = await createProduct(null, formData)
 
-      if (!state.isSuccess) {
+      if (state.isClientError || state.isServerError) {
         toast({
           variant: 'destructive',
           description: state.message,
@@ -238,7 +229,7 @@ export function ProductsForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="relative">
+      <form className="relative" onSubmit={form.handleSubmit(handleSubmit)}>
         <div className="container my-4 lg:my-6">
           <div className="grid grid-cols-12 gap-6">
             <div className="col-span-12 md:col-span-10 md:col-start-2">
@@ -538,7 +529,7 @@ export function ProductsForm() {
             </div>
           </div>
         </div>
-        <div className="sticky bottom-0 border-t bg-white">
+        <div className="sticky bottom-0 z-10 border-t bg-white">
           <div className="container py-4">
             <div className="grid grid-cols-12 gap-6">
               <div className="col-span-12 md:col-span-10 md:col-start-2">

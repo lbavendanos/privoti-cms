@@ -126,6 +126,8 @@ export function ProductsOptionsInput({
         value={
           selectedOption || { id: Date.now().toString(), name: '', values: [] }
         }
+        open={open}
+        onOpenChange={setOpen}
         onChange={(option) => {
           if (selectedOption) {
             onChange(
@@ -139,8 +141,6 @@ export function ProductsOptionsInput({
 
           setSelectedOption(null)
         }}
-        open={open}
-        onOpenChange={setOpen}
       />
     </div>
   )

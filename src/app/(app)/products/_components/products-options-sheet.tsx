@@ -31,9 +31,7 @@ const formSchema = z.object({
   name: z.string().min(1, {
     message: 'Please provide a valid title.',
   }),
-  values: z.array(z.string()).nonempty({
-    message: 'Please provide at least one variant.',
-  }),
+  values: z.array(z.string()),
 })
 
 type ProductsOptionsSheetProps = {
@@ -81,7 +79,14 @@ export function ProductsOptionsSheet({
           </SheetDescription>
         </SheetHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)}>
+          <form
+            onSubmit={(e) => {
+              e.stopPropagation()
+              e.preventDefault()
+
+              form.handleSubmit(handleSubmit)(e)
+            }}
+          >
             <div className="flex flex-col gap-4 py-4">
               <FormField
                 control={form.control}

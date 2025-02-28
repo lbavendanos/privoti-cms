@@ -36,6 +36,15 @@ const formSchema = z.object({
   id: z.string().min(1, {
     message: 'Please provide a valid ID.',
   }),
+  name: z.string().min(1, {
+    message: 'The name is required.',
+  }),
+  price: z.coerce.number().positive({
+    message: 'The price must be a positive number.',
+  }),
+  quantity: z.coerce.number().int().nonnegative({
+    message: 'The quantity must be a non-negative integer.',
+  }),
   options: z
     .array(
       z.object({
@@ -46,12 +55,6 @@ const formSchema = z.object({
       }),
     )
     .min(1, { message: 'At least one option is required.' }),
-  price: z.coerce.number().positive({
-    message: 'Please provide a valid price.',
-  }),
-  quantity: z.coerce.number().int().nonnegative({
-    message: 'Please provide a valid quantity.',
-  }),
 })
 
 type ProductsVariantsSheetProps = {
@@ -73,6 +76,7 @@ export function ProductsVariantsSheet({
     resolver: zodResolver(formSchema),
     defaultValues: {
       id: variant.id,
+      name: variant.name,
       options: variant.options,
       price: variant.price,
       quantity: variant.quantity,
@@ -87,6 +91,7 @@ export function ProductsVariantsSheet({
   useEffect(() => {
     form.reset({
       id: variant.id,
+      name: variant.name,
       options: variant.options,
       price: variant.price,
       quantity: variant.quantity,
@@ -103,8 +108,28 @@ export function ProductsVariantsSheet({
           </SheetDescription>
         </SheetHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)}>
+          <form
+            onSubmit={(e) => {
+              e.stopPropagation()
+              e.preventDefault()
+
+              form.handleSubmit(handleSubmit)(e)
+            }}
+          >
             <div className="flex flex-col gap-4 py-4">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Name</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               {options.map((option, index) => (
                 <FormField
                   key={option.id}

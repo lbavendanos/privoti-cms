@@ -23,6 +23,7 @@ import { Ellipsis, Pencil, PlusCircle, Trash2 } from 'lucide-react'
 
 export type VariantItem = {
   id: string
+  name: string
   price: number
   quantity: number
   options: { id: string; value: string }[]
@@ -53,6 +54,7 @@ export function ProductsVariantsInput({
         <Table>
           <TableHeader>
             <TableRow className="relative">
+              <TableHead className="w-2/12">Name</TableHead>
               {options.map((option) => (
                 <TableHead key={option.id} className="w-2/12">
                   {option.name}
@@ -68,6 +70,7 @@ export function ProductsVariantsInput({
           <TableBody>
             {value.map((option) => (
               <TableRow key={option.id} className="relative">
+                <TableCell>{option.name}</TableCell>
                 {option.options.map((opt) => (
                   <TableCell key={opt.id} className="w-2/12">
                     <Badge variant="secondary">{opt.value}</Badge>
@@ -146,6 +149,7 @@ export function ProductsVariantsInput({
         value={
           selectedVariant || {
             id: Date.now().toString(),
+            name: '',
             options: options.map((opt) => ({
               id: opt.id,
               value: '',
@@ -154,6 +158,8 @@ export function ProductsVariantsInput({
             quantity: 0,
           }
         }
+        open={open}
+        onOpenChange={setOpen}
         onChange={(variant) => {
           if (selectedVariant) {
             onChange(
@@ -169,8 +175,6 @@ export function ProductsVariantsInput({
 
           setSelectedVariant(null)
         }}
-        open={open}
-        onOpenChange={setOpen}
       />
     </div>
   )

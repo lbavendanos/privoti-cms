@@ -97,6 +97,7 @@ const formSchema = z.object({
   variants: z.array(
     z.object({
       id: z.string(),
+      name: z.string(),
       price: z.number(),
       quantity: z.number(),
       options: z.array(
@@ -158,10 +159,10 @@ export function ProductsForm() {
       if (typedKey === 'media') {
         const media = dirtyValues[typedKey]
 
-        media?.forEach((file, index) => {
-          formData.append(`media[${index}][id]`, file.id)
-          formData.append(`media[${index}][file]`, file.file)
-          formData.append(`media[${index}][rank]`, file.rank.toString())
+        media?.forEach((media, mediaIndex) => {
+          formData.append(`media[${mediaIndex}][id]`, media.id)
+          formData.append(`media[${mediaIndex}][file]`, media.file)
+          formData.append(`media[${mediaIndex}][rank]`, media.rank.toString())
         })
 
         return
@@ -185,27 +186,38 @@ export function ProductsForm() {
         return
       }
 
+      if (typedKey === 'variants') {
+        const variants = dirtyValues[typedKey]
+
+        variants?.forEach((variant, variantIndex) => {
+          formData.append(`variants[${variantIndex}][id]`, variant.id)
+          formData.append(`variants[${variantIndex}][name]`, variant.name)
+          formData.append(
+            `variants[${variantIndex}][price]`,
+            variant.price.toString(),
+          )
+          formData.append(
+            `variants[${variantIndex}][quantity]`,
+            variant.quantity.toString(),
+          )
+
+          variant.options?.forEach((option, optionIndex) => {
+            formData.append(
+              `variants[${variantIndex}][options][${optionIndex}][id]`,
+              option.id,
+            )
+            formData.append(
+              `variants[${variantIndex}][options][${optionIndex}][value]`,
+              option.value,
+            )
+          })
+        })
+
+        return
+      }
+
       formData.append(key, dirtyValues[typedKey] as string)
     })
-
-    // variants.forEach((variant, index) => {
-    //   formData.append(`variants[${index}][id]`, variant.id)
-    //   formData.append(`variants[${index}][price]`, variant.price.toString())
-    //   formData.append(
-    //     `variants[${index}][quantity]`,
-    //     variant.quantity.toString(),
-    //   )
-    //   variant.options.forEach((option, optionIndex) => {
-    //     formData.append(
-    //       `variants[${index}][options][${optionIndex}][id]`,
-    //       option.id,
-    //     )
-    //     formData.append(
-    //       `variants[${index}][options][${optionIndex}][value]`,
-    //       option.value,
-    //     )
-    //   })
-    // })
 
     startTransition(async () => {
       const state = await createProduct(null, formData)

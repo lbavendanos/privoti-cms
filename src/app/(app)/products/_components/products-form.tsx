@@ -6,6 +6,7 @@ import { useToast } from '@/hooks/use-toast'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { createProduct } from '@/core/actions/product'
 import { useState, useTransition } from 'react'
+import { type ProductType } from '@/core/types'
 import Link from 'next/link'
 import {
   Card,
@@ -35,6 +36,7 @@ import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { MultipleTag } from '@/components/ui/multiple-tag'
 import { LoadingButton } from '@/components/ui/loading-button'
+import { ProductTypeInput } from './product-type-input'
 import { SortableFileInput } from '@/components/ui/sortable-file-input'
 import { MultipleSelector, Option } from '@/components/ui/multiple-selector'
 import { ProductsOptionsInput } from './products-options-input'
@@ -109,6 +111,9 @@ const formSchema = z.object({
     }),
   ),
   status: z.enum(['draft', 'active', 'archived']),
+  category_id: z.string().optional(),
+  type_id: z.string().optional(),
+  vendor_id: z.string().optional(),
 })
 
 function StatusDot({ className }: { className?: string }) {
@@ -127,11 +132,15 @@ function StatusDot({ className }: { className?: string }) {
   )
 }
 
-export function ProductsForm() {
+export function ProductsForm({
+  typesPromise,
+}: {
+  typesPromise: Promise<ProductType[]>
+}) {
   const [isPending, startTransition] = useTransition()
-  const { toast } = useToast()
-
   const [tags, setTags] = useState<string[]>([])
+
+  const { toast } = useToast()
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -143,6 +152,9 @@ export function ProductsForm() {
       options: [],
       variants: [],
       status: 'draft',
+      category_id: '',
+      type_id: '',
+      vendor_id: '',
     },
   })
 
@@ -498,6 +510,27 @@ export function ProductsForm() {
                           hideClearAllButton
                         />
                       </div>
+                      <FormField
+                        control={form.control}
+                        name="type_id"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>
+                              Type{' '}
+                              <span className="text-muted-foreground">
+                                (optional)
+                              </span>
+                            </FormLabel>
+                            <FormControl>
+                              <ProductTypeInput
+                                typesPromise={typesPromise}
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
                       <div className="space-y-2">
                         <Label>
                           Collections{' '}

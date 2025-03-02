@@ -16,3 +16,10 @@ export type ProductType = {
   updated_at?: string
   created_at?: string
 }
+
+export type Vendor = {
+  id: number
+  name: string
+  updated_at?: string
+  created_at?: string
+}

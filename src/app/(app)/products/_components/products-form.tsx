@@ -6,7 +6,7 @@ import { useToast } from '@/hooks/use-toast'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { createProduct } from '@/core/actions/product'
 import { use, useTransition } from 'react'
-import { type Vendor, type ProductType } from '@/core/types'
+import { type Vendor, type ProductType, type Collection } from '@/core/types'
 import Link from 'next/link'
 import {
   Card,
@@ -67,14 +67,6 @@ const CATEGORIES: Option[] = [
   { label: 'Hats', value: 'hats' },
 ]
 
-const COLLECTIONS: Option[] = [
-  { label: 'Latest Drops', value: 'latest-drops' },
-  { label: 'Best Sellers', value: 'best-sellers' },
-  { label: 'Sale', value: 'sale' },
-  { label: 'Summer Collection', value: 'summer-collection' },
-  { label: 'Winter Collection', value: 'winter-collection' },
-]
-
 const formSchema = z.object({
   title: z.string().min(1, {
     message: 'Please provide a valid title.',
@@ -115,6 +107,15 @@ const formSchema = z.object({
   category_id: z.string().optional(),
   type_id: z.string().optional(),
   vendor_id: z.string().optional(),
+  collections: z
+    .array(
+      z.object({
+        label: z.string(),
+        value: z.string(),
+        disable: z.boolean().optional(),
+      }),
+    )
+    .optional(),
 })
 
 function StatusDot({ className }: { className?: string }) {
@@ -136,12 +137,15 @@ function StatusDot({ className }: { className?: string }) {
 export function ProductsForm({
   typesPromise,
   vendorsPromise,
+  collectionsPromise,
 }: {
   typesPromise: Promise<ProductType[]>
   vendorsPromise: Promise<Vendor[]>
+  collectionsPromise: Promise<Collection[]>
 }) {
   const types = use(typesPromise)
   const vendors = use(vendorsPromise)
+  const collections = use(collectionsPromise)
 
   const [isPending, startTransition] = useTransition()
 
@@ -161,6 +165,7 @@ export function ProductsForm({
       category_id: '',
       type_id: '',
       vendor_id: '',
+      collections: [],
     },
   })
 
@@ -229,6 +234,16 @@ export function ProductsForm({
               option.value,
             )
           })
+        })
+
+        return
+      }
+
+      if (typedKey === 'collections') {
+        const collections = dirtyValues[typedKey]
+
+        collections?.forEach((collection, collectionIndex) => {
+          formData.append(`collections[${collectionIndex}]`, collection.value)
         })
 
         return
@@ -580,25 +595,40 @@ export function ProductsForm({
                           </FormItem>
                         )}
                       />
-                      <div className="space-y-2">
-                        <Label>
-                          Collections{' '}
-                          <span className="text-muted-foreground">
-                            (optional)
-                          </span>
-                        </Label>
-                        <MultipleSelector
-                          defaultOptions={COLLECTIONS}
-                          badgeVariant="secondary"
-                          commandProps={{
-                            label: 'Select collections',
-                          }}
-                          placeholder="Winter Collection"
-                          emptyIndicator="No collection found"
-                          hidePlaceholderWhenSelected
-                          hideClearAllButton
-                        />
-                      </div>
+                      <FormField
+                        control={form.control}
+                        name="collections"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>
+                              Collections{' '}
+                              <span className="text-muted-foreground">
+                                (optional)
+                              </span>
+                            </FormLabel>
+                            <FormControl>
+                              <MultipleSelector
+                                defaultOptions={collections.map(
+                                  (collection) => ({
+                                    label: collection.title,
+                                    value: collection.id.toString(),
+                                  }),
+                                )}
+                                badgeVariant="secondary"
+                                commandProps={{
+                                  label: 'Select collections',
+                                }}
+                                placeholder="Winter Collection"
+                                emptyIndicator="No collection found"
+                                hidePlaceholderWhenSelected
+                                hideClearAllButton
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
                       <FormField
                         control={form.control}
                         name="tags"

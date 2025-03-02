@@ -10,6 +10,15 @@ export type User = {
   created_at?: string
 }
 
+export type Collection = {
+  id: number
+  title: string
+  handle: string
+  description?: string
+  updated_at?: string
+  created_at?: string
+}
+
 export type ProductType = {
   id: number
   name: string

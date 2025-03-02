@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form'
 import { useToast } from '@/hooks/use-toast'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { createProduct } from '@/core/actions/product'
-import { use, useState, useTransition } from 'react'
+import { use, useTransition } from 'react'
 import { type Vendor, type ProductType } from '@/core/types'
 import Link from 'next/link'
 import {
@@ -81,6 +81,7 @@ const formSchema = z.object({
   }),
   subtitle: z.string().optional(),
   description: z.string().optional(),
+  tags: z.array(z.string()),
   media: z.array(
     z.object({
       id: z.string(),
@@ -143,7 +144,6 @@ export function ProductsForm({
   const vendors = use(vendorsPromise)
 
   const [isPending, startTransition] = useTransition()
-  const [tags, setTags] = useState<string[]>([])
 
   const { toast } = useToast()
 
@@ -153,6 +153,7 @@ export function ProductsForm({
       title: '',
       subtitle: '',
       description: '',
+      tags: [],
       media: [],
       options: [],
       variants: [],
@@ -228,6 +229,16 @@ export function ProductsForm({
               option.value,
             )
           })
+        })
+
+        return
+      }
+
+      if (typedKey === 'tags') {
+        const tags = dirtyValues[typedKey]
+
+        tags?.forEach((tag, tagIndex) => {
+          formData.append(`tags[${tagIndex}]`, tag)
         })
 
         return
@@ -596,19 +607,27 @@ export function ProductsForm({
                           hideClearAllButton
                         />
                       </div>
-                      <div className="space-y-2">
-                        <Label>
-                          Tags{' '}
-                          <span className="text-muted-foreground">
-                            (optional)
-                          </span>
-                        </Label>
-                        <MultipleTag
-                          value={tags}
-                          onChange={setTags}
-                          placeholder="Winter, Jacket, Warm, Stylish"
-                        />
-                      </div>
+                      <FormField
+                        control={form.control}
+                        name="tags"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>
+                              Tags{' '}
+                              <span className="text-muted-foreground">
+                                (optional)
+                              </span>
+                            </FormLabel>
+                            <FormControl>
+                              <MultipleTag
+                                placeholder="Winter, Jacket, Warm, Stylish"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
                     </div>
                   </CardContent>
                 </Card>

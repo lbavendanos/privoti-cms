@@ -1,5 +1,6 @@
 import { getSessionToken } from '@/lib/session'
 import { getAllProductTypes } from '@/core/actions/product-type'
+import { getAllVendors } from '@/core/actions/vendor'
 import type { Metadata } from 'next'
 import { ProductsForm } from '../_components/products-form'
 
@@ -10,6 +11,9 @@ export const metadata: Metadata = {
 export default async function CreateProductPage() {
   const token = await getSessionToken()
   const typesPromise = getAllProductTypes(token!)
+  const vendorsPromise = getAllVendors(token!)
 
-  return <ProductsForm typesPromise={typesPromise} />
+  return (
+    <ProductsForm typesPromise={typesPromise} vendorsPromise={vendorsPromise} />
+  )
 }

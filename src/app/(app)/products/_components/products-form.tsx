@@ -6,7 +6,7 @@ import { useToast } from '@/hooks/use-toast'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { createProduct } from '@/core/actions/product'
 import { use, useState, useTransition } from 'react'
-import { type ProductType } from '@/core/types'
+import { type Vendor, type ProductType } from '@/core/types'
 import Link from 'next/link'
 import {
   Card,
@@ -134,10 +134,13 @@ function StatusDot({ className }: { className?: string }) {
 
 export function ProductsForm({
   typesPromise,
+  vendorsPromise,
 }: {
   typesPromise: Promise<ProductType[]>
+  vendorsPromise: Promise<Vendor[]>
 }) {
   const types = use(typesPromise)
+  const vendors = use(vendorsPromise)
 
   const [isPending, startTransition] = useTransition()
   const [tags, setTags] = useState<string[]>([])
@@ -533,6 +536,35 @@ export function ProductsForm({
                                 search={{
                                   placeholder: 'Search type',
                                   emptyText: 'No type found',
+                                }}
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="vendor_id"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>
+                              Vendor{' '}
+                              <span className="text-muted-foreground">
+                                (optional)
+                              </span>
+                            </FormLabel>
+                            <FormControl>
+                              <SearchSelect
+                                options={vendors.map((vendor) => ({
+                                  label: vendor.name,
+                                  value: vendor.id.toString(),
+                                }))}
+                                placeholder="Select vendor"
+                                search={{
+                                  placeholder: 'Search vendor',
+                                  emptyText: 'No vendor found',
                                 }}
                                 {...field}
                               />

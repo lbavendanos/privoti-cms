@@ -27,7 +27,7 @@ type SearchSelectProps = {
   empty?: string
   options?: Option[]
   value?: string
-  search?: { placeholder?: string; empty?: string }
+  search?: { placeholder?: string; emptyText?: string }
   onChange?: React.Dispatch<React.SetStateAction<string>>
 }
 
@@ -70,7 +70,7 @@ export function SearchSelect({
         <Command>
           <CommandInput placeholder={search?.placeholder} />
           <CommandList>
-            <CommandEmpty>{search?.empty}</CommandEmpty>
+            <CommandEmpty>{search?.emptyText}</CommandEmpty>
             <CommandGroup>
               {options.map((option) => (
                 <CommandItem

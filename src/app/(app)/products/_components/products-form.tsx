@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form'
 import { useToast } from '@/hooks/use-toast'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { createProduct } from '@/core/actions/product'
-import { useState, useTransition } from 'react'
+import { use, useState, useTransition } from 'react'
 import { type ProductType } from '@/core/types'
 import Link from 'next/link'
 import {
@@ -35,8 +35,8 @@ import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { MultipleTag } from '@/components/ui/multiple-tag'
+import { SearchSelect } from '@/components/ui/search-select'
 import { LoadingButton } from '@/components/ui/loading-button'
-import { ProductTypeInput } from './product-type-input'
 import { SortableFileInput } from '@/components/ui/sortable-file-input'
 import { MultipleSelector, Option } from '@/components/ui/multiple-selector'
 import { ProductsOptionsInput } from './products-options-input'
@@ -137,6 +137,8 @@ export function ProductsForm({
 }: {
   typesPromise: Promise<ProductType[]>
 }) {
+  const types = use(typesPromise)
+
   const [isPending, startTransition] = useTransition()
   const [tags, setTags] = useState<string[]>([])
 
@@ -522,8 +524,16 @@ export function ProductsForm({
                               </span>
                             </FormLabel>
                             <FormControl>
-                              <ProductTypeInput
-                                typesPromise={typesPromise}
+                              <SearchSelect
+                                options={types.map((type) => ({
+                                  label: type.name,
+                                  value: type.id.toString(),
+                                }))}
+                                placeholder="Select type"
+                                search={{
+                                  placeholder: 'Search type',
+                                  emptyText: 'No type found',
+                                }}
                                 {...field}
                               />
                             </FormControl>

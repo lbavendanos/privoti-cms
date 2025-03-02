@@ -27,7 +27,8 @@ type SearchSelectProps = {
   empty?: string
   options?: Option[]
   value?: string
-  search?: { placeholder?: string; emptyText?: string }
+  commandInputProps?: { placeholder?: string }
+  emptyIndicator?: React.ReactNode
   onChange?: React.Dispatch<React.SetStateAction<string>>
 }
 
@@ -36,7 +37,8 @@ export function SearchSelect({
   placeholder,
   value,
   options = [],
-  search,
+  emptyIndicator,
+  commandInputProps,
   onChange,
 }: SearchSelectProps) {
   const [open, setOpen] = useState<boolean>(false)
@@ -68,9 +70,9 @@ export function SearchSelect({
         align="start"
       >
         <Command>
-          <CommandInput placeholder={search?.placeholder} />
+          <CommandInput {...commandInputProps} />
           <CommandList>
-            <CommandEmpty>{search?.emptyText}</CommandEmpty>
+            <CommandEmpty>{emptyIndicator}</CommandEmpty>
             <CommandGroup>
               {options.map((option) => (
                 <CommandItem

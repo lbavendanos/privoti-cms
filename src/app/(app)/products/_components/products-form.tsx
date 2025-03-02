@@ -517,11 +517,7 @@ export function ProductsForm({
                             label: 'Jackets',
                           }}
                           placeholder="Jackets"
-                          emptyIndicator={
-                            <p className="text-center text-sm">
-                              No results found
-                            </p>
-                          }
+                          emptyIndicator="No category found"
                           hidePlaceholderWhenSelected
                           hideClearAllButton
                         />
@@ -544,9 +540,9 @@ export function ProductsForm({
                                   value: type.id.toString(),
                                 }))}
                                 placeholder="Select type"
-                                search={{
+                                emptyIndicator="No type found"
+                                commandInputProps={{
                                   placeholder: 'Search type',
-                                  emptyText: 'No type found',
                                 }}
                                 {...field}
                               />
@@ -573,9 +569,9 @@ export function ProductsForm({
                                   value: vendor.id.toString(),
                                 }))}
                                 placeholder="Select vendor"
-                                search={{
+                                emptyIndicator="No vendor found"
+                                commandInputProps={{
                                   placeholder: 'Search vendor',
-                                  emptyText: 'No vendor found',
                                 }}
                                 {...field}
                               />
@@ -598,11 +594,7 @@ export function ProductsForm({
                             label: 'Select collections',
                           }}
                           placeholder="Winter Collection"
-                          emptyIndicator={
-                            <p className="text-center text-sm">
-                              No results found
-                            </p>
-                          }
+                          emptyIndicator="No collection found"
                           hidePlaceholderWhenSelected
                           hideClearAllButton
                         />

@@ -19,6 +19,19 @@ export type Collection = {
   created_at?: string
 }
 
+export type ProductCategory = {
+  id: number
+  name: string
+  handle: string
+  description?: string
+  is_active: boolean
+  is_public: boolean
+  rank: number
+  parent_id?: number
+  updated_at?: string
+  created_at?: string
+}
+
 export type ProductType = {
   id: number
   name: string

@@ -8,7 +8,7 @@ export interface ApiResponse<TData> {
   data: TData
   status: number
   statusText: string
-  headers: Headers
+  headers: HeadersInit
 }
 
 class ApiError<TData> extends Error {
@@ -62,6 +62,35 @@ class Api {
     throw new Error(`Fetch does not support content-type ${contentType} yet`)
   }
 
+  #handleInput(url: string | URL, config: ApiRequestConfig) {
+    return this.#handleURL(url, config.params)
+  }
+
+  #handleInit(
+    method: string,
+    data: object = {},
+    config: ApiRequestConfig = {},
+  ): RequestInit {
+    const { headers: extraHeaders, ...rest } = config
+
+    const headers: HeadersInit = {
+      Accept: 'application/json',
+      ...(data instanceof FormData
+        ? {}
+        : { 'Content-Type': 'application/json' }),
+      ...extraHeaders,
+    }
+
+    const body = method !== 'GET' ? this.#handleBody(data) : null
+
+    return {
+      ...rest,
+      method,
+      body,
+      headers,
+    }
+  }
+
   async #handleResponse<TData>(
     response: Response,
   ): Promise<ApiResponse<TData>> {
@@ -84,9 +113,8 @@ class Api {
     url: string | URL,
     config: ApiRequestConfig = {},
   ): Promise<ApiResponse<TData>> {
-    const { params, ...rest } = config
-    const init = { ...rest, method: 'GET' }
-    const input = this.#handleURL(url, params)
+    const input = this.#handleInput(url, config)
+    const init = this.#handleInit('GET', {}, config)
 
     return fetch(input, init).then((response) =>
       this.#handleResponse<TData>(response),
@@ -98,9 +126,8 @@ class Api {
     data: object = {},
     config: ApiRequestConfig = {},
   ): Promise<ApiResponse<TData>> {
-    const { params, ...rest } = config
-    const init = { ...rest, method: 'POST', body: this.#handleBody(data) }
-    const input = this.#handleURL(url, params)
+    const input = this.#handleInput(url, config)
+    const init = this.#handleInit('POST', data, config)
 
     return fetch(input, init).then((response) =>
       this.#handleResponse<TData>(response),
@@ -112,9 +139,8 @@ class Api {
     data: object = {},
     config: ApiRequestConfig = {},
   ): Promise<ApiResponse<TData>> {
-    const { params, ...rest } = config
-    const init = { ...rest, method: 'PUT', body: this.#handleBody(data) }
-    const input = this.#handleURL(url, params)
+    const input = this.#handleInput(url, config)
+    const init = this.#handleInit('PUT', data, config)
 
     return fetch(input, init).then((response) =>
       this.#handleResponse<TData>(response),

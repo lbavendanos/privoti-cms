@@ -19,6 +19,69 @@ export type Collection = {
   created_at?: string
 }
 
+export type Product = {
+  id: number
+  title: string
+  subtitle?: string
+  handle: string
+  description?: string
+  status: string
+  tags?: string[]
+  metadata?: Record<string, string>
+  category_id?: number
+  type_id?: number
+  vendor_id?: number
+  updated_at?: string
+  created_at?: string
+  category?: ProductCategory
+  type?: ProductType
+  vendor?: Vendor
+  media?: ProductMedia[]
+  options?: ProductOption[]
+  variants?: ProductVariant[]
+}
+
+export type ProductMedia = {
+  id: number
+  url: string
+  name: string
+  type: string
+  rank: number
+  product_id: number
+  updated_at?: string
+  created_at?: string
+}
+
+export type ProductOption = {
+  id: number
+  name: string
+  product_id: number
+  updated_at?: string
+  created_at?: string
+  values?: ProductOptionValue[]
+}
+
+export type ProductOptionValue = {
+  id: number
+  value: string
+  option_id: number
+  updated_at?: string
+  created_at?: string
+}
+
+export type ProductVariant = {
+  id: number
+  name: string
+  price: string
+  quantity: number
+  sku?: string
+  barcode?: string
+  product_id: number
+  updated_at?: string
+  created_at?: string
+  values?: ProductOptionValue[]
+}
+
 export type ProductCategory = {
   id: number
   name: string

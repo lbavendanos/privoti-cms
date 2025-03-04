@@ -5,8 +5,9 @@ import { useForm } from 'react-hook-form'
 import { useToast } from '@/hooks/use-toast'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { createProduct } from '@/core/actions/product'
+import { getCollections } from '@/core/actions/collection'
 import { use, useTransition } from 'react'
-import { type Vendor, type ProductType, type Collection } from '@/core/types'
+import type { Vendor, ProductType, ProductCategory } from '@/core/types'
 import Link from 'next/link'
 import {
   Card,
@@ -135,17 +136,17 @@ function StatusDot({ className }: { className?: string }) {
 }
 
 export function ProductsForm({
+  categoriesPromise,
   typesPromise,
   vendorsPromise,
-  collectionsPromise,
 }: {
+  categoriesPromise: Promise<ProductCategory[]>
   typesPromise: Promise<ProductType[]>
   vendorsPromise: Promise<Vendor[]>
-  collectionsPromise: Promise<Collection[]>
 }) {
+  const categories = use(categoriesPromise)
   const types = use(typesPromise)
   const vendors = use(vendorsPromise)
-  const collections = use(collectionsPromise)
 
   const [isPending, startTransition] = useTransition()
 
@@ -608,18 +609,23 @@ export function ProductsForm({
                             </FormLabel>
                             <FormControl>
                               <MultipleSelector
-                                defaultOptions={collections.map(
-                                  (collection) => ({
+                                onSearch={async (value) => {
+                                  const collections = await getCollections({
+                                    search: value,
+                                  })
+
+                                  return collections.map((collection) => ({
                                     label: collection.title,
                                     value: collection.id.toString(),
-                                  }),
-                                )}
+                                  }))
+                                }}
                                 badgeVariant="secondary"
                                 commandProps={{
                                   label: 'Select collections',
                                 }}
                                 placeholder="Winter Collection"
-                                emptyIndicator="No collection found"
+                                emptyIndicator="No collections found"
+                                loadingIndicator="Loading..."
                                 hidePlaceholderWhenSelected
                                 hideClearAllButton
                                 {...field}

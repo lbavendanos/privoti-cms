@@ -15,9 +15,7 @@ export async function getAllVendors(token: string): Promise<Vendor[]> {
       data: { data },
     } = await api.get<{ data: Vendor[] }>('/vendors', {
       params: { all: '1' },
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      token,
     })
 
     return data

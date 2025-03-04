@@ -17,11 +17,7 @@ export async function createProduct(
   try {
     const response = await api.post<{
       message?: string
-    }>('/products', formData, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
+    }>('/products', formData, { token })
 
     return handleActionSuccess(response)
   } catch (error) {

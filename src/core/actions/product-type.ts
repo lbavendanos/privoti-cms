@@ -17,9 +17,7 @@ export async function getAllProductTypes(
       data: { data },
     } = await api.get<{ data: ProductType[] }>('/types', {
       params: { all: '1' },
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      token,
     })
 
     return data

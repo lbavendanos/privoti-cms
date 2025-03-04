@@ -18,10 +18,6 @@ import { type User } from '../types'
 
 const AUTH_USER_TAG = 'auth-user'
 
-function getAuthHeaders(token: string): HeadersInit {
-  return { Authorization: `Bearer ${token}` }
-}
-
 export async function getUser(token: string) {
   'use cache'
   cacheTag(AUTH_USER_TAG)
@@ -31,9 +27,7 @@ export async function getUser(token: string) {
   } = await api
     .get<{
       data: User
-    }>('/auth/user', {
-      headers: getAuthHeaders(token),
-    })
+    }>('/auth/user', { token })
     .catch(() => {
       return { data: { data: null } }
     })
@@ -59,7 +53,7 @@ export async function updateUser(
   try {
     const response = await api.put<{
       data: User
-    }>('/auth/user', { name }, { headers: getAuthHeaders(token!) })
+    }>('/auth/user', { name }, { token })
 
     revalidateTag(AUTH_USER_TAG)
 
@@ -83,7 +77,7 @@ export async function updatePassword(
     }>(
       '/auth/user/password',
       { current_password: currentPassword, password },
-      { headers: getAuthHeaders(token!) },
+      { token },
     )
 
     revalidateTag(AUTH_USER_TAG)
@@ -123,9 +117,7 @@ export async function login(
 export async function logout() {
   const token = await getSessionToken()
 
-  await api
-    .post('/auth/logout', {}, { headers: getAuthHeaders(token!) })
-    .catch(() => {})
+  await api.post('/auth/logout', {}, { token }).catch(() => {})
 
   await removeSession()
 
@@ -188,7 +180,7 @@ export async function sendEmailVerificationNotification(): Promise<ActionRespons
   try {
     const response = await api.post<{
       message?: string
-    }>('/auth/user/email/notification', {}, { headers: getAuthHeaders(token!) })
+    }>('/auth/user/email/notification', {}, { token })
 
     return handleActionSuccess(response)
   } catch (error) {
@@ -210,7 +202,7 @@ export async function verifyEmail(params: {
       message?: string
     }>(`/auth/user/email/verify/${id}/${hash}`, {
       params: { expires, signature },
-      headers: getAuthHeaders(token!),
+      token,
     })
 
     revalidateTag(AUTH_USER_TAG)
@@ -231,11 +223,7 @@ export async function sendEmailChangeVerificationNotification(
   try {
     const response = await api.post<{
       message?: string
-    }>(
-      '/auth/user/email/new/notification',
-      { email },
-      { headers: getAuthHeaders(token!) },
-    )
+    }>('/auth/user/email/new/notification', { email }, { token })
 
     return handleActionSuccess(response)
   } catch (error) {
@@ -258,7 +246,7 @@ export async function verifyNewEmail(params: {
       message?: string
     }>(`/auth/user/email/new/verify/${id}/${email}/${hash}`, {
       params: { expires, signature },
-      headers: getAuthHeaders(token!),
+      token,
     })
 
     revalidateTag(AUTH_USER_TAG)

@@ -1,18 +1,19 @@
 import 'server-only'
-import { isApiError, type ApiResponse } from './http'
+import { isApiError } from './http'
 
-export type ActionResponse = {
+export type ActionResponse<TData> = {
   code?: number
   codeType?: string
+  data?: TData
+  message?: string
+  errors?: Record<string, string[]>
+  payload?: FormData
   isInformational?: boolean
   isSuccess?: boolean
   isRedirection?: boolean
   isClientError?: boolean
   isServerError?: boolean
   isUnknown?: boolean
-  message?: string
-  errors?: Record<string, string[]>
-  payload?: FormData
 }
 
 const CodeTypes = {
@@ -41,17 +42,19 @@ export function getCodeType(code: number): string {
   )
 }
 
-function createActionResponse(
+function createActionResponse<TData>(
   code: number,
-  message: string,
+  data?: TData,
+  message?: string,
   errors?: Record<string, string[]>,
   payload?: FormData,
-): ActionResponse {
+): ActionResponse<TData> {
   const codeType = getCodeType(code ?? 0)
 
   return {
     code,
     codeType,
+    data,
     message,
     errors,
     payload,
@@ -64,21 +67,20 @@ function createActionResponse(
   }
 }
 
-export function handleActionSuccess(
-  response: ApiResponse<{ message?: string; [key: string]: unknown }>,
-): ActionResponse {
+export function handleActionSuccess<TData>(
+  code: number,
+  data?: TData,
+  message?: string,
+): ActionResponse<TData> {
   const defaultMessage = 'The action was successful.'
 
-  return createActionResponse(
-    response.status,
-    response.data.message || defaultMessage,
-  )
+  return createActionResponse(code, data as TData, message || defaultMessage)
 }
 
-export function handleActionError(
+export function handleActionError<TData>(
   error: unknown,
   payload?: FormData,
-): ActionResponse {
+): ActionResponse<TData> {
   const defaultMessage =
     'There was a problem with the server. Please try again.'
 
@@ -88,18 +90,25 @@ export function handleActionError(
       errors?: Record<string, string[]>
     }>(error)
   ) {
-    const { response } = error
+    const {
+      response: {
+        status,
+        data: { message, errors },
+      },
+    } = error
 
     return createActionResponse(
-      response.status,
-      response.data.message || defaultMessage,
-      response.data.errors || {},
+      status,
+      {} as TData,
+      message || defaultMessage,
+      errors || {},
       payload,
     )
   }
 
   return createActionResponse(
     0,
+    {} as TData,
     error instanceof Error ? error.message : defaultMessage,
     {},
     payload,

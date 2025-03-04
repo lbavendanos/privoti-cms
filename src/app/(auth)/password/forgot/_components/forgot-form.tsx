@@ -28,7 +28,9 @@ export function ForgotForm() {
       {state?.isSuccess && (
         <Alert variant="success">
           <CircleCheck className="h-4 w-4" />
-          <AlertDescription>{state.message}</AlertDescription>
+          <AlertDescription>
+            We have emailed your password reset link.
+          </AlertDescription>
         </Alert>
       )}
       {state?.isClientError && (

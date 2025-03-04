@@ -8,10 +8,6 @@ import {
 } from '@/lib/action'
 import { getSessionToken } from '@/lib/session'
 
-const DEFAULT_HEADERS: HeadersInit = {
-  Accept: 'application/json',
-}
-
 export async function createProduct(
   _: unknown,
   formData: FormData,
@@ -23,7 +19,6 @@ export async function createProduct(
       message?: string
     }>('/products', formData, {
       headers: {
-        ...DEFAULT_HEADERS,
         Authorization: `Bearer ${token}`,
       },
     })

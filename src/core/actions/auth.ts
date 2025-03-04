@@ -16,12 +16,11 @@ import {
 } from '@/lib/session'
 import { type User } from '../types'
 
-const DEFAULT_HEADERS: HeadersInit = {
-  Accept: 'application/json',
-  'Content-Type': 'application/json',
-}
-
 const AUTH_USER_TAG = 'auth-user'
+
+function getAuthHeaders(token: string): HeadersInit {
+  return { Authorization: `Bearer ${token}` }
+}
 
 export async function getUser(token: string) {
   'use cache'
@@ -33,10 +32,7 @@ export async function getUser(token: string) {
     .get<{
       data: User
     }>('/auth/user', {
-      headers: {
-        ...DEFAULT_HEADERS,
-        Authorization: `Bearer ${token}`,
-      },
+      headers: getAuthHeaders(token),
     })
     .catch(() => {
       return { data: { data: null } }
@@ -63,16 +59,7 @@ export async function updateUser(
   try {
     const response = await api.put<{
       data: User
-    }>(
-      '/auth/user',
-      { name },
-      {
-        headers: {
-          ...DEFAULT_HEADERS,
-          Authorization: `Bearer ${token}`,
-        },
-      },
-    )
+    }>('/auth/user', { name }, { headers: getAuthHeaders(token!) })
 
     revalidateTag(AUTH_USER_TAG)
 
@@ -82,7 +69,10 @@ export async function updateUser(
   }
 }
 
-export async function updatePassword(_: unknown, formData: FormData) {
+export async function updatePassword(
+  _: unknown,
+  formData: FormData,
+): Promise<ActionResponse> {
   const token = await getSessionToken()
   const currentPassword = formData.get('current_password')
   const password = formData.get('password')
@@ -93,12 +83,7 @@ export async function updatePassword(_: unknown, formData: FormData) {
     }>(
       '/auth/user/password',
       { current_password: currentPassword, password },
-      {
-        headers: {
-          ...DEFAULT_HEADERS,
-          Authorization: `Bearer ${token}`,
-        },
-      },
+      { headers: getAuthHeaders(token!) },
     )
 
     revalidateTag(AUTH_USER_TAG)
@@ -121,13 +106,7 @@ export async function login(
       data: { data: authTokenData },
     } = await api.post<{
       data: SessionData
-    }>(
-      '/auth/login',
-      { email, password },
-      {
-        headers: DEFAULT_HEADERS,
-      },
-    )
+    }>('/auth/login', { email, password })
 
     if (authTokenData) {
       await setSession(authTokenData)
@@ -145,16 +124,7 @@ export async function logout() {
   const token = await getSessionToken()
 
   await api
-    .post(
-      '/auth/logout',
-      {},
-      {
-        headers: {
-          ...DEFAULT_HEADERS,
-          Authorization: `Bearer ${token}`,
-        },
-      },
-    )
+    .post('/auth/logout', {}, { headers: getAuthHeaders(token!) })
     .catch(() => {})
 
   await removeSession()
@@ -173,13 +143,7 @@ export async function forgotPassword(
   try {
     const response = await api.post<{
       message?: string
-    }>(
-      '/auth/forgot-password',
-      { email },
-      {
-        headers: DEFAULT_HEADERS,
-      },
-    )
+    }>('/auth/forgot-password', { email })
 
     return handleActionSuccess(response)
   } catch (error) {
@@ -201,13 +165,12 @@ export async function resetPassword(
       data: { data: authTokenData },
     } = await api.post<{
       data: SessionData
-    }>(
-      '/auth/reset-password',
-      { token, email, password, password_confirmation: passwordConfirmation },
-      {
-        headers: DEFAULT_HEADERS,
-      },
-    )
+    }>('/auth/reset-password', {
+      token,
+      email,
+      password,
+      password_confirmation: passwordConfirmation,
+    })
 
     if (authTokenData) {
       await setSession(authTokenData)
@@ -225,16 +188,7 @@ export async function sendEmailVerificationNotification(): Promise<ActionRespons
   try {
     const response = await api.post<{
       message?: string
-    }>(
-      '/auth/user/email/notification',
-      {},
-      {
-        headers: {
-          ...DEFAULT_HEADERS,
-          Authorization: `Bearer ${token}`,
-        },
-      },
-    )
+    }>('/auth/user/email/notification', {}, { headers: getAuthHeaders(token!) })
 
     return handleActionSuccess(response)
   } catch (error) {
@@ -256,10 +210,7 @@ export async function verifyEmail(params: {
       message?: string
     }>(`/auth/user/email/verify/${id}/${hash}`, {
       params: { expires, signature },
-      headers: {
-        ...DEFAULT_HEADERS,
-        Authorization: `Bearer ${token}`,
-      },
+      headers: getAuthHeaders(token!),
     })
 
     revalidateTag(AUTH_USER_TAG)
@@ -283,12 +234,7 @@ export async function sendEmailChangeVerificationNotification(
     }>(
       '/auth/user/email/new/notification',
       { email },
-      {
-        headers: {
-          ...DEFAULT_HEADERS,
-          Authorization: `Bearer ${token}`,
-        },
-      },
+      { headers: getAuthHeaders(token!) },
     )
 
     return handleActionSuccess(response)
@@ -312,10 +258,7 @@ export async function verifyNewEmail(params: {
       message?: string
     }>(`/auth/user/email/new/verify/${id}/${email}/${hash}`, {
       params: { expires, signature },
-      headers: {
-        ...DEFAULT_HEADERS,
-        Authorization: `Bearer ${token}`,
-      },
+      headers: getAuthHeaders(token!),
     })
 
     revalidateTag(AUTH_USER_TAG)

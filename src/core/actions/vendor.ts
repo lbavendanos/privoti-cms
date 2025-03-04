@@ -4,10 +4,6 @@ import { api } from '@/lib/http'
 import { unstable_cacheTag as cacheTag } from 'next/cache'
 import { type Vendor } from '../types'
 
-const DEFAULT_HEADERS: HeadersInit = {
-  Accept: 'application/json',
-}
-
 const ALL_VENDORS_TAG = 'all-vendors'
 
 export async function getAllVendors(token: string): Promise<Vendor[]> {
@@ -16,16 +12,15 @@ export async function getAllVendors(token: string): Promise<Vendor[]> {
 
   try {
     const {
-      data: { data: types },
+      data: { data },
     } = await api.get<{ data: Vendor[] }>('/vendors', {
       params: { all: '1' },
       headers: {
-        ...DEFAULT_HEADERS,
         Authorization: `Bearer ${token}`,
       },
     })
 
-    return types
+    return data
   } catch {
     return []
   }

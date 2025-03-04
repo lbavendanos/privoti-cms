@@ -4,10 +4,6 @@ import { api } from '@/lib/http'
 import { unstable_cacheTag as cacheTag } from 'next/cache'
 import { type ProductType } from '../types'
 
-const DEFAULT_HEADERS: HeadersInit = {
-  Accept: 'application/json',
-}
-
 const ALL_PRODUCT_TYPES_TAG = 'all-product-types'
 
 export async function getAllProductTypes(
@@ -18,16 +14,15 @@ export async function getAllProductTypes(
 
   try {
     const {
-      data: { data: types },
+      data: { data },
     } = await api.get<{ data: ProductType[] }>('/types', {
       params: { all: '1' },
       headers: {
-        ...DEFAULT_HEADERS,
         Authorization: `Bearer ${token}`,
       },
     })
 
-    return types
+    return data
   } catch {
     return []
   }

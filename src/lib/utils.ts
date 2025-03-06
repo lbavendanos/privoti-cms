@@ -78,3 +78,36 @@ export function isFalse(value: boolean | number | string): boolean {
 export function delay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
+
+/**
+ * Determine if the given value is "blank".
+ *
+ * @param {unknown} value - The value to check.
+ * @returns {boolean} Returns `true` if the value is "blank", `false` otherwise.
+ */
+export function blank(value: unknown): boolean {
+  if (value === null || value === undefined) return true
+
+  if (typeof value === 'number' || typeof value === 'boolean') return false
+
+  if (typeof value === 'string' && value.trim() === '') return true
+
+  if (Array.isArray(value) && value.length === 0) return true
+
+  if (value instanceof Map || value instanceof Set) return value.size === 0
+
+  if (typeof value === 'object' && Object.keys(value as object).length === 0)
+    return true
+
+  return false
+}
+
+/**
+ * Determine if the given value is "filled".
+ *
+ * @param {unknown} value - The value to check.
+ * @returns {boolean} Returns `true` if the value is "filled", `false` otherwise.
+ */
+export function filled(value: unknown): boolean {
+  return !blank(value)
+}

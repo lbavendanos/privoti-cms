@@ -159,6 +159,7 @@ export function SearchableSelect({
                 <CommandItem
                   key={option.value}
                   value={option.value}
+                  className="cursor-pointer"
                   onSelect={handleSelect}
                 >
                   {option.label}

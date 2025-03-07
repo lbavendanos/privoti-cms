@@ -18,13 +18,6 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import {
   Form,
   FormControl,
   FormField,
@@ -41,6 +34,7 @@ import { LoadingButton } from '@/components/ui/loading-button'
 import { SearchableSelect } from '@/components/ui/searchable-select'
 import { SortableFileInput } from '@/components/ui/sortable-file-input'
 import { MultipleSelector, Option } from '@/components/ui/multiple-selector'
+import { ProductsStatusInput } from './products-status-input'
 import { ProductsOptionsInput } from './products-options-input'
 import { ProductsVariantsInput } from './products-variants-input'
 import { ChevronLeft } from 'lucide-react'
@@ -112,12 +106,14 @@ const formSchema = z.object({
       label: z.string(),
       value: z.string(),
     })
+    .nullable()
     .optional(),
   vendor: z
     .object({
       label: z.string(),
       value: z.string(),
     })
+    .nullable()
     .optional(),
   collections: z
     .array(
@@ -129,22 +125,6 @@ const formSchema = z.object({
     )
     .optional(),
 })
-
-function StatusDot({ className }: { className?: string }) {
-  return (
-    <svg
-      width="8"
-      height="8"
-      fill="currentColor"
-      viewBox="0 0 8 8"
-      xmlns="http://www.w3.org/2000/svg"
-      className={className}
-      aria-hidden="true"
-    >
-      <circle cx="4" cy="4" r="4" />
-    </svg>
-  )
-}
 
 export function ProductsForm() {
   const [isPending, startTransition] = useTransition()
@@ -163,8 +143,8 @@ export function ProductsForm() {
       variants: [],
       status: 'draft',
       category_id: '',
-      type: {},
-      vendor: {},
+      type: null,
+      vendor: null,
       collections: [],
     },
   })
@@ -516,36 +496,9 @@ export function ProductsForm() {
                       name="status"
                       render={({ field }) => (
                         <FormItem>
-                          <Select
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
-                          >
-                            <FormControl>
-                              <SelectTrigger className="[&>span]:flex [&>span]:items-center [&>span]:gap-2 [&>span_svg]:shrink-0">
-                                <SelectValue placeholder="Select status" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent className="[&_*[role=option]>span>svg]:shrink-0 [&_*[role=option]>span>svg]:text-muted-foreground/80 [&_*[role=option]>span]:end-2 [&_*[role=option]>span]:start-auto [&_*[role=option]>span]:flex [&_*[role=option]>span]:items-center [&_*[role=option]>span]:gap-2 [&_*[role=option]]:pe-8 [&_*[role=option]]:ps-2">
-                              <SelectItem value="draft">
-                                <span className="flex items-center gap-2">
-                                  <StatusDot className="text-amber-500" />
-                                  <span className="truncate">Draft</span>
-                                </span>
-                              </SelectItem>
-                              <SelectItem value="active">
-                                <span className="flex items-center gap-2">
-                                  <StatusDot className="text-emerald-600" />
-                                  <span className="truncate">Active</span>
-                                </span>
-                              </SelectItem>
-                              <SelectItem value="archived">
-                                <span className="flex items-center gap-2">
-                                  <StatusDot className="text-gray-500" />
-                                  <span className="truncate">Archived</span>
-                                </span>
-                              </SelectItem>
-                            </SelectContent>
-                          </Select>
+                          <FormControl>
+                            <ProductsStatusInput {...field} />
+                          </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}

@@ -187,6 +187,15 @@ export function ProductsForm() {
     }))
   }, [])
 
+  const onSearchCollection = useCallback(async (value: string) => {
+    const collections = await getCollections({ search: value })
+
+    return collections.map((collection) => ({
+      label: collection.title,
+      value: collection.id.toString(),
+    }))
+  }, [])
+
   const handleSubmit = (values: z.infer<typeof formSchema>) => {
     const dirtyValues = getDirtyFields<typeof formSchema._type>(
       form.formState.dirtyFields,
@@ -629,24 +638,17 @@ export function ProductsForm() {
                             <FormControl>
                               <MultipleSelector
                                 badgeVariant="secondary"
-                                commandProps={{
-                                  label: 'Select collections',
-                                }}
                                 placeholder="Winter Collection"
                                 emptyIndicator="No collections found"
-                                loadingIndicator="Loading..."
+                                loadingIndicator={
+                                  <div className="w-full py-6 text-center text-sm text-muted-foreground">
+                                    Loading...
+                                  </div>
+                                }
                                 hidePlaceholderWhenSelected={true}
                                 hideClearAllButton={true}
-                                onSearch={async (value) => {
-                                  const collections = await getCollections({
-                                    search: value,
-                                  })
-
-                                  return collections.map((collection) => ({
-                                    label: collection.title,
-                                    value: collection.id.toString(),
-                                  }))
-                                }}
+                                triggerSearchOnFocus={true}
+                                onSearch={onSearchCollection}
                                 {...field}
                               />
                             </FormControl>

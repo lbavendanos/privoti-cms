@@ -3,11 +3,12 @@
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { useToast } from '@/hooks/use-toast'
+import { getVendors } from '@/core/actions/vendor'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { createProduct } from '@/core/actions/product'
 import { getCollections } from '@/core/actions/collection'
-import { use, useTransition } from 'react'
-import type { Vendor, ProductType, ProductCategory } from '@/core/types'
+import { getProductTypes } from '@/core/actions/product-type'
+import { useCallback, useTransition } from 'react'
 import Link from 'next/link'
 import {
   Card,
@@ -36,8 +37,8 @@ import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { MultipleTag } from '@/components/ui/multiple-tag'
-import { SearchSelect } from '@/components/ui/search-select'
 import { LoadingButton } from '@/components/ui/loading-button'
+import { SearchableSelect } from '@/components/ui/searchable-select'
 import { SortableFileInput } from '@/components/ui/sortable-file-input'
 import { MultipleSelector, Option } from '@/components/ui/multiple-selector'
 import { ProductsOptionsInput } from './products-options-input'
@@ -106,8 +107,18 @@ const formSchema = z.object({
   ),
   status: z.enum(['draft', 'active', 'archived']),
   category_id: z.string().optional(),
-  type_id: z.string().optional(),
-  vendor_id: z.string().optional(),
+  type: z
+    .object({
+      label: z.string(),
+      value: z.string(),
+    })
+    .optional(),
+  vendor: z
+    .object({
+      label: z.string(),
+      value: z.string(),
+    })
+    .optional(),
   collections: z
     .array(
       z.object({
@@ -135,19 +146,7 @@ function StatusDot({ className }: { className?: string }) {
   )
 }
 
-export function ProductsForm({
-  categoriesPromise,
-  typesPromise,
-  vendorsPromise,
-}: {
-  categoriesPromise: Promise<ProductCategory[]>
-  typesPromise: Promise<ProductType[]>
-  vendorsPromise: Promise<Vendor[]>
-}) {
-  const categories = use(categoriesPromise)
-  const types = use(typesPromise)
-  const vendors = use(vendorsPromise)
-
+export function ProductsForm() {
   const [isPending, startTransition] = useTransition()
 
   const { toast } = useToast()
@@ -164,11 +163,29 @@ export function ProductsForm({
       variants: [],
       status: 'draft',
       category_id: '',
-      type_id: '',
-      vendor_id: '',
+      type: {},
+      vendor: {},
       collections: [],
     },
   })
+
+  const onSearchType = useCallback(async (value: string) => {
+    const types = await getProductTypes({ search: value })
+
+    return types.map((type) => ({
+      label: type.name,
+      value: type.id.toString(),
+    }))
+  }, [])
+
+  const onSearchVendor = useCallback(async (value: string) => {
+    const vendors = await getVendors({ search: value })
+
+    return vendors.map((vendor) => ({
+      label: vendor.name,
+      value: vendor.id.toString(),
+    }))
+  }, [])
 
   const handleSubmit = (values: z.infer<typeof formSchema>) => {
     const dirtyValues = getDirtyFields<typeof formSchema._type>(
@@ -236,6 +253,22 @@ export function ProductsForm({
             )
           })
         })
+
+        return
+      }
+
+      if (typedKey === 'type') {
+        const type = dirtyValues[typedKey]
+
+        formData.append('type_id', type ? type.value : '')
+
+        return
+      }
+
+      if (typedKey === 'vendor') {
+        const vendor = dirtyValues[typedKey]
+
+        formData.append('vendor_id', vendor ? vendor.value : '')
 
         return
       }
@@ -540,7 +573,7 @@ export function ProductsForm({
                       </div>
                       <FormField
                         control={form.control}
-                        name="type_id"
+                        name="type"
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>
@@ -550,16 +583,9 @@ export function ProductsForm({
                               </span>
                             </FormLabel>
                             <FormControl>
-                              <SearchSelect
-                                options={types.map((type) => ({
-                                  label: type.name,
-                                  value: type.id.toString(),
-                                }))}
-                                placeholder="Select type"
-                                emptyIndicator="No type found"
-                                commandInputProps={{
-                                  placeholder: 'Search type',
-                                }}
+                              <SearchableSelect
+                                emptyIndicator="No types found"
+                                onSearch={onSearchType}
                                 {...field}
                               />
                             </FormControl>
@@ -569,7 +595,7 @@ export function ProductsForm({
                       />
                       <FormField
                         control={form.control}
-                        name="vendor_id"
+                        name="vendor"
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>
@@ -579,16 +605,9 @@ export function ProductsForm({
                               </span>
                             </FormLabel>
                             <FormControl>
-                              <SearchSelect
-                                options={vendors.map((vendor) => ({
-                                  label: vendor.name,
-                                  value: vendor.id.toString(),
-                                }))}
-                                placeholder="Select vendor"
-                                emptyIndicator="No vendor found"
-                                commandInputProps={{
-                                  placeholder: 'Search vendor',
-                                }}
+                              <SearchableSelect
+                                emptyIndicator="No vendors found"
+                                onSearch={onSearchVendor}
                                 {...field}
                               />
                             </FormControl>
@@ -609,6 +628,15 @@ export function ProductsForm({
                             </FormLabel>
                             <FormControl>
                               <MultipleSelector
+                                badgeVariant="secondary"
+                                commandProps={{
+                                  label: 'Select collections',
+                                }}
+                                placeholder="Winter Collection"
+                                emptyIndicator="No collections found"
+                                loadingIndicator="Loading..."
+                                hidePlaceholderWhenSelected={true}
+                                hideClearAllButton={true}
                                 onSearch={async (value) => {
                                   const collections = await getCollections({
                                     search: value,
@@ -619,15 +647,6 @@ export function ProductsForm({
                                     value: collection.id.toString(),
                                   }))
                                 }}
-                                badgeVariant="secondary"
-                                commandProps={{
-                                  label: 'Select collections',
-                                }}
-                                placeholder="Winter Collection"
-                                emptyIndicator="No collections found"
-                                loadingIndicator="Loading..."
-                                hidePlaceholderWhenSelected
-                                hideClearAllButton
                                 {...field}
                               />
                             </FormControl>

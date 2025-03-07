@@ -1,22 +1,19 @@
 'use server'
 
 import { api } from '@/lib/http'
-import { unstable_cacheTag as cacheTag } from 'next/cache'
+import { getSessionToken } from '@/lib/session'
 import { type ProductType } from '../types'
 
-const ALL_PRODUCT_TYPES_TAG = 'all-product-types'
-
-export async function getAllProductTypes(
-  token: string,
+export async function getProductTypes(
+  params: Record<string, string> = {},
 ): Promise<ProductType[]> {
-  'use cache'
-  cacheTag(ALL_PRODUCT_TYPES_TAG)
+  const token = await getSessionToken()
 
   try {
     const {
       data: { data },
     } = await api.get<{ data: ProductType[] }>('/types', {
-      params: { all: '1' },
+      params,
       token,
     })
 

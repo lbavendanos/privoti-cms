@@ -95,7 +95,7 @@ const formSchema = z.object({
     .object({
       id: z.string(),
       name: z.string(),
-      parent_id: z.string().nullable(),
+      parentId: z.string().nullable(),
     })
     .nullable()
     .optional(),

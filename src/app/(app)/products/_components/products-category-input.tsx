@@ -30,7 +30,8 @@ import {
 interface Category {
   id: string
   name: string
-  parent_id: string | null
+  parentId: string | null
+  parentName?: string
 }
 
 interface ProductsCategoryInputProps {
@@ -60,17 +61,17 @@ export function ProductsCategoryInput({
   )
 
   const hasChildren = useCallback(
-    (categoryId: string) => {
-      return categories.some((c) => c.parent_id === categoryId)
+    (category: Category) => {
+      return categories.some((c) => c.parentId === category.id)
     },
     [categories],
   )
 
   const getChildren = useCallback(
-    (parent: Category | null) => {
-      const parentId = parent ? parent.id : null
+    (category: Category | null) => {
+      const parentId = category?.id ?? null
 
-      return categories.filter((c) => c.parent_id === parentId)
+      return categories.filter((c) => c.parentId === parentId)
     },
     [categories],
   )
@@ -95,7 +96,7 @@ export function ProductsCategoryInput({
 
   const handleGoBack = useCallback(() => {
     if (currentParent) {
-      const parent = findCategory(currentParent.parent_id!)
+      const parent = findCategory(currentParent.parentId!)
 
       setCurrentParent(parent!)
     }
@@ -104,11 +105,16 @@ export function ProductsCategoryInput({
   const filteredCategories = useMemo(
     () =>
       searchTerm
-        ? categories.filter((c) =>
-            c.name.toLowerCase().includes(searchTerm.toLowerCase()),
-          )
+        ? categories
+            .filter((c) =>
+              c.name.toLowerCase().includes(searchTerm.toLowerCase()),
+            )
+            .map((c) => ({
+              ...c,
+              parentName: findCategory(c.parentId!)?.name,
+            }))
         : getChildren(currentParent),
-    [currentParent, categories, searchTerm, getChildren],
+    [currentParent, categories, searchTerm, getChildren, findCategory],
   )
 
   useEffect(() => {
@@ -120,7 +126,7 @@ export function ProductsCategoryInput({
           const categoryList = data.map((c) => ({
             id: c.id.toString(),
             name: c.name,
-            parent_id: c.parent_id ? c.parent_id.toString() : null,
+            parentId: c.parent_id ? c.parent_id.toString() : null,
           }))
 
           setCategories(categoryList)
@@ -133,7 +139,7 @@ export function ProductsCategoryInput({
 
   useEffect(() => {
     if (!isLoading && currentCategory) {
-      const parent = findCategory(currentCategory.parent_id!) ?? null
+      const parent = findCategory(currentCategory.parentId!) ?? null
 
       setCurrentParent(parent)
     }
@@ -226,7 +232,7 @@ export function ProductsCategoryInput({
                     <CheckIcon size={16} className="absolute left-2" />
                   )}
                   <span className="flex-1 py-1.5 pl-8">{category.name}</span>
-                  {hasChildren(category.id) && (
+                  {hasChildren(category) ? (
                     <span
                       className="ml-auto px-2 py-1.5"
                       onClick={(e) => {
@@ -240,6 +246,14 @@ export function ProductsCategoryInput({
                         className="text-muted-foreground/80"
                       />
                     </span>
+                  ) : (
+                    <>
+                      {category.parentName && (
+                        <span className="ml-auto truncate px-2 py-1.5 text-xs text-muted-foreground/80">
+                          {category.parentName}
+                        </span>
+                      )}
+                    </>
                   )}
                 </CommandItem>
               ))}

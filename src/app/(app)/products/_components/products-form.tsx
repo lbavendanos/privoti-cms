@@ -5,8 +5,7 @@ import { useForm } from 'react-hook-form'
 import { useToast } from '@/hooks/use-toast'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { createProduct } from '@/core/actions/product'
-import { getCollections } from '@/core/actions/collection'
-import { useCallback, useTransition } from 'react'
+import { useTransition } from 'react'
 import Link from 'next/link'
 import {
   Card,
@@ -28,7 +27,6 @@ import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { MultipleTag } from '@/components/ui/multiple-tag'
 import { LoadingButton } from '@/components/ui/loading-button'
-import { MultipleSelector } from '@/components/ui/multiple-selector'
 import { SortableFileInput } from '@/components/ui/sortable-file-input'
 import { ProductsTypeInput } from './products-type-input'
 import { ProductsVendorInput } from './products-vendor-input'
@@ -36,6 +34,7 @@ import { ProductsStatusInput } from './products-status-input'
 import { ProductsOptionsInput } from './products-options-input'
 import { ProductsVariantsInput } from './products-variants-input'
 import { ProductsCategoryInput } from './products-category-input'
+import { ProductsCollectionsInput } from './products-collections-input'
 import { ChevronLeft } from 'lucide-react'
 
 function getDirtyFields<T extends Record<string, unknown>>(
@@ -115,9 +114,8 @@ const formSchema = z.object({
   collections: z
     .array(
       z.object({
-        label: z.string(),
-        value: z.string(),
-        disable: z.boolean().optional(),
+        id: z.string(),
+        title: z.string(),
       }),
     )
     .optional(),
@@ -145,18 +143,6 @@ export function ProductsForm() {
       collections: [],
     },
   })
-
-  const onSearchCollection = useCallback(async (value: string) => {
-    const collections = await getCollections({
-      search: value,
-      fields: 'id,title',
-    })
-
-    return collections.map((collection) => ({
-      label: collection.title,
-      value: collection.id.toString(),
-    }))
-  }, [])
 
   const handleSubmit = (values: z.infer<typeof formSchema>) => {
     const dirtyValues = getDirtyFields<typeof formSchema._type>(
@@ -256,7 +242,7 @@ export function ProductsForm() {
         const collections = dirtyValues[typedKey]
 
         collections?.forEach((collection, collectionIndex) => {
-          formData.append(`collections[${collectionIndex}]`, collection.value)
+          formData.append(`collections[${collectionIndex}]`, collection.id)
         })
 
         return
@@ -570,21 +556,7 @@ export function ProductsForm() {
                               </span>
                             </FormLabel>
                             <FormControl>
-                              <MultipleSelector
-                                badgeVariant="secondary"
-                                placeholder="Winter Collection"
-                                emptyIndicator="No collections found"
-                                loadingIndicator={
-                                  <div className="w-full py-6 text-center text-sm text-muted-foreground">
-                                    Loading...
-                                  </div>
-                                }
-                                hidePlaceholderWhenSelected={true}
-                                hideClearAllButton={true}
-                                triggerSearchOnFocus={true}
-                                onSearch={onSearchCollection}
-                                {...field}
-                              />
+                              <ProductsCollectionsInput {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>

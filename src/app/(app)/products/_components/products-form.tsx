@@ -150,7 +150,7 @@ export function ProductsForm() {
   })
 
   const onSearchType = useCallback(async (value: string) => {
-    const types = await getProductTypes({ search: value })
+    const types = await getProductTypes({ search: value, fields: 'id,name' })
 
     return types.map((type) => ({
       label: type.name,
@@ -159,7 +159,7 @@ export function ProductsForm() {
   }, [])
 
   const onSearchVendor = useCallback(async (value: string) => {
-    const vendors = await getVendors({ search: value })
+    const vendors = await getVendors({ search: value, fields: 'id,name' })
 
     return vendors.map((vendor) => ({
       label: vendor.name,
@@ -168,7 +168,10 @@ export function ProductsForm() {
   }, [])
 
   const onSearchCollection = useCallback(async (value: string) => {
-    const collections = await getCollections({ search: value })
+    const collections = await getCollections({
+      search: value,
+      fields: 'id,title',
+    })
 
     return collections.map((collection) => ({
       label: collection.title,

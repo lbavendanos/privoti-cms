@@ -3,7 +3,6 @@
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { useToast } from '@/hooks/use-toast'
-import { getVendors } from '@/core/actions/vendor'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { createProduct } from '@/core/actions/product'
 import { getCollections } from '@/core/actions/collection'
@@ -30,9 +29,9 @@ import { Textarea } from '@/components/ui/textarea'
 import { MultipleTag } from '@/components/ui/multiple-tag'
 import { LoadingButton } from '@/components/ui/loading-button'
 import { MultipleSelector } from '@/components/ui/multiple-selector'
-import { SearchableSelect } from '@/components/ui/searchable-select'
 import { SortableFileInput } from '@/components/ui/sortable-file-input'
 import { ProductsTypeInput } from './products-type-input'
+import { ProductsVendorInput } from './products-vendor-input'
 import { ProductsStatusInput } from './products-status-input'
 import { ProductsOptionsInput } from './products-options-input'
 import { ProductsVariantsInput } from './products-variants-input'
@@ -108,8 +107,8 @@ const formSchema = z.object({
     .optional(),
   vendor: z
     .object({
-      label: z.string(),
-      value: z.string(),
+      id: z.string(),
+      name: z.string(),
     })
     .nullable()
     .optional(),
@@ -146,15 +145,6 @@ export function ProductsForm() {
       collections: [],
     },
   })
-
-  const onSearchVendor = useCallback(async (value: string) => {
-    const vendors = await getVendors({ search: value, fields: 'id,name' })
-
-    return vendors.map((vendor) => ({
-      label: vendor.name,
-      value: vendor.id.toString(),
-    }))
-  }, [])
 
   const onSearchCollection = useCallback(async (value: string) => {
     const collections = await getCollections({
@@ -257,7 +247,7 @@ export function ProductsForm() {
       if (typedKey === 'vendor') {
         const vendor = dirtyValues[typedKey]
 
-        formData.append('vendor_id', vendor ? vendor.value : '')
+        formData.append('vendor_id', vendor ? vendor.id : '')
 
         return
       }
@@ -562,11 +552,7 @@ export function ProductsForm() {
                               </span>
                             </FormLabel>
                             <FormControl>
-                              <SearchableSelect
-                                emptyIndicator="No vendors found"
-                                onSearch={onSearchVendor}
-                                {...field}
-                              />
+                              <ProductsVendorInput {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>

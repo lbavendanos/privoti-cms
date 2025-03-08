@@ -32,7 +32,6 @@ export function ProductsTypeInput({
     <SearchableSelect
       {...props}
       emptyIndicator="No types found"
-      onSearch={handleSearch}
       value={
         currentType ? { label: currentType.name, value: currentType.id } : null
       }
@@ -43,6 +42,7 @@ export function ProductsTypeInput({
           onChange?.(null)
         }
       }}
+      onSearch={handleSearch}
     />
   )
 }

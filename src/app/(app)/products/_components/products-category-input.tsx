@@ -37,7 +37,7 @@ interface Category {
 interface ProductsCategoryInputProps {
   id?: string
   value?: Category | null
-  onChange?: React.Dispatch<React.SetStateAction<Category | null>>
+  onChange?: (category: Category | null) => void
 }
 
 export function ProductsCategoryInput({

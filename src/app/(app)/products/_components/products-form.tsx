@@ -7,7 +7,6 @@ import { getVendors } from '@/core/actions/vendor'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { createProduct } from '@/core/actions/product'
 import { getCollections } from '@/core/actions/collection'
-import { getProductTypes } from '@/core/actions/product-type'
 import { useCallback, useTransition } from 'react'
 import Link from 'next/link'
 import {
@@ -33,6 +32,7 @@ import { LoadingButton } from '@/components/ui/loading-button'
 import { MultipleSelector } from '@/components/ui/multiple-selector'
 import { SearchableSelect } from '@/components/ui/searchable-select'
 import { SortableFileInput } from '@/components/ui/sortable-file-input'
+import { ProductsTypeInput } from './products-type-input'
 import { ProductsStatusInput } from './products-status-input'
 import { ProductsOptionsInput } from './products-options-input'
 import { ProductsVariantsInput } from './products-variants-input'
@@ -101,8 +101,8 @@ const formSchema = z.object({
     .optional(),
   type: z
     .object({
-      label: z.string(),
-      value: z.string(),
+      id: z.string(),
+      name: z.string(),
     })
     .nullable()
     .optional(),
@@ -146,15 +146,6 @@ export function ProductsForm() {
       collections: [],
     },
   })
-
-  const onSearchType = useCallback(async (value: string) => {
-    const types = await getProductTypes({ search: value, fields: 'id,name' })
-
-    return types.map((type) => ({
-      label: type.name,
-      value: type.id.toString(),
-    }))
-  }, [])
 
   const onSearchVendor = useCallback(async (value: string) => {
     const vendors = await getVendors({ search: value, fields: 'id,name' })
@@ -258,7 +249,7 @@ export function ProductsForm() {
       if (typedKey === 'type') {
         const type = dirtyValues[typedKey]
 
-        formData.append('type_id', type ? type.value : '')
+        formData.append('type_id', type ? type.id : '')
 
         return
       }
@@ -553,11 +544,7 @@ export function ProductsForm() {
                               </span>
                             </FormLabel>
                             <FormControl>
-                              <SearchableSelect
-                                emptyIndicator="No types found"
-                                onSearch={onSearchType}
-                                {...field}
-                              />
+                              <ProductsTypeInput {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>

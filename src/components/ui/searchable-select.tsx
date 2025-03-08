@@ -34,7 +34,7 @@ type SearchSelectProps = {
   emptyIndicator?: React.ReactNode
   delay?: number
   onSearch?: (value: string) => Promise<Option[]>
-  onChange?: React.Dispatch<React.SetStateAction<Option | null>>
+  onChange?: (option: Option | null) => void
 }
 
 export function SearchableSelect({
@@ -48,9 +48,10 @@ export function SearchableSelect({
   onSearch,
   onChange,
 }: SearchSelectProps) {
-  const [open, setOpen] = useState<boolean>(false)
   const [options, setOptions] = useState<Option[]>(defaultOptions ?? [])
   const [searchTerm, setSearchTerm] = useState<string>('')
+
+  const [isOpen, setIsOpen] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
   const debouncedSearchTerm = useDebounce(searchTerm, delay)
@@ -61,7 +62,7 @@ export function SearchableSelect({
 
       if (newValue === currentValue) {
         onChange?.(null)
-        setOpen(false)
+        setIsOpen(false)
 
         return
       }
@@ -69,7 +70,7 @@ export function SearchableSelect({
       const newOption = options.find((o) => o.value === newValue)
 
       onChange?.(newOption ?? null)
-      setOpen(false)
+      setIsOpen(false)
     },
     [currentOption, options, onChange],
   )
@@ -90,13 +91,13 @@ export function SearchableSelect({
   }, [debouncedSearchTerm, onSearch])
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
         <Button
           id={id}
           variant="outline"
           role="combobox"
-          aria-expanded={open}
+          aria-expanded={isOpen}
           className="relative w-full justify-between border-input bg-background px-3 font-normal outline-none outline-offset-0 hover:bg-background focus-visible:outline-[3px]"
         >
           <span

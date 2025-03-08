@@ -4,8 +4,10 @@ import { blank, cn, filled } from '@/lib/utils'
 import { getProductCategories } from '@/core/actions/product-category'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
 import {
   Command,
+  CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
@@ -22,7 +24,6 @@ import {
   ChevronDownIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
-  Loader2,
   X,
 } from 'lucide-react'
 
@@ -69,15 +70,6 @@ export function ProductsCategoryInput({
 
           if (currentCategory) {
             setCurrentParent(currentCategory.parent_id)
-
-            // const categoryId = currentCategory.id
-            // const parentPath = getParentPath(categoryId, categoryList)
-            //
-            // console.log(parentPath)
-            //
-            // setCurrentParent(
-            //   parentPath.length > 0 ? parentPath[parentPath.length - 1] : null,
-            // )
           }
         })
         .catch(() => setIsLoading(false))
@@ -111,28 +103,6 @@ export function ProductsCategoryInput({
     },
     [categories],
   )
-
-  // function getParentPath(
-  //   categoryId: string,
-  //   categoryList: Category[],
-  // ): string[] {
-  //   const path: string[] = []
-  //
-  //   let current = categoryId
-  //
-  //   while (current !== null) {
-  //     const parent = categoryList.find((cat) => cat.id === current)?.parent_id
-  //
-  //     if (parent !== null) {
-  //       path.unshift(parent)
-  //       current = parent
-  //     } else {
-  //       break
-  //     }
-  //   }
-  //
-  //   return path
-  // }
 
   const filteredCategories = useMemo(
     () =>
@@ -169,7 +139,6 @@ export function ProductsCategoryInput({
   // useEffect(() => {
   //   if (isOpen) {
   //     if (value) {
-  //       // Si hay una categoría seleccionada, restablecemos la jerarquía de navegación a su ubicación
   //       const categoryId = parseInt(value.value, 10)
   //       const parentPath = getParentPath(categoryId, categories)
   //       setCurrentParent(
@@ -225,78 +194,83 @@ export function ProductsCategoryInput({
         className="w-full min-w-[var(--radix-popper-anchor-width)] border-input p-0"
         align="start"
       >
-        {isLoading ? (
-          <div className="flex items-center justify-center p-4">
-            <Loader2 className="h-5 w-5 animate-spin" />
-          </div>
-        ) : (
-          <Command shouldFilter={false}>
-            <CommandInput
-              placeholder="Search category"
-              value={searchTerm}
-              onValueChange={setSearchTerm}
-            />
-            <CommandList>
-              {currentParent !== null && !searchTerm && (
-                <>
-                  <CommandGroup>
-                    <CommandItem
-                      className="cursor-pointer"
-                      onSelect={handleGoBack}
+        <Command shouldFilter={false}>
+          <CommandInput
+            placeholder="Search category"
+            value={searchTerm}
+            onValueChange={setSearchTerm}
+          />
+          <CommandList>
+            {isLoading && filteredCategories.length === 0 && (
+              <DefaultLoadingSkeleton />
+            )}
+            {filteredCategories.length === 0 && (
+              <CommandEmpty>No categories found.</CommandEmpty>
+            )}
+            {currentParent !== null && !searchTerm && (
+              <>
+                <CommandGroup>
+                  <CommandItem
+                    className="cursor-pointer"
+                    onSelect={handleGoBack}
+                  >
+                    <ChevronLeftIcon
+                      size={16}
+                      className="text-muted-foreground/80"
+                    />
+                    <span>{getParentName(currentParent)}</span>
+                  </CommandItem>
+                </CommandGroup>
+                <CommandSeparator />
+              </>
+            )}
+            <CommandGroup>
+              {filteredCategories.map((category) => (
+                <CommandItem
+                  key={category.id}
+                  value={category.id}
+                  className="cursor-pointer p-0"
+                  onSelect={() => handleSelectCategory(category)}
+                >
+                  {currentCategory && currentCategory.id === category.id && (
+                    <CheckIcon size={16} className="absolute left-2" />
+                  )}
+                  <span className="flex-1 py-1.5 pl-8">{category.name}</span>
+                  {hasChildren(category.id) && (
+                    <span
+                      className="ml-auto px-2 py-1.5"
+                      onClick={(e) => {
+                        e.stopPropagation()
+
+                        handleNavigateToSubcategory(category.id)
+                      }}
                     >
-                      <ChevronLeftIcon
+                      <ChevronRightIcon
                         size={16}
                         className="text-muted-foreground/80"
                       />
-                      <span>{getParentName(currentParent)}</span>
-                    </CommandItem>
-                  </CommandGroup>
-                  <CommandSeparator />
-                </>
-              )}
-              <CommandGroup>
-                {filteredCategories.length > 0 ? (
-                  filteredCategories.map((category) => (
-                    <CommandItem
-                      key={category.id}
-                      value={category.id}
-                      className="cursor-pointer p-0"
-                      onSelect={() => handleSelectCategory(category)}
-                    >
-                      {currentCategory &&
-                        currentCategory.id === category.id && (
-                          <CheckIcon size={16} className="absolute left-2" />
-                        )}
-                      <span className="flex-1 py-1.5 pl-8">
-                        {category.name}
-                      </span>
-                      {hasChildren(category.id) && (
-                        <span
-                          className="ml-auto px-2 py-1.5"
-                          onClick={(e) => {
-                            e.stopPropagation()
-
-                            handleNavigateToSubcategory(category.id)
-                          }}
-                        >
-                          <ChevronRightIcon
-                            size={16}
-                            className="text-muted-foreground/80"
-                          />
-                        </span>
-                      )}
-                    </CommandItem>
-                  ))
-                ) : (
-                  <CommandItem disabled>
-                    No se encontraron categorías
-                  </CommandItem>
-                )}
-              </CommandGroup>
-            </CommandList>
-          </Command>
-        )}
+                    </span>
+                  )}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </Command>
       </PopoverContent>
     </Popover>
+  )
+}
+
+function DefaultLoadingSkeleton() {
+  return (
+    <CommandGroup>
+      {[1, 2, 3].map((i) => (
+        <CommandItem key={i} disabled>
+          <div className="flex w-full items-center">
+            <Skeleton className="h-4 w-full" />
+          </div>
+        </CommandItem>
+      ))}
+    </CommandGroup>
   )
 }

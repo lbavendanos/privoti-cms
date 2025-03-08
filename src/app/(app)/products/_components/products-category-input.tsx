@@ -45,12 +45,71 @@ export function ProductsCategoryInput({
   onChange,
 }: ProductsCategoryInputProps) {
   const [categories, setCategories] = useState<Category[]>([])
-  const [currentParent, setCurrentParent] = useState<string | null>(null)
+  const [currentParent, setCurrentParent] = useState<Category | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
   const [categoriesLoaded, setCategoriesLoaded] = useState(false)
 
   const [isOpen, setIsOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+
+  const findCategory = useCallback(
+    (categoryId: string) => {
+      return categories.find((c) => c.id === categoryId)
+    },
+    [categories],
+  )
+
+  const hasChildren = useCallback(
+    (categoryId: string) => {
+      return categories.some((c) => c.parent_id === categoryId)
+    },
+    [categories],
+  )
+
+  const getChildren = useCallback(
+    (parent: Category | null) => {
+      const parentId = parent ? parent.id : null
+
+      return categories.filter((c) => c.parent_id === parentId)
+    },
+    [categories],
+  )
+
+  const handleSelectCategory = useCallback(
+    (newCategory: Category) => {
+      if (currentCategory && currentCategory.id === newCategory.id) {
+        onChange?.(null)
+      } else {
+        onChange?.(newCategory)
+      }
+
+      setIsOpen(false)
+    },
+    [currentCategory, onChange],
+  )
+
+  const handleNavigateToSubcategory = useCallback((category: Category) => {
+    setCurrentParent(category)
+    setSearchTerm('')
+  }, [])
+
+  const handleGoBack = useCallback(() => {
+    if (currentParent) {
+      const parent = findCategory(currentParent.parent_id!)
+
+      setCurrentParent(parent!)
+    }
+  }, [currentParent, findCategory])
+
+  const filteredCategories = useMemo(
+    () =>
+      searchTerm
+        ? categories.filter((c) =>
+            c.name.toLowerCase().includes(searchTerm.toLowerCase()),
+          )
+        : getChildren(currentParent),
+    [currentParent, categories, searchTerm, getChildren],
+  )
 
   useEffect(() => {
     if (!categoriesLoaded) {
@@ -67,87 +126,18 @@ export function ProductsCategoryInput({
           setCategories(categoryList)
           setCategoriesLoaded(true)
           setIsLoading(false)
-
-          if (currentCategory) {
-            setCurrentParent(currentCategory.parent_id)
-          }
         })
         .catch(() => setIsLoading(false))
     }
-  }, [categoriesLoaded, currentCategory])
+  }, [categoriesLoaded])
 
-  const getChildren = useCallback(
-    (parentId: string | null) => {
-      return categories.filter((c) => c.parent_id === parentId)
-    },
-    [categories],
-  )
+  useEffect(() => {
+    if (!isLoading && currentCategory) {
+      const parent = findCategory(currentCategory.parent_id!) ?? null
 
-  const hasChildren = useCallback(
-    (categoryId: string) => {
-      return categories.some((c) => c.parent_id === categoryId)
-    },
-    [categories],
-  )
-
-  const getParent = useCallback(
-    (categoryId: string) => {
-      return categories.find((c) => c.id === categoryId)?.parent_id ?? null
-    },
-    [categories],
-  )
-
-  const getParentName = useCallback(
-    (categoryId: string) => {
-      return categories.find((c) => c.id === categoryId)?.name ?? ''
-    },
-    [categories],
-  )
-
-  const filteredCategories = useMemo(
-    () =>
-      searchTerm
-        ? categories.filter((c) =>
-            c.name.toLowerCase().includes(searchTerm.toLowerCase()),
-          )
-        : getChildren(currentParent),
-    [currentParent, categories, searchTerm, getChildren],
-  )
-
-  const handleSelectCategory = useCallback(
-    (newCategory: Category) => {
-      if (currentCategory && currentCategory.id === newCategory.id) {
-        onChange?.(null)
-      } else {
-        onChange?.(newCategory)
-      }
-
-      setIsOpen(false)
-    },
-    [currentCategory, onChange],
-  )
-
-  const handleNavigateToSubcategory = useCallback((categoryId: string) => {
-    setCurrentParent(categoryId)
-    setSearchTerm('')
-  }, [])
-
-  const handleGoBack = useCallback(() => {
-    setCurrentParent(getParent(currentParent!))
-  }, [currentParent, getParent])
-
-  // useEffect(() => {
-  //   if (isOpen) {
-  //     if (value) {
-  //       const categoryId = parseInt(value.value, 10)
-  //       const parentPath = getParentPath(categoryId, categories)
-  //       setCurrentParent(
-  //         parentPath.length > 0 ? parentPath[parentPath.length - 1] : null,
-  //       )
-  //       setSearchTerm('')
-  //     }
-  //   }
-  // }, [isOpen, value, categories])
+      setCurrentParent(parent)
+    }
+  }, [isLoading, currentCategory, findCategory])
 
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
@@ -204,10 +194,10 @@ export function ProductsCategoryInput({
             {isLoading && filteredCategories.length === 0 && (
               <DefaultLoadingSkeleton />
             )}
-            {filteredCategories.length === 0 && (
+            {!isLoading && filteredCategories.length === 0 && (
               <CommandEmpty>No categories found.</CommandEmpty>
             )}
-            {currentParent !== null && !searchTerm && (
+            {filled(currentParent) && !searchTerm && (
               <>
                 <CommandGroup>
                   <CommandItem
@@ -218,7 +208,7 @@ export function ProductsCategoryInput({
                       size={16}
                       className="text-muted-foreground/80"
                     />
-                    <span>{getParentName(currentParent)}</span>
+                    <span>{currentParent?.name}</span>
                   </CommandItem>
                 </CommandGroup>
                 <CommandSeparator />
@@ -242,7 +232,7 @@ export function ProductsCategoryInput({
                       onClick={(e) => {
                         e.stopPropagation()
 
-                        handleNavigateToSubcategory(category.id)
+                        handleNavigateToSubcategory(category)
                       }}
                     >
                       <ChevronRightIcon

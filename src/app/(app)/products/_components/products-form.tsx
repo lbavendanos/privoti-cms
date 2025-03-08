@@ -26,17 +26,17 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { MultipleTag } from '@/components/ui/multiple-tag'
 import { LoadingButton } from '@/components/ui/loading-button'
 import { SearchableSelect } from '@/components/ui/searchable-select'
 import { SortableFileInput } from '@/components/ui/sortable-file-input'
-import { MultipleSelector, Option } from '@/components/ui/multiple-selector'
+import { MultipleSelector } from '@/components/ui/multiple-selector'
 import { ProductsStatusInput } from './products-status-input'
 import { ProductsOptionsInput } from './products-options-input'
 import { ProductsVariantsInput } from './products-variants-input'
+import { ProductsCategoryInput } from './products-category-input'
 import { ChevronLeft } from 'lucide-react'
 
 function getDirtyFields<T extends Record<string, unknown>>(
@@ -53,15 +53,6 @@ function getDirtyFields<T extends Record<string, unknown>>(
     return dirtyValues
   }, {} as Partial<T>)
 }
-
-const CATEGORIES: Option[] = [
-  { label: 'Shirts', value: 'shirts' },
-  { label: 'Pants', value: 'pants' },
-  { label: 'Jackets', value: 'jackets' },
-  { label: 'Shoes', value: 'shoes' },
-  { label: 'Accessories', value: 'accessories' },
-  { label: 'Hats', value: 'hats' },
-]
 
 const formSchema = z.object({
   title: z.string().min(1, {
@@ -100,7 +91,14 @@ const formSchema = z.object({
     }),
   ),
   status: z.enum(['draft', 'active', 'archived']),
-  category_id: z.string().optional(),
+  category: z
+    .object({
+      id: z.string(),
+      name: z.string(),
+      parent_id: z.string().nullable(),
+    })
+    .nullable()
+    .optional(),
   type: z
     .object({
       label: z.string(),
@@ -142,7 +140,7 @@ export function ProductsForm() {
       options: [],
       variants: [],
       status: 'draft',
-      category_id: '',
+      category: null,
       type: null,
       vendor: null,
       collections: [],
@@ -245,6 +243,14 @@ export function ProductsForm() {
             )
           })
         })
+
+        return
+      }
+
+      if (typedKey === 'category') {
+        const category = dirtyValues[typedKey]
+
+        formData.append('category_id', category ? category.id : '')
 
         return
       }
@@ -517,25 +523,24 @@ export function ProductsForm() {
                   </CardHeader>
                   <CardContent>
                     <div className="grid gap-6">
-                      <div className="space-y-2">
-                        <Label>
-                          Categories{' '}
-                          <span className="text-muted-foreground">
-                            (optional)
-                          </span>
-                        </Label>
-                        <MultipleSelector
-                          defaultOptions={CATEGORIES}
-                          badgeVariant="secondary"
-                          commandProps={{
-                            label: 'Jackets',
-                          }}
-                          placeholder="Jackets"
-                          emptyIndicator="No category found"
-                          hidePlaceholderWhenSelected
-                          hideClearAllButton
-                        />
-                      </div>
+                      <FormField
+                        control={form.control}
+                        name="category"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>
+                              Category{' '}
+                              <span className="text-muted-foreground">
+                                (optional)
+                              </span>
+                            </FormLabel>
+                            <FormControl>
+                              <ProductsCategoryInput {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
                       <FormField
                         control={form.control}
                         name="type"

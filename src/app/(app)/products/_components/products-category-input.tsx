@@ -1,5 +1,8 @@
 'use client'
 
+import { blank, cn, filled } from '@/lib/utils'
+import { getProductCategories } from '@/core/actions/product-category'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import {
   Command,
@@ -7,112 +10,161 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
+  CommandSeparator,
 } from '@/components/ui/command'
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
-import { getProductCategories } from '@/core/actions/product-category'
-import { Loader2 } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import {
+  CheckIcon,
+  ChevronDownIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  Loader2,
+  X,
+} from 'lucide-react'
 
 interface Category {
-  id: number
+  id: string
   name: string
-  parent_id: number | null
+  parent_id: string | null
 }
 
-interface CategorySelectorProps {
-  value: { label: string; value: string } | null
-  onChange: (value: { label: string; value: string } | null) => void
+interface ProductsCategoryInputProps {
+  id?: string
+  value?: Category | null
+  onChange?: React.Dispatch<React.SetStateAction<Category | null>>
 }
 
 export function ProductsCategoryInput({
-  value,
+  id,
+  value: currentCategory,
   onChange,
-}: CategorySelectorProps) {
+}: ProductsCategoryInputProps) {
   const [categories, setCategories] = useState<Category[]>([])
-  const [currentParent, setCurrentParent] = useState<number | null>(null)
+  const [currentParent, setCurrentParent] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
-  const [isOpen, setIsOpen] = useState(false)
-  const [loading, setLoading] = useState(true)
   const [categoriesLoaded, setCategoriesLoaded] = useState(false)
+
+  const [isOpen, setIsOpen] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     if (!categoriesLoaded) {
-      setLoading(true)
+      setIsLoading(true)
+
       getProductCategories({ all: '1', fields: 'id,name,parent_id' })
         .then((data) => {
-          setCategories(data)
-          setCategoriesLoaded(true)
-          setLoading(false)
+          const categoryList = data.map((c) => ({
+            id: c.id.toString(),
+            name: c.name,
+            parent_id: c.parent_id ? c.parent_id.toString() : null,
+          }))
 
-          if (value) {
-            const categoryId = parseInt(value.value, 10)
-            const parentPath = getParentPath(categoryId, data)
-            setCurrentParent(
-              parentPath.length > 0 ? parentPath[parentPath.length - 1] : null,
-            )
+          setCategories(categoryList)
+          setCategoriesLoaded(true)
+          setIsLoading(false)
+
+          if (currentCategory) {
+            setCurrentParent(currentCategory.parent_id)
+
+            // const categoryId = currentCategory.id
+            // const parentPath = getParentPath(categoryId, categoryList)
+            //
+            // console.log(parentPath)
+            //
+            // setCurrentParent(
+            //   parentPath.length > 0 ? parentPath[parentPath.length - 1] : null,
+            // )
           }
         })
-        .catch(() => setLoading(false))
+        .catch(() => setIsLoading(false))
     }
-  }, [categoriesLoaded, value])
+  }, [categoriesLoaded, currentCategory])
 
-  function getChildren(parentId: number | null) {
-    return categories.filter((cat) => cat.parent_id === parentId)
-  }
+  const getChildren = useCallback(
+    (parentId: string | null) => {
+      return categories.filter((c) => c.parent_id === parentId)
+    },
+    [categories],
+  )
 
-  function hasChildren(categoryId: number) {
-    return categories.some((cat) => cat.parent_id === categoryId)
-  }
+  const hasChildren = useCallback(
+    (categoryId: string) => {
+      return categories.some((c) => c.parent_id === categoryId)
+    },
+    [categories],
+  )
 
-  function getParent(categoryId: number) {
-    return categories.find((cat) => cat.id === categoryId)?.parent_id ?? null
-  }
+  const getParent = useCallback(
+    (categoryId: string) => {
+      return categories.find((c) => c.id === categoryId)?.parent_id ?? null
+    },
+    [categories],
+  )
 
-  function getParentPath(
-    categoryId: number,
-    categoryList: Category[],
-  ): number[] {
-    const path: number[] = []
-    let current = categoryId
-    while (current !== null) {
-      const parent = categoryList.find((cat) => cat.id === current)?.parent_id
-      if (parent !== null) {
-        path.unshift(parent)
-        current = parent
+  const getParentName = useCallback(
+    (categoryId: string) => {
+      return categories.find((c) => c.id === categoryId)?.name ?? ''
+    },
+    [categories],
+  )
+
+  // function getParentPath(
+  //   categoryId: string,
+  //   categoryList: Category[],
+  // ): string[] {
+  //   const path: string[] = []
+  //
+  //   let current = categoryId
+  //
+  //   while (current !== null) {
+  //     const parent = categoryList.find((cat) => cat.id === current)?.parent_id
+  //
+  //     if (parent !== null) {
+  //       path.unshift(parent)
+  //       current = parent
+  //     } else {
+  //       break
+  //     }
+  //   }
+  //
+  //   return path
+  // }
+
+  const filteredCategories = useMemo(
+    () =>
+      searchTerm
+        ? categories.filter((c) =>
+            c.name.toLowerCase().includes(searchTerm.toLowerCase()),
+          )
+        : getChildren(currentParent),
+    [currentParent, categories, searchTerm, getChildren],
+  )
+
+  const handleSelectCategory = useCallback(
+    (newCategory: Category) => {
+      if (currentCategory && currentCategory.id === newCategory.id) {
+        onChange?.(null)
       } else {
-        break
+        onChange?.(newCategory)
       }
-    }
-    return path
-  }
 
-  const filteredCategories = searchTerm
-    ? categories.filter((cat) =>
-        cat.name.toLowerCase().includes(searchTerm.toLowerCase()),
-      )
-    : getChildren(currentParent)
+      setIsOpen(false)
+    },
+    [currentCategory, onChange],
+  )
 
-  const handleSelectCategory = (category: Category) => {
-    if (value && value.value === String(category.id)) {
-      onChange(null)
-    } else {
-      onChange({ label: category.name, value: String(category.id) })
-    }
-    setIsOpen(false)
-  }
-
-  const handleNavigateToSubcategory = (categoryId: number) => {
+  const handleNavigateToSubcategory = useCallback((categoryId: string) => {
     setCurrentParent(categoryId)
     setSearchTerm('')
-  }
+  }, [])
 
-  const handleGoBack = () => {
+  const handleGoBack = useCallback(() => {
     setCurrentParent(getParent(currentParent!))
-  }
+  }, [currentParent, getParent])
 
   // useEffect(() => {
   //   if (isOpen) {
@@ -131,48 +183,107 @@ export function ProductsCategoryInput({
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
-        <Button variant="outline">
-          {value ? value.label : 'Selecciona una categoría'}
+        <Button
+          id={id}
+          variant="outline"
+          role="combobox"
+          aria-expanded={isOpen}
+          className="relative w-full justify-between border-input bg-background px-3 font-normal outline-none outline-offset-0 hover:bg-background focus-visible:outline-[3px]"
+        >
+          <span
+            className={cn(
+              'truncate',
+              blank(currentCategory) && 'text-muted-foreground',
+            )}
+          >
+            {filled(currentCategory)
+              ? currentCategory?.name
+              : 'Select category'}
+          </span>
+          <div className="flex shrink-0 gap-x-2">
+            {filled(currentCategory) && (
+              <span
+                onClick={(e) => {
+                  e.preventDefault()
+
+                  setSearchTerm('')
+                  onChange?.(null)
+                }}
+              >
+                <X size={16} className="text-muted-foreground/80" />
+              </span>
+            )}
+            <ChevronDownIcon
+              size={16}
+              className="text-muted-foreground/80"
+              aria-hidden="true"
+            />
+          </div>
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-72 p-2">
-        {loading ? (
+      <PopoverContent
+        className="w-full min-w-[var(--radix-popper-anchor-width)] border-input p-0"
+        align="start"
+      >
+        {isLoading ? (
           <div className="flex items-center justify-center p-4">
             <Loader2 className="h-5 w-5 animate-spin" />
           </div>
         ) : (
           <Command shouldFilter={false}>
             <CommandInput
-              placeholder="Buscar categoría..."
+              placeholder="Search category"
               value={searchTerm}
               onValueChange={setSearchTerm}
             />
             <CommandList>
               {currentParent !== null && !searchTerm && (
-                <CommandItem onSelect={handleGoBack}>🔙 Volver</CommandItem>
+                <>
+                  <CommandGroup>
+                    <CommandItem
+                      className="cursor-pointer"
+                      onSelect={handleGoBack}
+                    >
+                      <ChevronLeftIcon
+                        size={16}
+                        className="text-muted-foreground/80"
+                      />
+                      <span>{getParentName(currentParent)}</span>
+                    </CommandItem>
+                  </CommandGroup>
+                  <CommandSeparator />
+                </>
               )}
-
               <CommandGroup>
                 {filteredCategories.length > 0 ? (
                   filteredCategories.map((category) => (
                     <CommandItem
-                      key={String(category.id)}
-                      value={String(category.id)}
-                      className="flex justify-between"
+                      key={category.id}
+                      value={category.id}
+                      className="cursor-pointer p-0"
                       onSelect={() => handleSelectCategory(category)}
                     >
-                      <span>{category.name}</span>
+                      {currentCategory &&
+                        currentCategory.id === category.id && (
+                          <CheckIcon size={16} className="absolute left-2" />
+                        )}
+                      <span className="flex-1 py-1.5 pl-8">
+                        {category.name}
+                      </span>
                       {hasChildren(category.id) && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
+                        <span
+                          className="ml-auto px-2 py-1.5"
                           onClick={(e) => {
                             e.stopPropagation()
+
                             handleNavigateToSubcategory(category.id)
                           }}
                         >
-                          ➡
-                        </Button>
+                          <ChevronRightIcon
+                            size={16}
+                            className="text-muted-foreground/80"
+                          />
+                        </span>
                       )}
                     </CommandItem>
                   ))

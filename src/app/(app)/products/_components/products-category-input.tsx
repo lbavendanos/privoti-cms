@@ -12,6 +12,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
+import { getProductCategories } from '@/core/actions/product-category'
+import { Loader2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
 const categories = [
@@ -44,37 +46,6 @@ const categories = [
   { id: 27, name: 'Comedores', parent_id: 21 },
 ]
 
-// Función para obtener los hijos de una categoría
-function getChildren(parentId: number | null) {
-  return categories.filter((cat) => cat.parent_id === parentId)
-}
-
-// Función para verificar si una categoría tiene hijos
-function hasChildren(categoryId: number) {
-  return categories.some((cat) => cat.parent_id === categoryId)
-}
-
-// Función para obtener el padre inmediato de una categoría
-function getParent(categoryId: number) {
-  const category = categories.find((cat) => cat.id === categoryId)
-  return category?.parent_id ?? null
-}
-
-function getParentPath(categoryId: number): number[] {
-  const path: number[] = []
-  let current = categoryId
-  while (current !== null) {
-    const parent = getParent(current)
-    if (parent !== null) {
-      path.unshift(parent)
-      current = parent
-    } else {
-      break
-    }
-  }
-  return path
-}
-
 interface Category {
   label: string
   value: string
@@ -89,19 +60,65 @@ export function ProductsCategoryInput({
   value,
   onChange,
 }: CategorySelectorProps) {
+  const [categories, setCategories] = useState<Category[]>([])
   const [currentParent, setCurrentParent] = useState<number | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
   const [isOpen, setIsOpen] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [categoriesLoaded, setCategoriesLoaded] = useState(false)
 
+  // Cargar categorías solo una vez
   useEffect(() => {
-    if (isOpen && value) {
-      const categoryId = parseInt(value.value, 10)
-      const parentPath = getParentPath(categoryId)
-      setCurrentParent(
-        parentPath.length > 0 ? parentPath[parentPath.length - 1] : null,
-      )
+    if (!categoriesLoaded) {
+      setLoading(true)
+      getProductCategories({ all: '1', fields: 'id,name,parent_id' })
+        .then((data) => {
+          setCategories(data)
+          setCategoriesLoaded(true)
+          setLoading(false)
+
+          // Si hay una categoría preseleccionada, navegar hasta ella
+          if (value) {
+            const categoryId = parseInt(value.value, 10)
+            const parentPath = getParentPath(categoryId, data)
+            setCurrentParent(
+              parentPath.length > 0 ? parentPath[parentPath.length - 1] : null,
+            )
+          }
+        })
+        .catch(() => setLoading(false))
     }
-  }, [isOpen, value])
+  }, [categoriesLoaded, value])
+
+  function getChildren(parentId: number | null) {
+    return categories.filter((cat) => cat.parent_id === parentId)
+  }
+
+  function hasChildren(categoryId: number) {
+    return categories.some((cat) => cat.parent_id === categoryId)
+  }
+
+  function getParent(categoryId: number) {
+    return categories.find((cat) => cat.id === categoryId)?.parent_id ?? null
+  }
+
+  function getParentPath(
+    categoryId: number,
+    categoryList: Category[],
+  ): number[] {
+    const path: number[] = []
+    let current = categoryId
+    while (current !== null) {
+      const parent = categoryList.find((cat) => cat.id === current)?.parent_id
+      if (parent !== null) {
+        path.unshift(parent)
+        current = parent
+      } else {
+        break
+      }
+    }
+    return path
+  }
 
   const filteredCategories = searchTerm
     ? categories.filter((cat) =>
@@ -109,14 +126,18 @@ export function ProductsCategoryInput({
       )
     : getChildren(currentParent)
 
-  const handleSelectCategory = (category: { id: number; name: string }) => {
-    onChange({ label: category.name, value: String(category.id) })
+  const handleSelectCategory = (category: Category) => {
+    if (value && value.value === String(category.id)) {
+      onChange(null) // Deseleccionar si ya está seleccionada
+    } else {
+      onChange({ label: category.name, value: String(category.id) })
+    }
     setIsOpen(false)
   }
 
   const handleNavigateToSubcategory = (categoryId: number) => {
     setCurrentParent(categoryId)
-    setSearchTerm('') // Limpiar búsqueda
+    setSearchTerm('')
   }
 
   const handleGoBack = () => {
@@ -126,47 +147,56 @@ export function ProductsCategoryInput({
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
-        <Button variant="outline" onClick={() => setIsOpen(true)}>
+        <Button variant="outline">
           {value ? value.label : 'Selecciona una categoría'}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-72 p-2">
-        <Command>
-          <CommandInput
-            placeholder="Buscar categoría..."
-            value={searchTerm}
-            onValueChange={setSearchTerm}
-          />
-          <CommandList>
-            {currentParent !== null && !searchTerm && (
-              <CommandItem onSelect={handleGoBack}>🔙 Volver</CommandItem>
-            )}
+        {loading ? (
+          <div className="flex items-center justify-center p-4">
+            <Loader2 className="h-5 w-5 animate-spin" />
+          </div>
+        ) : (
+          <Command>
+            <CommandInput
+              placeholder="Buscar categoría..."
+              value={searchTerm}
+              onValueChange={setSearchTerm}
+            />
+            <CommandList>
+              {currentParent !== null && !searchTerm && (
+                <CommandItem onSelect={handleGoBack}>🔙 Volver</CommandItem>
+              )}
 
-            {filteredCategories.length > 0 ? (
-              filteredCategories.map((category) => (
-                <CommandItem key={category.id} className="flex justify-between">
-                  <span onClick={() => handleSelectCategory(category)}>
-                    {category.name}
-                  </span>
-                  {hasChildren(category.id) && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        handleNavigateToSubcategory(category.id)
-                      }}
-                    >
-                      ➡
-                    </Button>
-                  )}
-                </CommandItem>
-              ))
-            ) : (
-              <CommandItem disabled>No se encontraron categorías</CommandItem>
-            )}
-          </CommandList>
-        </Command>
+              {filteredCategories.length > 0 ? (
+                filteredCategories.map((category) => (
+                  <CommandItem
+                    key={category.id}
+                    className="flex justify-between"
+                  >
+                    <span onClick={() => handleSelectCategory(category)}>
+                      {category.name}
+                    </span>
+                    {hasChildren(category.id) && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleNavigateToSubcategory(category.id)
+                        }}
+                      >
+                        ➡
+                      </Button>
+                    )}
+                  </CommandItem>
+                ))
+              ) : (
+                <CommandItem disabled>No se encontraron categorías</CommandItem>
+              )}
+            </CommandList>
+          </Command>
+        )}
       </PopoverContent>
     </Popover>
   )

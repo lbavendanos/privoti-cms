@@ -1,5 +1,7 @@
+'use client'
+
 import { cn } from '@/lib/utils'
-import { useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { type InputProps } from './input'
 import { Badge } from '@/components/ui/badge'
 import { X } from 'lucide-react'
@@ -10,32 +12,40 @@ type MultipleTagProps = Omit<InputProps, 'value' | 'onChange'> & {
 }
 
 export function MultipleTag({
-  value,
+  value: currentTags,
   className,
   placeholder,
   onChange,
+  onBlur,
   ...props
 }: MultipleTagProps) {
   const [pendingDataPoint, setPendingDataPoint] = useState('')
 
-  const addPendingDataPoint = () => {
+  const addPendingDataPoint = useCallback(() => {
     if (pendingDataPoint) {
-      const newDataPoints = new Set([...value, pendingDataPoint])
-      onChange(Array.from(newDataPoints))
-      setPendingDataPoint('')
-    }
-  }
+      const newDataPoints = new Set([...currentTags, pendingDataPoint])
 
-  useEffect(() => {
-    if (pendingDataPoint.includes(',')) {
-      const newDataPoints = new Set([
-        ...value,
-        ...pendingDataPoint.split(',').map((chunk) => chunk.trim()),
-      ])
       onChange(Array.from(newDataPoints))
       setPendingDataPoint('')
     }
-  }, [pendingDataPoint, onChange, value])
+  }, [pendingDataPoint, currentTags, onChange])
+
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === 'Enter' || e.key === ',') {
+        e.preventDefault()
+        addPendingDataPoint()
+      } else if (
+        e.key === 'Backspace' &&
+        pendingDataPoint.length === 0 &&
+        currentTags.length > 0
+      ) {
+        e.preventDefault()
+        onChange(currentTags.slice(0, -1))
+      }
+    },
+    [pendingDataPoint, currentTags, onChange, addPendingDataPoint],
+  )
 
   return (
     <div
@@ -44,14 +54,14 @@ export function MultipleTag({
         className,
       )}
     >
-      {value.map((item) => (
-        <Badge key={item} variant="secondary">
-          {item}
+      {currentTags.map((tag) => (
+        <Badge key={tag} variant="secondary">
+          {tag}
           <button
             type="button"
             className="ml-1 rounded-full outline-none ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2"
             onClick={() => {
-              onChange(value.filter((i) => i !== item))
+              onChange(currentTags.filter((t) => t !== tag))
             }}
           >
             <X className="h-3 w-3 text-muted-foreground hover:text-foreground" />
@@ -61,21 +71,13 @@ export function MultipleTag({
       <input
         className="flex-1 text-base outline-none placeholder:text-neutral-500 dark:placeholder:text-neutral-400 md:text-sm"
         value={pendingDataPoint}
-        placeholder={value.length === 0 ? placeholder : ''}
+        placeholder={currentTags.length === 0 ? placeholder : ''}
         onChange={(e) => setPendingDataPoint(e.target.value)}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ',') {
-            e.preventDefault()
-            addPendingDataPoint()
-          } else if (
-            e.key === 'Backspace' &&
-            pendingDataPoint.length === 0 &&
-            value.length > 0
-          ) {
-            e.preventDefault()
-            onChange(value.slice(0, -1))
-          }
+        onBlur={(e) => {
+          addPendingDataPoint()
+          onBlur?.(e)
         }}
+        onKeyDown={handleKeyDown}
         {...props}
       />
     </div>

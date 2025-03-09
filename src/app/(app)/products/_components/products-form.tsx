@@ -53,6 +53,7 @@ function getDirtyFields<T extends Record<string, unknown>>(
 }
 
 const formSchema = z.object({
+  status: z.enum(['draft', 'active', 'archived']),
   title: z.string().min(1, {
     message: 'Please provide a valid title.',
   }),
@@ -88,7 +89,6 @@ const formSchema = z.object({
       ),
     }),
   ),
-  status: z.enum(['draft', 'active', 'archived']),
   category: z
     .object({
       id: z.string(),
@@ -129,6 +129,7 @@ export function ProductsForm() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      status: 'draft',
       title: '',
       subtitle: '',
       description: '',
@@ -136,7 +137,6 @@ export function ProductsForm() {
       media: [],
       options: [],
       variants: [],
-      status: 'draft',
       category: null,
       type: null,
       vendor: null,

@@ -54,6 +54,10 @@ function getDirtyFields<T extends Record<string, unknown>>(
   }, {} as Partial<T>)
 }
 
+const MAX_FILE_SIZE = 1024 * 1024 // 1MB
+const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp']
+const ALLOWED_VIDEO_TYPES = ['video/mp4', 'video/webm']
+
 const formSchema = z.object({
   status: z.enum(['draft', 'active', 'archived']),
   title: z.string().min(1, {
@@ -70,7 +74,19 @@ const formSchema = z.object({
       type: z.string(),
       url: z.string(),
       rank: z.number(),
-      file: z.any().optional(),
+      file: z
+        .instanceof(File)
+        .refine(
+          (file) =>
+            (ALLOWED_IMAGE_TYPES.includes(file.type) ||
+              ALLOWED_VIDEO_TYPES.includes(file.type)) &&
+            file.size <= MAX_FILE_SIZE,
+          {
+            message:
+              'The file must be an image (JPG, PNG, WEBP) or a video (MP4, WEBM) and no larger than 1MB',
+          },
+        )
+        .optional(),
     }),
   ),
   options: z.array(

@@ -25,7 +25,7 @@ export type Product = {
   subtitle?: string
   handle: string
   description?: string
-  status: string
+  status: 'draft' | 'active' | 'archived'
   tags?: string[]
   metadata?: Record<string, string>
   category_id?: number
@@ -36,6 +36,7 @@ export type Product = {
   category?: ProductCategory
   type?: ProductType
   vendor?: Vendor
+  collections?: Collection[]
   media?: ProductMedia[]
   options?: ProductOption[]
   variants?: ProductVariant[]

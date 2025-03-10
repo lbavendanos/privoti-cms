@@ -121,7 +121,11 @@ export function ProductsCategoryInput({
     if (!categoriesLoaded) {
       setIsLoading(true)
 
-      getProductCategories({ all: '1', fields: 'id,name,parent_id' })
+      getProductCategories({
+        all: '1',
+        fields: 'id,name,parent_id',
+        name: 'category',
+      })
         .then((data) => {
           const categoryList = data.map((c) => ({
             id: c.id.toString(),

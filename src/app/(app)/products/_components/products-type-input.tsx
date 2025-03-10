@@ -20,7 +20,11 @@ export function ProductsTypeInput({
   ...props
 }: ProductsTypeInputProps) {
   const handleSearch = useCallback(async (value: string) => {
-    const types = await getProductTypes({ search: value, fields: 'id,name' })
+    const types = await getProductTypes({
+      search: value,
+      fields: 'id,name',
+      name: 'type',
+    })
 
     return types.map((type) => ({
       label: type.name,

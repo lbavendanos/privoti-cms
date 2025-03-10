@@ -3,9 +3,11 @@
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { useToast } from '@/hooks/use-toast'
+import { useRouter } from 'next/navigation'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { createProduct } from '@/core/actions/product'
-import { useTransition } from 'react'
+import { useCallback, useTransition } from 'react'
+import { createProduct, updateProduct } from '@/core/actions/product'
+import { type Product } from '@/core/types'
 import Link from 'next/link'
 import {
   Card,
@@ -62,10 +64,13 @@ const formSchema = z.object({
   tags: z.array(z.string()),
   media: z.array(
     z.object({
-      id: z.string(),
-      file: z.any(),
+      uuid: z.string(),
+      id: z.string().optional(),
+      name: z.string(),
+      type: z.string(),
       url: z.string(),
       rank: z.number(),
+      file: z.any().optional(),
     }),
   ),
   options: z.array(
@@ -121,165 +126,220 @@ const formSchema = z.object({
     .optional(),
 })
 
-export function ProductsForm() {
-  const [isPending, startTransition] = useTransition()
+function generateDefaultValue(product?: Product): z.infer<typeof formSchema> {
+  return {
+    status: product ? product.status : 'draft',
+    title: product?.title ?? '',
+    subtitle: product?.subtitle ?? '',
+    description: product?.description ?? '',
+    tags: product?.tags ?? [],
+    media: product?.media
+      ? product.media
+          .sort((a, b) => a.rank - b.rank)
+          .map((media) => ({
+            uuid: crypto.randomUUID(),
+            id: media.id.toString(),
+            name: media.name,
+            type: media.type,
+            url: media.url,
+            rank: media.rank,
+          }))
+      : [],
+    options: [],
+    variants: [],
+    category: product?.category
+      ? {
+          id: product.category.id.toString(),
+          name: product.category.name,
+          parentId: product.category.parent_id
+            ? product.category.parent_id.toString()
+            : null,
+        }
+      : null,
+    type: product?.type
+      ? { id: product.type.id.toString(), name: product.type.name }
+      : null,
+    vendor: product?.vendor
+      ? { id: product.vendor.id.toString(), name: product.vendor.name }
+      : null,
+    collections: product?.collections
+      ? product.collections.map((collection) => ({
+          id: collection.id.toString(),
+          title: collection.title,
+        }))
+      : [],
+  }
+}
 
+type ProductsFormProps = {
+  product?: Product
+}
+
+export function ProductsForm({ product }: ProductsFormProps) {
+  const router = useRouter()
   const { toast } = useToast()
+
+  const [isPending, startTransition] = useTransition()
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      status: 'draft',
-      title: '',
-      subtitle: '',
-      description: '',
-      tags: [],
-      media: [],
-      options: [],
-      variants: [],
-      category: null,
-      type: null,
-      vendor: null,
-      collections: [],
-    },
+    defaultValues: generateDefaultValue(product),
   })
 
-  const handleSubmit = (values: z.infer<typeof formSchema>) => {
-    const dirtyValues = getDirtyFields<typeof formSchema._type>(
-      form.formState.dirtyFields,
-      values,
-    )
-    const formData = new FormData()
+  const handleSubmit = useCallback(
+    (values: z.infer<typeof formSchema>) => {
+      const dirtyValues = getDirtyFields<typeof formSchema._type>(
+        form.formState.dirtyFields,
+        values,
+      )
 
-    Object.keys(dirtyValues).forEach((key) => {
-      const typedKey = key as keyof typeof dirtyValues
+      const formData = new FormData()
 
-      if (typedKey === 'media') {
-        const media = dirtyValues[typedKey]
+      Object.keys(dirtyValues).forEach((key) => {
+        const typedKey = key as keyof typeof dirtyValues
 
-        media?.forEach((media, mediaIndex) => {
-          formData.append(`media[${mediaIndex}][id]`, media.id)
-          formData.append(`media[${mediaIndex}][file]`, media.file)
-          formData.append(`media[${mediaIndex}][rank]`, media.rank.toString())
-        })
+        if (typedKey === 'media') {
+          const media = dirtyValues[typedKey]
 
-        return
-      }
-
-      if (typedKey === 'options') {
-        const options = dirtyValues[typedKey]
-
-        options?.forEach((option, optionIndex) => {
-          formData.append(`options[${optionIndex}][id]`, option.id)
-          formData.append(`options[${optionIndex}][name]`, option.name)
-
-          option.values?.forEach((value, valueIndex) => {
-            formData.append(
-              `options[${optionIndex}][values][${valueIndex}]`,
-              value,
-            )
+          media?.forEach((media, mediaIndex) => {
+            if (media.id) {
+              formData.append(`media[${mediaIndex}][id]`, media.id)
+            }
+            if (media.file) {
+              formData.append(`media[${mediaIndex}][file]`, media.file)
+            }
+            formData.append(`media[${mediaIndex}][rank]`, media.rank.toString())
           })
-        })
 
-        return
-      }
+          return
+        }
 
-      if (typedKey === 'variants') {
-        const variants = dirtyValues[typedKey]
+        if (typedKey === 'options') {
+          const options = dirtyValues[typedKey]
 
-        variants?.forEach((variant, variantIndex) => {
-          formData.append(`variants[${variantIndex}][id]`, variant.id)
-          formData.append(`variants[${variantIndex}][name]`, variant.name)
-          formData.append(
-            `variants[${variantIndex}][price]`,
-            variant.price.toString(),
-          )
-          formData.append(
-            `variants[${variantIndex}][quantity]`,
-            variant.quantity.toString(),
-          )
+          options?.forEach((option, optionIndex) => {
+            formData.append(`options[${optionIndex}][id]`, option.id)
+            formData.append(`options[${optionIndex}][name]`, option.name)
 
-          variant.options?.forEach((option, optionIndex) => {
-            formData.append(
-              `variants[${variantIndex}][options][${optionIndex}][id]`,
-              option.id,
-            )
-            formData.append(
-              `variants[${variantIndex}][options][${optionIndex}][value]`,
-              option.value,
-            )
+            option.values?.forEach((value, valueIndex) => {
+              formData.append(
+                `options[${optionIndex}][values][${valueIndex}]`,
+                value,
+              )
+            })
           })
-        })
 
-        return
-      }
+          return
+        }
 
-      if (typedKey === 'category') {
-        const category = dirtyValues[typedKey]
+        if (typedKey === 'variants') {
+          const variants = dirtyValues[typedKey]
 
-        formData.append('category_id', category ? category.id : '')
+          variants?.forEach((variant, variantIndex) => {
+            formData.append(`variants[${variantIndex}][id]`, variant.id)
+            formData.append(`variants[${variantIndex}][name]`, variant.name)
+            formData.append(
+              `variants[${variantIndex}][price]`,
+              variant.price.toString(),
+            )
+            formData.append(
+              `variants[${variantIndex}][quantity]`,
+              variant.quantity.toString(),
+            )
 
-        return
-      }
+            variant.options?.forEach((option, optionIndex) => {
+              formData.append(
+                `variants[${variantIndex}][options][${optionIndex}][id]`,
+                option.id,
+              )
+              formData.append(
+                `variants[${variantIndex}][options][${optionIndex}][value]`,
+                option.value,
+              )
+            })
+          })
 
-      if (typedKey === 'type') {
-        const type = dirtyValues[typedKey]
+          return
+        }
 
-        formData.append('type_id', type ? type.id : '')
+        if (typedKey === 'category') {
+          const category = dirtyValues[typedKey]
 
-        return
-      }
+          formData.append('category_id', category ? category.id : '')
 
-      if (typedKey === 'vendor') {
-        const vendor = dirtyValues[typedKey]
+          return
+        }
 
-        formData.append('vendor_id', vendor ? vendor.id : '')
+        if (typedKey === 'type') {
+          const type = dirtyValues[typedKey]
 
-        return
-      }
+          formData.append('type_id', type ? type.id : '')
 
-      if (typedKey === 'collections') {
-        const collections = dirtyValues[typedKey]
+          return
+        }
 
-        collections?.forEach((collection, collectionIndex) => {
-          formData.append(`collections[${collectionIndex}]`, collection.id)
-        })
+        if (typedKey === 'vendor') {
+          const vendor = dirtyValues[typedKey]
 
-        return
-      }
+          formData.append('vendor_id', vendor ? vendor.id : '')
 
-      if (typedKey === 'tags') {
-        const tags = dirtyValues[typedKey]
+          return
+        }
 
-        tags?.forEach((tag, tagIndex) => {
-          formData.append(`tags[${tagIndex}]`, tag)
-        })
+        if (typedKey === 'collections') {
+          const collections = dirtyValues[typedKey]
 
-        return
-      }
+          collections?.forEach((collection, collectionIndex) => {
+            formData.append(`collections[${collectionIndex}]`, collection.id)
+          })
 
-      formData.append(key, dirtyValues[typedKey] as string)
-    })
+          return
+        }
 
-    startTransition(async () => {
-      const state = await createProduct(null, formData)
+        if (typedKey === 'tags') {
+          const tags = dirtyValues[typedKey]
 
-      if (state.isClientError || state.isServerError) {
-        toast({
-          variant: 'destructive',
-          description: state.message,
-        })
-      }
+          tags?.forEach((tag, tagIndex) => {
+            formData.append(`tags[${tagIndex}]`, tag)
+          })
 
-      if (state.isSuccess) {
-        toast({
-          description: 'Product created successfully.',
-        })
+          return
+        }
 
-        form.reset()
-      }
-    })
-  }
+        formData.append(key, dirtyValues[typedKey] as string)
+      })
+
+      startTransition(async () => {
+        const state = product
+          ? await updateProduct(product.id, formData)
+          : await createProduct(formData)
+
+        if (state.isClientError || state.isServerError) {
+          toast({
+            variant: 'destructive',
+            description: state.message,
+          })
+        }
+
+        if (state.isSuccess) {
+          toast({
+            description: `Product ${product ? 'updated' : 'created'} successfully.`,
+          })
+
+          form.reset(generateDefaultValue(state.data))
+
+          if (state.data) {
+            if (!product) {
+              router.replace(`/products/${state.data.id}`)
+            } else {
+              router.refresh()
+            }
+          }
+        }
+      })
+    },
+    [product, form, router, toast],
+  )
 
   return (
     <Form {...form}>
@@ -300,7 +360,7 @@ export function ProductsForm() {
                   </Link>
                 </Button>
                 <h1 className="flex-1 shrink-0 whitespace-nowrap text-xl font-semibold tracking-tight sm:grow-0">
-                  Create Product
+                  {product ? product.title : 'Create Product'}
                 </h1>
               </div>
             </div>

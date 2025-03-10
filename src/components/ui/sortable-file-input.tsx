@@ -1,5 +1,7 @@
+'use client'
+
 import { CSS } from '@dnd-kit/utilities'
-import React from 'react'
+import { useCallback } from 'react'
 import Image from 'next/image'
 import {
   DndContext,
@@ -18,10 +20,12 @@ import { Button } from './button'
 import { GripVertical, Upload, X } from 'lucide-react'
 
 type FileItem = {
-  id: string
-  file?: File
+  uuid: string
+  name: string
+  type: string
   url: string
   rank: number
+  file?: File
 }
 
 type SortableFileInputProps = {
@@ -37,74 +41,95 @@ export function SortableFileInput({
   value,
   onChange,
 }: SortableFileInputProps) {
-  const handleDrop = (event: React.DragEvent<HTMLLabelElement>) => {
-    event.preventDefault()
+  const handleFiles = useCallback(
+    (files: FileList) => {
+      return Array.from(files)
+        .filter(
+          (file) =>
+            file.type.startsWith('image/') || file.type.startsWith('video/'),
+        )
+        .map((file, index) => ({
+          uuid: crypto.randomUUID(),
+          name: file.name,
+          type: file.type.split('/')[0],
+          url: URL.createObjectURL(file),
+          rank: value.length + index,
+          file,
+        }))
+    },
+    [value],
+  )
 
-    const newFiles = Array.from(event.dataTransfer.files)
-      .filter(
-        (file) =>
-          file.type.startsWith('image/') || file.type.startsWith('video/'),
+  const handleDrop = useCallback(
+    (event: React.DragEvent<HTMLLabelElement>) => {
+      event.preventDefault()
+
+      const newFiles = handleFiles(event.dataTransfer.files)
+
+      onChange([...value, ...newFiles])
+    },
+    [value, onChange, handleFiles],
+  )
+
+  const handleFileSelect = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const newFiles = handleFiles(
+        event.target.files ?? ([] as unknown as FileList),
       )
-      .map((file, index) => ({
-        id: `${file.name}-${file.size}-${Date.now()}`,
-        file,
-        url: URL.createObjectURL(file),
-        rank: value.length + index,
+
+      onChange([...value, ...newFiles])
+      event.target.value = ''
+    },
+    [value, onChange, handleFiles],
+  )
+
+  const handleDragOver = useCallback(
+    (event: React.DragEvent<HTMLLabelElement>) => {
+      event.preventDefault()
+    },
+    [],
+  )
+
+  const updatePositions = useCallback(
+    (files: FileItem[]) => {
+      const updatedFiles = files.map((file, index) => ({
+        ...file,
+        rank: index,
       }))
 
-    onChange([...value, ...newFiles])
-  }
+      onChange(updatedFiles)
+    },
+    [onChange],
+  )
 
-  const handleDragOver = (event: React.DragEvent<HTMLLabelElement>) => {
-    event.preventDefault()
-  }
-
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const newFiles = Array.from(event.target.files || [])
-      .filter(
-        (file) =>
-          file.type.startsWith('image/') || file.type.startsWith('video/'),
-      )
-      .map((file, index) => ({
-        id: `${file.name}-${file.size}-${Date.now()}`,
-        file,
-        url: URL.createObjectURL(file),
-        rank: value.length + index,
-      }))
-
-    onChange([...value, ...newFiles])
-    event.target.value = ''
-  }
-
-  const handleDelete = (id: string) => {
-    const updatedFiles = value.filter((file) => file.id !== id)
-
-    updatePositions(updatedFiles)
-  }
-
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event
-
-    if (active.id !== over?.id) {
-      const oldIndex = value.findIndex((item) => item.id === active.id)
-      const newIndex = value.findIndex((item) => item.id === over?.id)
-      const updatedFiles = arrayMove(value, oldIndex, newIndex)
+  const handleDelete = useCallback(
+    (id: string) => {
+      const updatedFiles = value.filter((file) => file.uuid !== id)
 
       updatePositions(updatedFiles)
-    }
-  }
+    },
+    [value, updatePositions],
+  )
 
-  const updatePositions = (files: FileItem[]) => {
-    const updatedFiles = files.map((file, index) => ({
-      ...file,
-      rank: index,
-    }))
-    onChange(updatedFiles)
-  }
+  const handleDragEnd = useCallback(
+    (event: DragEndEvent) => {
+      const { active, over } = event
+
+      if (active.id !== over?.id) {
+        const oldIndex = value.findIndex((item) => item.uuid === active.id)
+        const newIndex = value.findIndex((item) => item.uuid === over?.id)
+        const updatedFiles = arrayMove(value, oldIndex, newIndex)
+
+        updatePositions(updatedFiles)
+      }
+    },
+    [value, updatePositions],
+  )
 
   return (
     <div className="flex flex-col gap-y-4">
       <DndContext
+        id="sortable-files"
         collisionDetection={closestCenter}
         onDragEnd={handleDragEnd}
         measuring={{
@@ -113,13 +138,13 @@ export function SortableFileInput({
           },
         }}
       >
-        <SortableContext items={value.map((file) => file.id)}>
+        <SortableContext items={value.map((file) => file.uuid)}>
           {value.length > 0 && (
             <ul className="grid grid-cols-2 gap-4 md:grid-cols-3">
               {value.map((file) => (
                 <SortableItem
-                  key={file.id}
-                  id={file.id}
+                  key={file.uuid}
+                  id={file.uuid}
                   file={file}
                   onDelete={handleDelete}
                 />
@@ -192,16 +217,16 @@ const SortableItem: React.FC<SortableItemProps> = ({ id, file, onDelete }) => {
       style={style}
       className="group relative flex touch-none flex-col items-center rounded border"
     >
-      {file.file?.type.startsWith('image/') && (
+      {file.type === 'image' && (
         <Image
           src={file.url}
-          alt={file.file?.name}
+          alt={file.name}
           width={200}
           height={200}
           className="w-full object-cover"
         />
       )}
-      {file.file?.type.startsWith('video/') && (
+      {file.type === 'video' && (
         <video controls className="h-52 w-full object-cover">
           <source src={file.url} type={file.file?.type} />
         </video>
@@ -211,7 +236,7 @@ const SortableItem: React.FC<SortableItemProps> = ({ id, file, onDelete }) => {
           type="button"
           variant="ghost"
           className="w-4 md:opacity-0 md:transition-opacity md:group-hover:opacity-100"
-          onClick={() => onDelete(file.id)}
+          onClick={() => onDelete(id)}
         >
           <X />
         </Button>

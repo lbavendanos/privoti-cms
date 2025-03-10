@@ -20,7 +20,11 @@ export function ProductsVendorInput({
   ...props
 }: ProductsVendorInputProps) {
   const handleSearch = useCallback(async (value: string) => {
-    const vendors = await getVendors({ search: value, fields: 'id,name' })
+    const vendors = await getVendors({
+      search: value,
+      fields: 'id,name',
+      name: 'vendor',
+    })
 
     return vendors.map((vendor) => ({
       label: vendor.name,

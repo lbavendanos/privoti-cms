@@ -23,6 +23,7 @@ export function ProductsCollectionsInput({
     const collections = await getCollections({
       search: value,
       fields: 'id,title',
+      name: 'collections',
     })
 
     return collections.map((collection) => ({

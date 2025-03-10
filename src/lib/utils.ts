@@ -111,3 +111,13 @@ export function blank(value: unknown): boolean {
 export function filled(value: unknown): boolean {
   return !blank(value)
 }
+
+/**
+ * Capitalizes the first letter of a string.
+ *
+ * @param str - The string to capitalize.
+ * @returns The capitalized string.
+ */
+export function capitalize(str: string) {
+  return str.charAt(0).toUpperCase() + str.slice(1)
+}

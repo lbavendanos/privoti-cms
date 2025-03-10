@@ -1,5 +1,6 @@
 'use client'
 
+import { capitalize } from '@/lib/utils'
 import { usePathname } from 'next/navigation'
 import React from 'react'
 import {
@@ -11,15 +12,6 @@ import {
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb'
 import Link from 'next/link'
-
-/**
- * Capitalizes the first letter of a string.
- * @param str - The string to capitalize.
- * @returns The capitalized string.
- */
-function capitalize(str: string) {
-  return str.charAt(0).toUpperCase() + str.slice(1)
-}
 
 export function NavPath() {
   const pathname = usePathname()

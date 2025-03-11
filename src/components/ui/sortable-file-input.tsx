@@ -21,6 +21,7 @@ import { GripVertical, Upload, X } from 'lucide-react'
 
 type FileItem = {
   uuid: string
+  id?: string
   name: string
   type: string
   url: string

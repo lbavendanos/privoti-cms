@@ -78,14 +78,16 @@ const formSchema = z.object({
         .instanceof(File)
         .refine(
           (file) =>
-            (ALLOWED_IMAGE_TYPES.includes(file.type) ||
-              ALLOWED_VIDEO_TYPES.includes(file.type)) &&
-            file.size <= MAX_FILE_SIZE,
+            ALLOWED_IMAGE_TYPES.includes(file.type) ||
+            ALLOWED_VIDEO_TYPES.includes(file.type),
           {
             message:
-              'The file must be an image (JPG, PNG, WEBP) or a video (MP4, WEBM) and no larger than 1MB',
+              'The file must be an image (JPG, PNG, WEBP) or a video (MP4, WEBM)',
           },
         )
+        .refine((file) => file.size <= MAX_FILE_SIZE, {
+          message: 'The file must not be larger than 1MB',
+        })
         .optional(),
     }),
   ),
@@ -474,7 +476,16 @@ export function ProductsForm({ product }: ProductsFormProps) {
                           <FormControl>
                             <SortableFileInput {...field} />
                           </FormControl>
-                          <FormMessage />
+                          {form.formState.errors.media?.map?.(
+                            (media, index) => (
+                              <p
+                                key={index}
+                                className="text-sm font-medium text-destructive"
+                              >
+                                {media?.file?.message}
+                              </p>
+                            ),
+                          )}
                         </FormItem>
                       )}
                     />

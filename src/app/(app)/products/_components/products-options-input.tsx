@@ -21,27 +21,28 @@ import { Separator } from '@/components/ui/separator'
 import { ProductsOptionsSheet } from './products-options-sheet'
 import { Ellipsis, Pencil, PlusCircle, Trash2 } from 'lucide-react'
 
-export type OptionItem = {
-  id: string
+export type Option = {
+  uuid: string
+  id?: string
   name: string
   values: string[]
 }
 
 type ProductsOptionsInputProps = {
-  value: OptionItem[]
-  onChange: React.Dispatch<React.SetStateAction<OptionItem[]>>
+  value: Option[]
+  onChange: (value: Option[]) => void
 }
 
 export function ProductsOptionsInput({
-  value,
+  value: currentOptions,
   onChange,
 }: ProductsOptionsInputProps) {
-  const [selectedOption, setSelectedOption] = useState<OptionItem | null>(null)
+  const [selectedOption, setSelectedOption] = useState<Option | null>(null)
   const [open, setOpen] = useState(false)
 
   return (
     <div className="grid gap-6">
-      {value.length > 0 && (
+      {currentOptions.length > 0 && (
         <Table>
           <TableHeader>
             <TableRow className="relative">
@@ -53,8 +54,8 @@ export function ProductsOptionsInput({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {value.map((option) => (
-              <TableRow key={option.id} className="relative">
+            {currentOptions.map((option) => (
+              <TableRow key={option.uuid} className="relative">
                 <TableCell>{option.name}</TableCell>
                 <TableCell className="space-x-1 space-y-1">
                   {option.values.map((value) => (
@@ -93,7 +94,9 @@ export function ProductsOptionsInput({
                         className="cursor-pointer"
                         onClick={() =>
                           onChange(
-                            value.filter((item) => item.id !== option.id),
+                            currentOptions.filter(
+                              (o) => o.uuid !== option.uuid,
+                            ),
                           )
                         }
                       >
@@ -126,19 +129,19 @@ export function ProductsOptionsInput({
       </div>
       <ProductsOptionsSheet
         value={
-          selectedOption || { id: Date.now().toString(), name: '', values: [] }
+          selectedOption ?? { uuid: crypto.randomUUID(), name: '', values: [] }
         }
         open={open}
         onOpenChange={setOpen}
-        onChange={(option) => {
+        onChange={(newOption) => {
           if (selectedOption) {
             onChange(
-              value.map((item) =>
-                item.id === selectedOption.id ? (option as OptionItem) : item,
+              currentOptions.map((o) =>
+                o.uuid === selectedOption.uuid ? newOption : o,
               ),
             )
           } else {
-            onChange([...value, option as OptionItem])
+            onChange([...currentOptions, newOption])
           }
 
           setSelectedOption(null)

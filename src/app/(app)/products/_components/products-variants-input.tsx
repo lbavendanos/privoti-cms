@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import React from 'react'
-import { type OptionItem } from './products-options-input'
+import { type Option } from './products-options-input'
 import {
   Table,
   TableBody,
@@ -32,7 +32,7 @@ export type VariantItem = {
 }
 
 type ProductsVariantsInputProps = {
-  options: OptionItem[]
+  options: Option[]
   value: VariantItem[]
   onChange: React.Dispatch<React.SetStateAction<VariantItem[]>>
 }

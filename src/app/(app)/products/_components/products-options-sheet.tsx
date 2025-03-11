@@ -4,7 +4,7 @@ import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { useEffect } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { type OptionItem } from './products-options-input'
+import { type Option } from './products-options-input'
 import {
   Sheet,
   SheetClose,
@@ -27,9 +27,15 @@ import { Button } from '@/components/ui/button'
 import { MultipleTag } from '@/components/ui/multiple-tag'
 
 const formSchema = z.object({
-  id: z.string().min(1, {
-    message: 'Please provide a valid ID.',
+  uuid: z.string().min(1, {
+    message: 'Please provide a valid UUID.',
   }),
+  id: z
+    .string()
+    .min(1, {
+      message: 'Please provide a valid ID.',
+    })
+    .optional(),
   name: z.string().min(1, {
     message: 'Please provide a valid title.',
   }),
@@ -37,14 +43,14 @@ const formSchema = z.object({
 })
 
 type ProductsOptionsSheetProps = {
-  value: OptionItem
-  onChange: React.Dispatch<React.SetStateAction<OptionItem>>
+  value: Option
+  onChange: (value: Option) => void
   open: boolean
   onOpenChange: (open: boolean) => void
 }
 
 export function ProductsOptionsSheet({
-  value: option,
+  value: currentOption,
   open,
   onChange,
   onOpenChange,
@@ -52,9 +58,10 @@ export function ProductsOptionsSheet({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      id: option.id,
-      name: option.name,
-      values: option.values,
+      uuid: currentOption.uuid,
+      id: currentOption.id,
+      name: currentOption.name,
+      values: currentOption.values,
     },
   })
 
@@ -64,12 +71,15 @@ export function ProductsOptionsSheet({
   }
 
   useEffect(() => {
-    form.reset({
-      id: option.id,
-      name: option.name,
-      values: option.values,
-    })
-  }, [option, form])
+    if (open) {
+      form.reset({
+        uuid: currentOption.uuid,
+        id: currentOption.id,
+        name: currentOption.name,
+        values: currentOption.values,
+      })
+    }
+  }, [currentOption, open, form])
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>

@@ -4,7 +4,7 @@ import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { useEffect } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { type OptionItem } from './products-options-input'
+import { type Option } from './products-options-input'
 import { type VariantItem } from './products-variants-input'
 import {
   Sheet,
@@ -60,7 +60,7 @@ const formSchema = z.object({
 })
 
 type ProductsVariantsSheetProps = {
-  options: OptionItem[]
+  options: Option[]
   value: VariantItem
   onChange: React.Dispatch<React.SetStateAction<VariantItem>>
   open: boolean

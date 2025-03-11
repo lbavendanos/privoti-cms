@@ -38,6 +38,7 @@ import { ProductsVariantsInput } from './products-variants-input'
 import { ProductsCategoryInput } from './products-category-input'
 import { ProductsCollectionsInput } from './products-collections-input'
 import { ChevronLeft } from 'lucide-react'
+import { blank } from '@/lib/utils'
 
 function getDirtyFields<T extends Record<string, unknown>>(
   dirtyFields: Partial<Record<keyof T, unknown>>,
@@ -93,7 +94,8 @@ const formSchema = z.object({
   ),
   options: z.array(
     z.object({
-      id: z.string(),
+      uuid: z.string(),
+      id: z.string().optional(),
       name: z.string(),
       values: z.array(z.string()),
     }),
@@ -163,7 +165,13 @@ function generateDefaultValue(product?: Product): z.infer<typeof formSchema> {
             rank: media.rank,
           }))
       : [],
-    options: [],
+    options:
+      product?.options?.map((option) => ({
+        uuid: crypto.randomUUID(),
+        id: option.id.toString(),
+        name: option.name,
+        values: option.values?.map((value) => value.value) ?? [],
+      })) ?? [],
     variants: [],
     category: product?.category
       ? {
@@ -219,15 +227,22 @@ export function ProductsForm({ product }: ProductsFormProps) {
         if (typedKey === 'media') {
           const media = dirtyValues[typedKey]
 
-          media?.forEach((media, mediaIndex) => {
-            if (media.id) {
-              formData.append(`media[${mediaIndex}][id]`, media.id)
-            }
-            if (media.file) {
-              formData.append(`media[${mediaIndex}][file]`, media.file)
-            }
-            formData.append(`media[${mediaIndex}][rank]`, media.rank.toString())
-          })
+          if (blank(media)) {
+            formData.append('media', '')
+          } else {
+            media?.forEach((media, mediaIndex) => {
+              if (media.id) {
+                formData.append(`media[${mediaIndex}][id]`, media.id)
+              }
+              if (media.file) {
+                formData.append(`media[${mediaIndex}][file]`, media.file)
+              }
+              formData.append(
+                `media[${mediaIndex}][rank]`,
+                media.rank.toString(),
+              )
+            })
+          }
 
           return
         }
@@ -235,17 +250,23 @@ export function ProductsForm({ product }: ProductsFormProps) {
         if (typedKey === 'options') {
           const options = dirtyValues[typedKey]
 
-          options?.forEach((option, optionIndex) => {
-            formData.append(`options[${optionIndex}][id]`, option.id)
-            formData.append(`options[${optionIndex}][name]`, option.name)
+          if (blank(options)) {
+            formData.append('options', '')
+          } else {
+            options?.forEach((option, optionIndex) => {
+              if (option.id) {
+                formData.append(`options[${optionIndex}][id]`, option.id)
+              }
+              formData.append(`options[${optionIndex}][name]`, option.name)
 
-            option.values?.forEach((value, valueIndex) => {
-              formData.append(
-                `options[${optionIndex}][values][${valueIndex}]`,
-                value,
-              )
+              option.values?.forEach((value, valueIndex) => {
+                formData.append(
+                  `options[${optionIndex}][values][${valueIndex}]`,
+                  value,
+                )
+              })
             })
-          })
+          }
 
           return
         }

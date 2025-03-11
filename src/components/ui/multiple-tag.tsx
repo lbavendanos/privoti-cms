@@ -60,6 +60,7 @@ export function MultipleTag({
           <button
             type="button"
             className="ml-1 rounded-full outline-none ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2"
+            tabIndex={-1}
             onClick={() => {
               onChange(currentTags.filter((t) => t !== tag))
             }}

@@ -11,7 +11,7 @@ type Collection = {
 
 type ProductsCollectionsInputProps = {
   value?: Collection[]
-  onChange: (value: Collection[]) => void
+  onChange?: (value: Collection[]) => void
 }
 
 export function ProductsCollectionsInput({

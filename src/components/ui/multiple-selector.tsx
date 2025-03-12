@@ -46,12 +46,6 @@ interface MultipleSelectorProps {
   triggerSearchOnFocus?: boolean
   /** async search */
   onSearch?: (value: string) => Promise<Option[]>
-  /**
-   * sync search. This search will not showing loadingIndicator.
-   * The rest props are the same as async search.
-   * i.e.: creatable, groupBy, delay.
-   **/
-  onSearchSync?: (value: string) => Option[]
   onChange?: (options: Option[]) => void
   /** Limit the maximum number of selected options. */
   maxSelected?: number
@@ -88,8 +82,6 @@ interface MultipleSelectorProps {
 export interface MultipleSelectorRef {
   selectedValue: Option[]
   input: HTMLInputElement
-  focus: () => void
-  reset: () => void
 }
 
 export function useDebounce<T>(value: T, delay?: number): T {
@@ -189,7 +181,6 @@ const MultipleSelector = React.forwardRef<
       options: arrayOptions,
       delay,
       onSearch,
-      onSearchSync,
       loadingIndicator,
       emptyIndicator,
       maxSelected = Number.MAX_SAFE_INTEGER,
@@ -211,9 +202,7 @@ const MultipleSelector = React.forwardRef<
   ) => {
     const inputRef = React.useRef<HTMLInputElement>(null)
     const [open, setOpen] = React.useState(false)
-    const [onScrollbar, setOnScrollbar] = React.useState(false)
     const [isLoading, setIsLoading] = React.useState(false)
-    const dropdownRef = React.useRef<HTMLDivElement>(null) // Added this
 
     const [selected, setSelected] = React.useState<Option[]>(value || [])
     const [options, setOptions] = React.useState<GroupOption>(
@@ -227,23 +216,10 @@ const MultipleSelector = React.forwardRef<
       () => ({
         selectedValue: [...selected],
         input: inputRef.current as HTMLInputElement,
-        focus: () => inputRef?.current?.focus(),
-        reset: () => setSelected([]),
+        focus: () => inputRef.current?.focus(),
       }),
       [selected],
     )
-
-    const handleClickOutside = (event: MouseEvent | TouchEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node) &&
-        inputRef.current &&
-        !inputRef.current.contains(event.target as Node)
-      ) {
-        setOpen(false)
-        inputRef.current.blur()
-      }
-    }
 
     const handleUnselect = React.useCallback(
       (option: Option) => {
@@ -277,21 +253,6 @@ const MultipleSelector = React.forwardRef<
     )
 
     useEffect(() => {
-      if (open) {
-        document.addEventListener('mousedown', handleClickOutside)
-        document.addEventListener('touchend', handleClickOutside)
-      } else {
-        document.removeEventListener('mousedown', handleClickOutside)
-        document.removeEventListener('touchend', handleClickOutside)
-      }
-
-      return () => {
-        document.removeEventListener('mousedown', handleClickOutside)
-        document.removeEventListener('touchend', handleClickOutside)
-      }
-    }, [open])
-
-    useEffect(() => {
       if (value) {
         setSelected(value)
       }
@@ -309,32 +270,6 @@ const MultipleSelector = React.forwardRef<
     }, [arrayDefaultOptions, arrayOptions, groupBy, onSearch, options])
 
     useEffect(() => {
-      /** sync search */
-
-      const doSearchSync = () => {
-        const res = onSearchSync?.(debouncedSearchTerm)
-        setOptions(transToGroupOption(res || [], groupBy))
-      }
-
-      const exec = async () => {
-        if (!onSearchSync || !open) return
-
-        if (triggerSearchOnFocus) {
-          doSearchSync()
-        }
-
-        if (debouncedSearchTerm) {
-          doSearchSync()
-        }
-      }
-
-      void exec()
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [debouncedSearchTerm, groupBy, open, triggerSearchOnFocus])
-
-    useEffect(() => {
-      /** async search */
-
       const doSearch = async () => {
         setIsLoading(true)
         const res = await onSearch?.(debouncedSearchTerm)
@@ -440,7 +375,6 @@ const MultipleSelector = React.forwardRef<
 
     return (
       <Command
-        ref={dropdownRef}
         {...commandProps}
         onKeyDown={(e) => {
           handleKeyDown(e)
@@ -459,7 +393,7 @@ const MultipleSelector = React.forwardRef<
       >
         <div
           className={cn(
-            'min-h-10 rounded-md border border-input text-base ring-offset-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 md:text-sm',
+            'min-h-10 rounded-md border border-input text-sm ring-offset-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2',
             {
               'px-3 py-2': selected.length !== 0,
               'cursor-text': !disabled && selected.length !== 0,
@@ -468,10 +402,10 @@ const MultipleSelector = React.forwardRef<
           )}
           onClick={() => {
             if (disabled) return
-            inputRef?.current?.focus()
+            inputRef.current?.focus()
           }}
         >
-          <div className="relative flex flex-wrap gap-1">
+          <div className="flex flex-wrap gap-1">
             {selected.map((option) => {
               return (
                 <Badge
@@ -487,6 +421,7 @@ const MultipleSelector = React.forwardRef<
                 >
                   {option.label}
                   <button
+                    type="button"
                     className={cn(
                       'ml-1 rounded-full outline-none ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2',
                       (disabled || option.fixed) && 'hidden',
@@ -518,9 +453,7 @@ const MultipleSelector = React.forwardRef<
                 inputProps?.onValueChange?.(value)
               }}
               onBlur={(event) => {
-                if (!onScrollbar) {
-                  setOpen(false)
-                }
+                setOpen(false)
                 inputProps?.onBlur?.(event)
               }}
               onFocus={(event) => {
@@ -548,12 +481,8 @@ const MultipleSelector = React.forwardRef<
             />
             <button
               type="button"
-              onClick={() => {
-                setSelected(selected.filter((s) => s.fixed))
-                onChange?.(selected.filter((s) => s.fixed))
-              }}
+              onClick={() => setSelected(selected.filter((s) => s.fixed))}
               className={cn(
-                'absolute right-0 h-6 w-6 p-0',
                 (hideClearAllButton ||
                   disabled ||
                   selected.length < 1 ||
@@ -567,18 +496,7 @@ const MultipleSelector = React.forwardRef<
         </div>
         <div className="relative">
           {open && (
-            <CommandList
-              className="absolute top-1 z-10 w-full rounded-md border bg-popover text-popover-foreground shadow-md outline-none animate-in"
-              onMouseLeave={() => {
-                setOnScrollbar(false)
-              }}
-              onMouseEnter={() => {
-                setOnScrollbar(true)
-              }}
-              onMouseUp={() => {
-                inputRef?.current?.focus()
-              }}
-            >
+            <CommandList className="absolute top-1 z-10 w-full rounded-md border bg-popover text-popover-foreground shadow-md outline-none animate-in">
               {isLoading ? (
                 <>{loadingIndicator}</>
               ) : (
@@ -599,7 +517,7 @@ const MultipleSelector = React.forwardRef<
                           return (
                             <CommandItem
                               key={option.value}
-                              value={option.label}
+                              value={option.value}
                               disabled={option.disable}
                               onMouseDown={(e) => {
                                 e.preventDefault()

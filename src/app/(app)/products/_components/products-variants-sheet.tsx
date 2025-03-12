@@ -56,7 +56,6 @@ const formSchema = z.object({
   options: z
     .array(
       z.object({
-        uuid: z.string(),
         value: z.string().min(1, {
           message: 'This field is required.',
         }),
@@ -144,7 +143,7 @@ export function ProductsVariantsSheet({
               />
               {options.map((option, index) => (
                 <FormField
-                  key={option.id}
+                  key={option.uuid}
                   control={form.control}
                   name={`options.${index}.value`}
                   render={({ field }) => (

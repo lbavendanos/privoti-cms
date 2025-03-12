@@ -29,7 +29,7 @@ export type Variant = {
   name: string
   price: number
   quantity: number
-  options: { uuid: string; value: string }[]
+  options: { value: string }[]
 }
 
 type ProductsVariantsInputProps = {
@@ -72,11 +72,11 @@ export function ProductsVariantsInput({
             {currentVariants.map((variant) => (
               <TableRow key={variant.uuid} className="relative">
                 <TableCell>{variant.name}</TableCell>
-                {options.map((o, oi) => (
+                {options.map((o, oIndex) => (
                   <TableCell key={o.uuid} className="w-2/12">
-                    {variant.options[oi] ? (
+                    {variant.options[oIndex] ? (
                       <Badge variant="secondary">
-                        {variant.options[oi].value}
+                        {variant.options[oIndex].value}
                       </Badge>
                     ) : (
                       <span className="px-5 py-0.5">-</span>
@@ -162,7 +162,6 @@ export function ProductsVariantsInput({
             price: 0,
             quantity: 0,
             options: options.map(() => ({
-              uuid: crypto.randomUUID(),
               value: '',
             })),
           }

@@ -109,7 +109,6 @@ const formSchema = z.object({
       quantity: z.number(),
       options: z.array(
         z.object({
-          uuid: z.string(),
           value: z.string(),
         }),
       ),
@@ -180,11 +179,7 @@ function generateDefaultValues(product?: Product): z.infer<typeof formSchema> {
         name: variant.name,
         price: variant.price,
         quantity: variant.quantity,
-        options:
-          variant.values?.map((value) => ({
-            uuid: crypto.randomUUID(),
-            value: value.value,
-          })) ?? [],
+        options: variant.values?.map(({ value }) => ({ value })) ?? [],
       })) ?? [],
     category: product?.category
       ? {

@@ -205,6 +205,138 @@ function generateDefaultValues(product?: Product): z.infer<typeof formSchema> {
   }
 }
 
+function generateFormData(values: z.infer<typeof formSchema>): FormData {
+  const formData = new FormData()
+
+  Object.keys(values).forEach((key) => {
+    const typedKey = key as keyof typeof values
+
+    if (typedKey === 'media') {
+      const media = values[typedKey]
+
+      if (blank(media)) {
+        formData.append('media', '')
+      } else {
+        media?.forEach((media, mediaIndex) => {
+          if (media.id) {
+            formData.append(`media[${mediaIndex}][id]`, media.id)
+          }
+          if (media.file) {
+            formData.append(`media[${mediaIndex}][file]`, media.file)
+          }
+          formData.append(`media[${mediaIndex}][rank]`, media.rank.toString())
+        })
+      }
+
+      return
+    }
+
+    if (typedKey === 'options') {
+      const options = values[typedKey]
+
+      if (blank(options)) {
+        formData.append('options', '')
+      } else {
+        options?.forEach((option, optionIndex) => {
+          if (option.id) {
+            formData.append(`options[${optionIndex}][id]`, option.id)
+          }
+          formData.append(`options[${optionIndex}][name]`, option.name)
+
+          option.values?.forEach((value, valueIndex) => {
+            formData.append(
+              `options[${optionIndex}][values][${valueIndex}]`,
+              value,
+            )
+          })
+        })
+      }
+
+      return
+    }
+
+    if (typedKey === 'variants') {
+      const variants = values[typedKey]
+
+      if (blank(variants)) {
+        formData.append('variants', '')
+      } else {
+        variants?.forEach((variant, variantIndex) => {
+          if (variant.id) {
+            formData.append(`variants[${variantIndex}][id]`, variant.id)
+          }
+          formData.append(`variants[${variantIndex}][name]`, variant.name)
+          formData.append(
+            `variants[${variantIndex}][price]`,
+            variant.price.toString(),
+          )
+          formData.append(
+            `variants[${variantIndex}][quantity]`,
+            variant.quantity.toString(),
+          )
+
+          variant.options?.forEach((option, optionIndex) => {
+            formData.append(
+              `variants[${variantIndex}][options][${optionIndex}][value]`,
+              option.value,
+            )
+          })
+        })
+      }
+
+      return
+    }
+
+    if (typedKey === 'category') {
+      const category = values[typedKey]
+
+      formData.append('category_id', category ? category.id : '')
+
+      return
+    }
+
+    if (typedKey === 'type') {
+      const type = values[typedKey]
+
+      formData.append('type_id', type ? type.id : '')
+
+      return
+    }
+
+    if (typedKey === 'vendor') {
+      const vendor = values[typedKey]
+
+      formData.append('vendor_id', vendor ? vendor.id : '')
+
+      return
+    }
+
+    if (typedKey === 'collections') {
+      const collections = values[typedKey]
+
+      collections?.forEach((collection, collectionIndex) => {
+        formData.append(`collections[${collectionIndex}]`, collection.id)
+      })
+
+      return
+    }
+
+    if (typedKey === 'tags') {
+      const tags = values[typedKey]
+
+      tags?.forEach((tag, tagIndex) => {
+        formData.append(`tags[${tagIndex}]`, tag)
+      })
+
+      return
+    }
+
+    formData.append(key, values[typedKey] as string)
+  })
+
+  return formData
+}
+
 type ProductsFormProps = {
   product?: Product
 }
@@ -227,136 +359,9 @@ export function ProductsForm({ product }: ProductsFormProps) {
         values,
       )
 
-      const formData = new FormData()
-
-      Object.keys(dirtyValues).forEach((key) => {
-        const typedKey = key as keyof typeof dirtyValues
-
-        if (typedKey === 'media') {
-          const media = dirtyValues[typedKey]
-
-          if (blank(media)) {
-            formData.append('media', '')
-          } else {
-            media?.forEach((media, mediaIndex) => {
-              if (media.id) {
-                formData.append(`media[${mediaIndex}][id]`, media.id)
-              }
-              if (media.file) {
-                formData.append(`media[${mediaIndex}][file]`, media.file)
-              }
-              formData.append(
-                `media[${mediaIndex}][rank]`,
-                media.rank.toString(),
-              )
-            })
-          }
-
-          return
-        }
-
-        if (typedKey === 'options') {
-          const options = dirtyValues[typedKey]
-
-          if (blank(options)) {
-            formData.append('options', '')
-          } else {
-            options?.forEach((option, optionIndex) => {
-              if (option.id) {
-                formData.append(`options[${optionIndex}][id]`, option.id)
-              }
-              formData.append(`options[${optionIndex}][name]`, option.name)
-
-              option.values?.forEach((value, valueIndex) => {
-                formData.append(
-                  `options[${optionIndex}][values][${valueIndex}]`,
-                  value,
-                )
-              })
-            })
-          }
-
-          return
-        }
-
-        if (typedKey === 'variants') {
-          const variants = dirtyValues[typedKey]
-
-          if (blank(variants)) {
-            formData.append('variants', '')
-          } else {
-            variants?.forEach((variant, variantIndex) => {
-              if (variant.id) {
-                formData.append(`variants[${variantIndex}][id]`, variant.id)
-              }
-              formData.append(`variants[${variantIndex}][name]`, variant.name)
-              formData.append(
-                `variants[${variantIndex}][price]`,
-                variant.price.toString(),
-              )
-              formData.append(
-                `variants[${variantIndex}][quantity]`,
-                variant.quantity.toString(),
-              )
-
-              variant.options?.forEach((option, optionIndex) => {
-                formData.append(
-                  `variants[${variantIndex}][options][${optionIndex}][value]`,
-                  option.value,
-                )
-              })
-            })
-          }
-
-          return
-        }
-
-        if (typedKey === 'category') {
-          const category = dirtyValues[typedKey]
-
-          formData.append('category_id', category ? category.id : '')
-
-          return
-        }
-
-        if (typedKey === 'type') {
-          const type = dirtyValues[typedKey]
-
-          formData.append('type_id', type ? type.id : '')
-
-          return
-        }
-
-        if (typedKey === 'vendor') {
-          const vendor = dirtyValues[typedKey]
-
-          formData.append('vendor_id', vendor ? vendor.id : '')
-
-          return
-        }
-
-        if (typedKey === 'collections') {
-          const collections = dirtyValues[typedKey]
-
-          collections?.forEach((collection, collectionIndex) => {
-            formData.append(`collections[${collectionIndex}]`, collection.id)
-          })
-
-          return
-        }
-
-        if (typedKey === 'tags') {
-          const tags = dirtyValues[typedKey]
-
-          tags?.forEach((tag, tagIndex) => {
-            formData.append(`tags[${tagIndex}]`, tag)
-          })
-
-          return
-        }
-
-        formData.append(key, dirtyValues[typedKey] as string)
-      })
+      const formData = generateFormData(
+        dirtyValues as Required<typeof dirtyValues>,
+      )
 
       startTransition(async () => {
         const state = product

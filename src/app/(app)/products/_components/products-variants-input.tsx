@@ -23,42 +23,41 @@ import { Separator } from '@/components/ui/separator'
 import { ProductsVariantsSheet } from './products-variants-sheet'
 import { Ellipsis, Pencil, PlusCircle, Trash2 } from 'lucide-react'
 
-export type VariantItem = {
-  id: string
+export type Variant = {
+  uuid: string
+  id?: string
   name: string
   price: number
   quantity: number
-  options: { id: string; value: string }[]
+  options: { uuid: string; value: string }[]
 }
 
 type ProductsVariantsInputProps = {
+  value: Variant[]
   options: Option[]
-  value: VariantItem[]
-  onChange: React.Dispatch<React.SetStateAction<VariantItem[]>>
+  onChange: (value: Variant[]) => void
 }
 
 export function ProductsVariantsInput({
+  value: currentVariants,
   options,
-  value,
   onChange,
 }: ProductsVariantsInputProps) {
   const appLocale = process.env.NEXT_PUBLIC_APP_LOCALE
   const appCurrency = process.env.NEXT_PUBLIC_APP_CURRENCY
 
-  const [selectedVariant, setSelectedVariant] = useState<VariantItem | null>(
-    null,
-  )
+  const [selectedVariant, setSelectedVariant] = useState<Variant | null>(null)
   const [open, setOpen] = useState(false)
 
   return (
     <div className="grid gap-6">
-      {value.length > 0 && (
+      {currentVariants.length > 0 && (
         <Table>
           <TableHeader>
             <TableRow className="relative">
               <TableHead className="w-2/12">Name</TableHead>
               {options.map((option) => (
-                <TableHead key={option.id} className="w-2/12">
+                <TableHead key={option.uuid} className="w-2/12">
                   {option.name}
                 </TableHead>
               ))}
@@ -70,21 +69,27 @@ export function ProductsVariantsInput({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {value.map((option) => (
-              <TableRow key={option.id} className="relative">
-                <TableCell>{option.name}</TableCell>
-                {option.options.map((opt) => (
-                  <TableCell key={opt.id} className="w-2/12">
-                    <Badge variant="secondary">{opt.value}</Badge>
+            {currentVariants.map((variant) => (
+              <TableRow key={variant.uuid} className="relative">
+                <TableCell>{variant.name}</TableCell>
+                {options.map((o, oi) => (
+                  <TableCell key={o.uuid} className="w-2/12">
+                    {variant.options[oi] ? (
+                      <Badge variant="secondary">
+                        {variant.options[oi].value}
+                      </Badge>
+                    ) : (
+                      <span className="px-5 py-0.5">-</span>
+                    )}
                   </TableCell>
                 ))}
                 <TableCell>
                   {new Intl.NumberFormat(appLocale, {
                     style: 'currency',
                     currency: appCurrency,
-                  }).format(option.price)}
+                  }).format(variant.price)}
                 </TableCell>
-                <TableCell>{option.quantity}</TableCell>
+                <TableCell>{variant.quantity}</TableCell>
                 <TableCell className="sticky right-0 z-10 bg-white after:absolute after:inset-y-0 after:left-0 after:h-full after:w-px after:bg-border after:content-['']">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -105,7 +110,7 @@ export function ProductsVariantsInput({
                       <DropdownMenuItem
                         className="cursor-pointer"
                         onClick={() => {
-                          setSelectedVariant(option)
+                          setSelectedVariant(variant)
                           setOpen(true)
                         }}
                       >
@@ -115,7 +120,9 @@ export function ProductsVariantsInput({
                         className="cursor-pointer"
                         onClick={() =>
                           onChange(
-                            value.filter((item) => item.id !== option.id),
+                            currentVariants.filter(
+                              (v) => v.uuid !== variant.uuid,
+                            ),
                           )
                         }
                       >
@@ -149,30 +156,28 @@ export function ProductsVariantsInput({
       <ProductsVariantsSheet
         options={options}
         value={
-          selectedVariant || {
-            id: Date.now().toString(),
+          selectedVariant ?? {
+            uuid: crypto.randomUUID(),
             name: '',
-            options: options.map((opt) => ({
-              id: opt.id,
-              value: '',
-            })),
             price: 0,
             quantity: 0,
+            options: options.map(() => ({
+              uuid: crypto.randomUUID(),
+              value: '',
+            })),
           }
         }
         open={open}
         onOpenChange={setOpen}
-        onChange={(variant) => {
+        onChange={(newVariant) => {
           if (selectedVariant) {
             onChange(
-              value.map((item) =>
-                item.id === selectedVariant.id
-                  ? (variant as VariantItem)
-                  : item,
+              currentVariants.map((v) =>
+                v.uuid === selectedVariant.uuid ? newVariant : v,
               ),
             )
           } else {
-            onChange([...value, variant as VariantItem])
+            onChange([...currentVariants, newVariant])
           }
 
           setSelectedVariant(null)

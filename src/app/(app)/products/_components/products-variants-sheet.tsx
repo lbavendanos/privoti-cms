@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form'
 import { useEffect } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { type Option } from './products-options-input'
-import { type VariantItem } from './products-variants-input'
+import { type Variant } from './products-variants-input'
 import {
   Sheet,
   SheetClose,
@@ -35,9 +35,15 @@ import {
 import { CurrencyInput } from '@/components/ui/currency-input'
 
 const formSchema = z.object({
-  id: z.string().min(1, {
-    message: 'Please provide a valid ID.',
+  uuid: z.string().min(1, {
+    message: 'Please provide a valid UUID.',
   }),
+  id: z
+    .string()
+    .min(1, {
+      message: 'Please provide a valid ID.',
+    })
+    .optional(),
   name: z.string().min(1, {
     message: 'The name is required.',
   }),
@@ -50,7 +56,7 @@ const formSchema = z.object({
   options: z
     .array(
       z.object({
-        id: z.string(),
+        uuid: z.string(),
         value: z.string().min(1, {
           message: 'This field is required.',
         }),
@@ -60,16 +66,16 @@ const formSchema = z.object({
 })
 
 type ProductsVariantsSheetProps = {
+  value: Variant
   options: Option[]
-  value: VariantItem
-  onChange: React.Dispatch<React.SetStateAction<VariantItem>>
   open: boolean
   onOpenChange: (open: boolean) => void
+  onChange: (value: Variant) => void
 }
 
 export function ProductsVariantsSheet({
   options,
-  value: variant,
+  value: currentVariant,
   open,
   onChange,
   onOpenChange,
@@ -77,11 +83,12 @@ export function ProductsVariantsSheet({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      id: variant.id,
-      name: variant.name,
-      options: variant.options,
-      price: variant.price,
-      quantity: variant.quantity,
+      uuid: currentVariant.uuid,
+      id: currentVariant.id,
+      name: currentVariant.name,
+      price: currentVariant.price,
+      quantity: currentVariant.quantity,
+      options: currentVariant.options,
     },
   })
 
@@ -91,14 +98,17 @@ export function ProductsVariantsSheet({
   }
 
   useEffect(() => {
-    form.reset({
-      id: variant.id,
-      name: variant.name,
-      options: variant.options,
-      price: variant.price,
-      quantity: variant.quantity,
-    })
-  }, [variant, form])
+    if (open) {
+      form.reset({
+        uuid: currentVariant.uuid,
+        id: currentVariant.id,
+        name: currentVariant.name,
+        price: currentVariant.price,
+        quantity: currentVariant.quantity,
+        options: currentVariant.options,
+      })
+    }
+  }, [currentVariant, open, form])
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>

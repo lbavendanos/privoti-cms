@@ -1,6 +1,7 @@
 'use client'
 
 import { z } from 'zod'
+import { blank } from '@/lib/utils'
 import { useForm } from 'react-hook-form'
 import { useToast } from '@/hooks/use-toast'
 import { useRouter } from 'next/navigation'
@@ -38,7 +39,6 @@ import { ProductsVariantsInput } from './products-variants-input'
 import { ProductsCategoryInput } from './products-category-input'
 import { ProductsCollectionsInput } from './products-collections-input'
 import { ChevronLeft } from 'lucide-react'
-import { blank } from '@/lib/utils'
 
 function getDirtyFields<T extends Record<string, unknown>>(
   dirtyFields: Partial<Record<keyof T, unknown>>,
@@ -102,13 +102,14 @@ const formSchema = z.object({
   ),
   variants: z.array(
     z.object({
-      id: z.string(),
+      uuid: z.string(),
+      id: z.string().optional(),
       name: z.string(),
       price: z.number(),
       quantity: z.number(),
       options: z.array(
         z.object({
-          id: z.string(),
+          uuid: z.string(),
           value: z.string(),
         }),
       ),
@@ -146,7 +147,7 @@ const formSchema = z.object({
     .optional(),
 })
 
-function generateDefaultValue(product?: Product): z.infer<typeof formSchema> {
+function generateDefaultValues(product?: Product): z.infer<typeof formSchema> {
   return {
     status: product ? product.status : 'draft',
     title: product?.title ?? '',
@@ -172,7 +173,19 @@ function generateDefaultValue(product?: Product): z.infer<typeof formSchema> {
         name: option.name,
         values: option.values?.map((value) => value.value) ?? [],
       })) ?? [],
-    variants: [],
+    variants:
+      product?.variants?.map((variant) => ({
+        uuid: crypto.randomUUID(),
+        id: variant.id.toString(),
+        name: variant.name,
+        price: variant.price,
+        quantity: variant.quantity,
+        options:
+          variant.values?.map((value) => ({
+            uuid: crypto.randomUUID(),
+            value: value.value,
+          })) ?? [],
+      })) ?? [],
     category: product?.category
       ? {
           id: product.category.id.toString(),
@@ -209,7 +222,7 @@ export function ProductsForm({ product }: ProductsFormProps) {
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: generateDefaultValue(product),
+    defaultValues: generateDefaultValues(product),
   })
 
   const handleSubmit = useCallback(
@@ -274,29 +287,31 @@ export function ProductsForm({ product }: ProductsFormProps) {
         if (typedKey === 'variants') {
           const variants = dirtyValues[typedKey]
 
-          variants?.forEach((variant, variantIndex) => {
-            formData.append(`variants[${variantIndex}][id]`, variant.id)
-            formData.append(`variants[${variantIndex}][name]`, variant.name)
-            formData.append(
-              `variants[${variantIndex}][price]`,
-              variant.price.toString(),
-            )
-            formData.append(
-              `variants[${variantIndex}][quantity]`,
-              variant.quantity.toString(),
-            )
+          if (blank(variants)) {
+            formData.append('variants', '')
+          } else {
+            variants?.forEach((variant, variantIndex) => {
+              if (variant.id) {
+                formData.append(`variants[${variantIndex}][id]`, variant.id)
+              }
+              formData.append(`variants[${variantIndex}][name]`, variant.name)
+              formData.append(
+                `variants[${variantIndex}][price]`,
+                variant.price.toString(),
+              )
+              formData.append(
+                `variants[${variantIndex}][quantity]`,
+                variant.quantity.toString(),
+              )
 
-            variant.options?.forEach((option, optionIndex) => {
-              formData.append(
-                `variants[${variantIndex}][options][${optionIndex}][id]`,
-                option.id,
-              )
-              formData.append(
-                `variants[${variantIndex}][options][${optionIndex}][value]`,
-                option.value,
-              )
+              variant.options?.forEach((option, optionIndex) => {
+                formData.append(
+                  `variants[${variantIndex}][options][${optionIndex}][value]`,
+                  option.value,
+                )
+              })
             })
-          })
+          }
 
           return
         }
@@ -365,7 +380,7 @@ export function ProductsForm({ product }: ProductsFormProps) {
             description: `Product ${product ? 'updated' : 'created'} successfully.`,
           })
 
-          form.reset(generateDefaultValue(state.data))
+          form.reset(generateDefaultValues(state.data))
 
           if (state.data) {
             if (!product) {

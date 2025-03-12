@@ -44,8 +44,8 @@ const formSchema = z.object({
 
 type ProductsOptionsSheetProps = {
   value: Option
-  onChange: (value: Option) => void
   open: boolean
+  onChange: (value: Option) => void
   onOpenChange: (open: boolean) => void
 }
 

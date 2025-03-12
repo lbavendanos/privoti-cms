@@ -73,7 +73,7 @@ export type ProductOptionValue = {
 export type ProductVariant = {
   id: number
   name: string
-  price: string
+  price: number
   quantity: number
   sku?: string
   barcode?: string

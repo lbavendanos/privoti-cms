@@ -1,10 +1,10 @@
 'use client'
 
 import { z } from 'zod'
-import { blank } from '@/lib/utils'
 import { useForm } from 'react-hook-form'
 import { useToast } from '@/hooks/use-toast'
 import { useRouter } from 'next/navigation'
+import { blank, uuid } from '@/lib/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useCallback, useTransition } from 'react'
 import { createProduct, updateProduct } from '@/core/actions/product'
@@ -157,7 +157,7 @@ function generateDefaultValues(product?: Product): z.infer<typeof formSchema> {
       ? product.media
           .sort((a, b) => a.rank - b.rank)
           .map((media) => ({
-            uuid: crypto.randomUUID(),
+            uuid: uuid(),
             id: media.id.toString(),
             name: media.name,
             type: media.type,
@@ -167,14 +167,14 @@ function generateDefaultValues(product?: Product): z.infer<typeof formSchema> {
       : [],
     options:
       product?.options?.map((option) => ({
-        uuid: crypto.randomUUID(),
+        uuid: uuid(),
         id: option.id.toString(),
         name: option.name,
         values: option.values?.map((value) => value.value) ?? [],
       })) ?? [],
     variants:
       product?.variants?.map((variant) => ({
-        uuid: crypto.randomUUID(),
+        uuid: uuid(),
         id: variant.id.toString(),
         name: variant.name,
         price: variant.price,

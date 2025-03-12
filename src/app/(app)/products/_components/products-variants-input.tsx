@@ -1,7 +1,7 @@
 'use client'
 
+import { uuid } from '@/lib/utils'
 import { useState } from 'react'
-import React from 'react'
 import { type Option } from './products-options-input'
 import {
   Table,
@@ -157,7 +157,7 @@ export function ProductsVariantsInput({
         options={options}
         value={
           selectedVariant ?? {
-            uuid: crypto.randomUUID(),
+            uuid: uuid(),
             name: '',
             price: 0,
             quantity: 0,

@@ -1,7 +1,8 @@
 'use client'
 
-import { CSS } from '@dnd-kit/utilities'
+import { uuid } from '@/lib/utils'
 import { useCallback } from 'react'
+import { CSS } from '@dnd-kit/utilities'
 import Image from 'next/image'
 import {
   DndContext,
@@ -50,7 +51,7 @@ export function SortableFileInput({
             file.type.startsWith('image/') || file.type.startsWith('video/'),
         )
         .map((file, index) => ({
-          uuid: crypto.randomUUID(),
+          uuid: uuid(),
           name: file.name,
           type: file.type.split('/')[0],
           url: URL.createObjectURL(file),

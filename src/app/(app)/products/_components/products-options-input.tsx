@@ -1,5 +1,6 @@
 'use client'
 
+import { uuid } from '@/lib/utils'
 import { useState } from 'react'
 import {
   Table,
@@ -128,9 +129,7 @@ export function ProductsOptionsInput({
         </Button>
       </div>
       <ProductsOptionsSheet
-        value={
-          selectedOption ?? { uuid: crypto.randomUUID(), name: '', values: [] }
-        }
+        value={selectedOption ?? { uuid: uuid(), name: '', values: [] }}
         open={open}
         onOpenChange={setOpen}
         onChange={(newOption) => {

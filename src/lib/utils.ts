@@ -121,3 +121,12 @@ export function filled(value: unknown): boolean {
 export function capitalize(str: string) {
   return str.charAt(0).toUpperCase() + str.slice(1)
 }
+
+/**
+ * Generate a UUID.
+ *
+ * @returns {string} Returns a UUID.
+ */
+export function uuid(): string {
+  return crypto.randomUUID()
+}

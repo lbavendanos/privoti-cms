@@ -415,6 +415,28 @@ export function ProductsForm({ product }: ProductsFormProps) {
             </div>
             <div className="col-span-12 md:col-span-10 md:col-start-2 xl:col-span-7 xl:col-start-2">
               <div className="flex flex-col gap-6">
+                <Card className="block xl:hidden">
+                  <CardHeader>
+                    <CardTitle>Status</CardTitle>
+                    <CardDescription>
+                      Set the status of the product to manage its visibility.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <FormField
+                      control={form.control}
+                      name="status"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <ProductsStatusInput {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </CardContent>
+                </Card>
                 <Card>
                   <CardHeader>
                     <CardTitle>Details</CardTitle>
@@ -577,7 +599,7 @@ export function ProductsForm({ product }: ProductsFormProps) {
             </div>
             <div className="col-span-12 md:col-span-10 md:col-start-2 xl:col-span-3 xl:col-start-9">
               <div className="flex flex-col gap-6">
-                <Card>
+                <Card className="hidden xl:block">
                   <CardHeader>
                     <CardTitle>Status</CardTitle>
                     <CardDescription>

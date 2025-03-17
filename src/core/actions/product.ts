@@ -3,19 +3,32 @@
 import { api } from '@/lib/http'
 import { getSessionToken } from '@/lib/session'
 import {
+  unstable_cacheTag as cacheTag,
+  unstable_cacheLife as cacheLife,
+  revalidateTag,
+} from 'next/cache'
+import {
   type ActionResponse,
   handleActionError,
   handleActionSuccess,
 } from '@/lib/action'
 import { type Product } from '../types'
 
-export async function getProduct(id: number): Promise<Product | null> {
-  const sessionToken = await getSessionToken()
+const PRODUCT_TAG = 'product'
+
+export async function getProduct(
+  id: number,
+  sessionToken: string,
+): Promise<Product | null> {
+  'use cache'
+  cacheLife('hours')
 
   try {
     const {
       data: { data },
     } = await api.get<{ data: Product }>(`/products/${id}`, { sessionToken })
+
+    cacheTag(`${PRODUCT_TAG}_${data.id}`)
 
     return data
   } catch {
@@ -31,12 +44,14 @@ export async function createProduct(
   try {
     const {
       status,
-      data: { data: product },
+      data: { data },
     } = await api.post<{
       data: Product
     }>('/products', formData, { sessionToken })
 
-    return handleActionSuccess(status, product)
+    revalidateTag(`${PRODUCT_TAG}_${data.id}`)
+
+    return handleActionSuccess(status, data)
   } catch (error) {
     return handleActionError(error, formData)
   }
@@ -52,12 +67,14 @@ export async function updateProduct(
   try {
     const {
       status,
-      data: { data: product },
+      data: { data },
     } = await api.post<{
       data: Product
     }>(`/products/${id}`, formData, { params, sessionToken })
 
-    return handleActionSuccess(status, product)
+    revalidateTag(`${PRODUCT_TAG}_${data.id}`)
+
+    return handleActionSuccess(status, data)
   } catch (error) {
     return handleActionError(error, formData)
   }

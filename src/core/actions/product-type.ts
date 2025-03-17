@@ -7,14 +7,14 @@ import { type ProductType } from '../types'
 export async function getProductTypes(
   params: Record<string, string> = {},
 ): Promise<ProductType[]> {
-  const token = await getSessionToken()
+  const sessionToken = await getSessionToken()
 
   try {
     const {
       data: { data },
     } = await api.get<{ data: ProductType[] }>('/types', {
       params,
-      token,
+      sessionToken,
     })
 
     return data

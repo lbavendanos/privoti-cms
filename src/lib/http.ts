@@ -2,7 +2,7 @@ import 'server-only'
 
 interface ApiRequestConfig extends RequestInit {
   params?: Record<string, string>
-  token?: string | null
+  sessionToken?: string | null
 }
 
 export interface ApiResponse<TData> {
@@ -79,7 +79,9 @@ class Api {
       ...(data instanceof FormData
         ? {}
         : { 'Content-Type': 'application/json' }),
-      ...(config.token ? { Authorization: `Bearer ${config.token}` } : {}),
+      ...(config.sessionToken
+        ? { Authorization: `Bearer ${config.sessionToken}` }
+        : {}),
       ...extraHeaders,
     }
 

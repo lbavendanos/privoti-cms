@@ -7,14 +7,14 @@ import { type Collection } from '../types'
 export async function getCollections(
   params: Record<string, string> = {},
 ): Promise<Collection[]> {
-  const token = await getSessionToken()
+  const sessionToken = await getSessionToken()
 
   try {
     const {
       data: { data },
     } = await api.get<{ data: Collection[] }>('/collections', {
       params,
-      token,
+      sessionToken,
     })
 
     return data

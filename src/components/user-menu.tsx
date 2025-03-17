@@ -15,8 +15,8 @@ import { UserMenuContent } from './user-menu-content'
 import { ChevronsUpDown } from 'lucide-react'
 
 export async function UserMenu() {
-  const token = await getSessionToken()
-  const user = await getUser(token!)
+  const sessionToken = await getSessionToken()
+  const user = await getUser(sessionToken!)
 
   return (
     <SidebarMenu>

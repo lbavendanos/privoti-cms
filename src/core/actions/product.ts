@@ -10,12 +10,12 @@ import {
 import { type Product } from '../types'
 
 export async function getProduct(id: number): Promise<Product | null> {
-  const token = await getSessionToken()
+  const sessionToken = await getSessionToken()
 
   try {
     const {
       data: { data },
-    } = await api.get<{ data: Product }>(`/products/${id}`, { token })
+    } = await api.get<{ data: Product }>(`/products/${id}`, { sessionToken })
 
     return data
   } catch {
@@ -26,7 +26,7 @@ export async function getProduct(id: number): Promise<Product | null> {
 export async function createProduct(
   formData: FormData,
 ): Promise<ActionResponse<Product>> {
-  const token = await getSessionToken()
+  const sessionToken = await getSessionToken()
 
   try {
     const {
@@ -34,7 +34,7 @@ export async function createProduct(
       data: { data: product },
     } = await api.post<{
       data: Product
-    }>('/products', formData, { token })
+    }>('/products', formData, { sessionToken })
 
     return handleActionSuccess(status, product)
   } catch (error) {
@@ -46,7 +46,7 @@ export async function updateProduct(
   id: number,
   formData: FormData,
 ): Promise<ActionResponse<Product>> {
-  const token = await getSessionToken()
+  const sessionToken = await getSessionToken()
   const params = { _method: 'PUT' }
 
   try {
@@ -55,7 +55,7 @@ export async function updateProduct(
       data: { data: product },
     } = await api.post<{
       data: Product
-    }>(`/products/${id}`, formData, { params, token })
+    }>(`/products/${id}`, formData, { params, sessionToken })
 
     return handleActionSuccess(status, product)
   } catch (error) {

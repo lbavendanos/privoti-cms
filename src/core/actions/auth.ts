@@ -22,7 +22,7 @@ import { type User } from '../types'
 
 const AUTH_USER_TAG = 'auth-user'
 
-export async function getUser(token: string): Promise<User> {
+export async function getUser(sessionToken: string): Promise<User> {
   'use cache'
   cacheLife('hours')
   cacheTag(AUTH_USER_TAG)
@@ -32,7 +32,7 @@ export async function getUser(token: string): Promise<User> {
   } = await api
     .get<{
       data: User
-    }>('/auth/user', { token })
+    }>('/auth/user', { sessionToken })
     .catch(() => {
       return { data: { data: null } }
     })
@@ -52,7 +52,7 @@ export async function updateUser(
   _: unknown,
   formData: FormData,
 ): Promise<ActionResponse<User>> {
-  const token = await getSessionToken()
+  const sessionToken = await getSessionToken()
   const name = formData.get('name')
 
   try {
@@ -61,7 +61,7 @@ export async function updateUser(
       data: { data: user },
     } = await api.put<{
       data: User
-    }>('/auth/user', { name }, { token })
+    }>('/auth/user', { name }, { sessionToken })
 
     revalidateTag(AUTH_USER_TAG)
 
@@ -75,7 +75,7 @@ export async function updatePassword(
   _: unknown,
   formData: FormData,
 ): Promise<ActionResponse<object>> {
-  const token = await getSessionToken()
+  const sessionToken = await getSessionToken()
   const currentPassword = formData.get('current_password')
   const password = formData.get('password')
 
@@ -83,7 +83,7 @@ export async function updatePassword(
     const { status } = await api.post(
       '/auth/user/password',
       { current_password: currentPassword, password },
-      { token },
+      { sessionToken: sessionToken },
     )
 
     revalidateTag(AUTH_USER_TAG)
@@ -121,9 +121,9 @@ export async function login(
 }
 
 export async function logout() {
-  const token = await getSessionToken()
+  const sessionToken = await getSessionToken()
 
-  await api.post('/auth/logout', {}, { token }).catch(() => {})
+  await api.post('/auth/logout', {}, { sessionToken }).catch(() => {})
 
   await removeSession()
 
@@ -181,13 +181,13 @@ export async function resetPassword(
 export async function sendEmailVerificationNotification(): Promise<
   ActionResponse<object>
 > {
-  const token = await getSessionToken()
+  const sessionToken = await getSessionToken()
 
   try {
     const { status } = await api.post(
       '/auth/user/email/notification',
       {},
-      { token },
+      { sessionToken },
     )
 
     return handleActionSuccess(status)
@@ -202,13 +202,13 @@ export async function verifyEmail(params: {
   expires: string
   signature: string
 }): Promise<ActionResponse<object>> {
-  const token = await getSessionToken()
+  const sessionToken = await getSessionToken()
   const { id, token: hash, expires, signature } = params
 
   try {
     const { status } = await api.get(`/auth/user/email/verify/${id}/${hash}`, {
       params: { expires, signature },
-      token,
+      sessionToken,
     })
 
     revalidateTag(AUTH_USER_TAG)
@@ -223,14 +223,14 @@ export async function sendEmailChangeVerificationNotification(
   _: unknown,
   formData: FormData,
 ): Promise<ActionResponse<object>> {
-  const token = await getSessionToken()
+  const sessionToken = await getSessionToken()
   const email = formData.get('email')
 
   try {
     const { status } = await api.post(
       '/auth/user/email/new/notification',
       { email },
-      { token },
+      { sessionToken },
     )
 
     return handleActionSuccess(status)
@@ -246,7 +246,7 @@ export async function verifyNewEmail(params: {
   expires: string
   signature: string
 }): Promise<ActionResponse<object>> {
-  const token = await getSessionToken()
+  const sessionToken = await getSessionToken()
   const { id, email, token: hash, expires, signature } = params
 
   try {
@@ -254,7 +254,7 @@ export async function verifyNewEmail(params: {
       `/auth/user/email/new/verify/${id}/${email}/${hash}`,
       {
         params: { expires, signature },
-        token,
+        sessionToken,
       },
     )
 

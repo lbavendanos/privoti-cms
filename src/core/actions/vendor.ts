@@ -7,14 +7,14 @@ import { type Vendor } from '../types'
 export async function getVendors(
   params: Record<string, string> = {},
 ): Promise<Vendor[]> {
-  const token = await getSessionToken()
+  const sessionToken = await getSessionToken()
 
   try {
     const {
       data: { data },
     } = await api.get<{ data: Vendor[] }>('/vendors', {
       params,
-      token,
+      sessionToken,
     })
 
     return data

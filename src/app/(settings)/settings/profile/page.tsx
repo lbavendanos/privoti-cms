@@ -9,8 +9,8 @@ export const metadata: Metadata = {
 }
 
 export default async function ProfilePage() {
-  const token = await getSessionToken()
-  const userPromise = getUser(token!)
+  const sessionToken = await getSessionToken()
+  const userPromise = getUser(sessionToken!)
 
   return (
     <ProfileProvider userPromise={userPromise}>

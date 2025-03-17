@@ -2,7 +2,11 @@
 
 import { api } from '@/lib/http'
 import { redirect } from 'next/navigation'
-import { unstable_cacheTag as cacheTag, revalidateTag } from 'next/cache'
+import {
+  unstable_cacheTag as cacheTag,
+  unstable_cacheLife as cacheLife,
+  revalidateTag,
+} from 'next/cache'
 import {
   type ActionResponse,
   handleActionError,
@@ -20,6 +24,7 @@ const AUTH_USER_TAG = 'auth-user'
 
 export async function getUser(token: string): Promise<User> {
   'use cache'
+  cacheLife('hours')
   cacheTag(AUTH_USER_TAG)
 
   const {

@@ -2,8 +2,8 @@
 
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
-import { useEffect } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useCallback, useEffect } from 'react'
 import { type Option } from './products-options-input'
 import { type Variant } from './products-variants-input'
 import {
@@ -91,10 +91,13 @@ export function ProductsVariantsSheet({
     },
   })
 
-  const handleSubmit = (values: z.infer<typeof formSchema>) => {
-    onChange(values)
-    onOpenChange(false)
-  }
+  const handleSubmit = useCallback(
+    (values: z.infer<typeof formSchema>) => {
+      onChange(values)
+      onOpenChange(false)
+    },
+    [onChange, onOpenChange],
+  )
 
   useEffect(() => {
     if (open) {

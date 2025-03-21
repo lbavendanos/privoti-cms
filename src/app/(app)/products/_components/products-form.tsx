@@ -165,7 +165,7 @@ function generateDefaultValues(
           .sort((a, b) => a.rank - b.rank)
           .map((media) => ({
             uuid: uuid(),
-            id: media.id.toString(),
+            id: `${media.id}`,
             name: media.name,
             type: media.type,
             url: media.url,
@@ -175,14 +175,14 @@ function generateDefaultValues(
     options:
       product?.options?.map((option) => ({
         uuid: uuid(),
-        id: option.id.toString(),
+        id: `${option.id}`,
         name: option.name,
         values: option.values?.map((value) => value.value) ?? [],
       })) ?? [],
     variants:
       product?.variants?.map((variant) => ({
         uuid: uuid(),
-        id: variant.id.toString(),
+        id: `${variant.id}`,
         name: variant.name,
         price: variant.price,
         quantity: variant.quantity,
@@ -190,22 +190,22 @@ function generateDefaultValues(
       })) ?? [],
     category: product?.category
       ? {
-          id: product.category.id.toString(),
+          id: `${product.category.id}`,
           name: product.category.name,
           parentId: product.category.parent_id
-            ? product.category.parent_id.toString()
+            ? `${product.category.parent_id}`
             : null,
         }
       : null,
     type: product?.type
-      ? { id: product.type.id.toString(), name: product.type.name }
+      ? { id: `${product.type.id}`, name: product.type.name }
       : null,
     vendor: product?.vendor
-      ? { id: product.vendor.id.toString(), name: product.vendor.name }
+      ? { id: `${product.vendor.id}`, name: product.vendor.name }
       : null,
     collections: product?.collections
       ? product.collections.map((collection) => ({
-          id: collection.id.toString(),
+          id: `${collection.id}`,
           title: collection.title,
         }))
       : [],
@@ -231,7 +231,7 @@ function generateFormData(values: z.infer<typeof formSchema>): FormData {
           if (media.file) {
             formData.append(`media[${mediaIndex}][file]`, media.file)
           }
-          formData.append(`media[${mediaIndex}][rank]`, media.rank.toString())
+          formData.append(`media[${mediaIndex}][rank]`, `${media.rank}`)
         })
       }
 
@@ -275,11 +275,11 @@ function generateFormData(values: z.infer<typeof formSchema>): FormData {
           formData.append(`variants[${variantIndex}][name]`, variant.name)
           formData.append(
             `variants[${variantIndex}][price]`,
-            variant.price.toString(),
+            `${variant.price}`,
           )
           formData.append(
             `variants[${variantIndex}][quantity]`,
-            variant.quantity.toString(),
+            `${variant.quantity}`,
           )
 
           variant.options?.forEach((option, optionIndex) => {

@@ -7,7 +7,11 @@ import { blank, uuid } from '@/lib/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useCallback } from 'react'
 import { notFound, useRouter } from 'next/navigation'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import {
+  useMutation,
+  useQueryClient,
+  useSuspenseQuery,
+} from '@tanstack/react-query'
 import {
   getProduct,
   createProduct,
@@ -349,10 +353,9 @@ type ProductsFormProps = {
 }
 
 export function ProductsForm({ productId }: ProductsFormProps) {
-  const { data: product } = useQuery({
+  const { data: product } = useSuspenseQuery({
     queryKey: ['products', { id: productId }],
-    queryFn: () => getProduct(productId!),
-    enabled: !!productId,
+    queryFn: () => (productId ? getProduct(productId) : null),
   })
 
   if (productId && !product) {

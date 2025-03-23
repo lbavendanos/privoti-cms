@@ -9,8 +9,31 @@ import {
 } from '@/lib/action'
 import { type Product } from '../types'
 
+export async function getProducts(
+  params: Record<string, string> = {},
+): Promise<Product[]> {
+  const sessionToken = await getSessionToken()
+
+  console.info('Fetching products')
+
+  try {
+    const {
+      data: { data },
+    } = await api.get<{ data: Product[] }>('/products', {
+      params,
+      sessionToken,
+    })
+
+    return data
+  } catch {
+    return []
+  }
+}
+
 export async function getProduct(id: number | string): Promise<Product | null> {
   const sessionToken = await getSessionToken()
+
+  console.info('Fetching product', id)
 
   try {
     const {

@@ -1,8 +1,8 @@
 import { cache } from 'react'
 import { getProduct } from '@/core/actions/product'
 import { getQueryClient } from '@/lib/query'
-import type { Metadata } from 'next'
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query'
+import type { Metadata } from 'next'
 import { ProductsForm } from '../_components/products-form'
 
 const getProductCached = cache(getProduct)

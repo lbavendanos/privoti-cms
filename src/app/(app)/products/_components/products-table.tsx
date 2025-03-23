@@ -1,6 +1,9 @@
 'use client'
 
 import { cn } from '@/lib/utils'
+import { useId, useMemo, useRef, useState } from 'react'
+import { type Product } from '@/core/types'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -22,12 +25,6 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuPortal,
-  DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
@@ -73,6 +70,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table'
+import Link from 'next/link'
 import {
   ChevronDownIcon,
   ChevronFirstIcon,
@@ -89,23 +87,14 @@ import {
   PlusIcon,
   TrashIcon,
 } from 'lucide-react'
-import { useEffect, useId, useMemo, useRef, useState } from 'react'
 
-type Item = {
-  id: string
-  name: string
-  email: string
-  location: string
-  flag: string
-  status: 'Active' | 'Inactive' | 'Pending'
-  balance: number
-}
+type Item = Product
 
 // Custom filter function for multi-column searching
 const multiColumnFilterFn: FilterFn<Item> = (row, columnId, filterValue) => {
-  const searchableRowContent =
-    `${row.original.name} ${row.original.email}`.toLowerCase()
+  const searchableRowContent = `${row.original.title}`.toLowerCase()
   const searchTerm = (filterValue ?? '').toLowerCase()
+
   return searchableRowContent.includes(searchTerm)
 }
 
@@ -115,7 +104,9 @@ const statusFilterFn: FilterFn<Item> = (
   filterValue: string[],
 ) => {
   if (!filterValue?.length) return true
+
   const status = row.getValue(columnId) as string
+
   return filterValue.includes(status)
 }
 
@@ -144,30 +135,25 @@ const columns: ColumnDef<Item>[] = [
     enableHiding: false,
   },
   {
-    header: 'Name',
-    accessorKey: 'name',
+    header: 'Product',
+    accessorKey: 'title',
     cell: ({ row }) => (
-      <div className="font-medium">{row.getValue('name')}</div>
-    ),
-    size: 180,
-    filterFn: multiColumnFilterFn,
-    enableHiding: false,
-  },
-  {
-    header: 'Email',
-    accessorKey: 'email',
-    size: 220,
-  },
-  {
-    header: 'Location',
-    accessorKey: 'location',
-    cell: ({ row }) => (
-      <div>
-        <span className="text-lg leading-none">{row.original.flag}</span>{' '}
-        {row.getValue('location')}
+      <div className="flex items-center gap-x-3">
+        <Avatar className="w-8 rounded-md">
+          <AvatarImage
+            src={row.original.thumbnail!}
+            alt={row.getValue('title')}
+          />
+          <AvatarFallback className="w-8 rounded-md">
+            {row.getValue<string>('title').charAt(0).toUpperCase()}
+          </AvatarFallback>
+        </Avatar>
+        <div className="font-medium">{row.getValue('title')}</div>
       </div>
     ),
-    size: 180,
+    size: 220,
+    filterFn: multiColumnFilterFn,
+    enableHiding: false,
   },
   {
     header: 'Status',
@@ -175,8 +161,13 @@ const columns: ColumnDef<Item>[] = [
     cell: ({ row }) => (
       <Badge
         className={cn(
-          row.getValue('status') === 'Inactive' &&
-            'bg-muted-foreground/60 text-primary-foreground',
+          'capitalize',
+          row.getValue('status') === 'draft' &&
+            'bg-amber-500 hover:bg-amber-500',
+          row.getValue('status') === 'active' &&
+            'bg-emerald-600 hover:bg-emerald-600',
+          row.getValue('status') === 'archived' &&
+            'bg-gray-500 hover:bg-gray-500',
         )}
       >
         {row.getValue('status')}
@@ -186,21 +177,41 @@ const columns: ColumnDef<Item>[] = [
     filterFn: statusFilterFn,
   },
   {
-    header: 'Performance',
-    accessorKey: 'performance',
+    header: 'Inventory',
+    accessorKey: 'stock',
+    cell: ({ row }) => (
+      <>
+        <span
+          className={
+            row.getValue<number>('stock') < 10
+              ? 'text-destructive'
+              : 'text-foreground'
+          }
+        >
+          {row.getValue('stock')} in stock
+        </span>{' '}
+        <span>
+          for {row.original.variants?.length} variant
+          {row.original.variants && row.original.variants?.length > 0 && 's'}
+        </span>
+      </>
+    ),
+    size: 200,
   },
   {
-    header: 'Balance',
-    accessorKey: 'balance',
-    cell: ({ row }) => {
-      const amount = parseFloat(row.getValue('balance'))
-      const formatted = new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-      }).format(amount)
-      return formatted
-    },
-    size: 120,
+    header: 'Category',
+    accessorKey: 'category.name',
+    size: 100,
+  },
+  {
+    header: 'Type',
+    accessorKey: 'type.name',
+    size: 100,
+  },
+  {
+    header: 'Vendor',
+    accessorKey: 'vendor.name',
+    size: 100,
   },
   {
     id: 'actions',
@@ -211,7 +222,11 @@ const columns: ColumnDef<Item>[] = [
   },
 ]
 
-export function ProductsTable() {
+type ProductsTableProps = {
+  data: Item[]
+}
+
+export function ProductsTable({ data }: ProductsTableProps) {
   const id = useId()
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
@@ -223,29 +238,17 @@ export function ProductsTable() {
 
   const [sorting, setSorting] = useState<SortingState>([
     {
-      id: 'name',
+      id: 'title',
       desc: false,
     },
   ])
 
-  const [data, setData] = useState<Item[]>([])
-  useEffect(() => {
-    async function fetchPosts() {
-      const res = await fetch(
-        'https://res.cloudinary.com/dlzlfasou/raw/upload/users-01_fertyx.json',
-      )
-      const data = await res.json()
-      setData(data)
-    }
-    fetchPosts()
-  }, [])
-
   const handleDeleteRows = () => {
-    const selectedRows = table.getSelectedRowModel().rows
-    const updatedData = data.filter(
-      (item) => !selectedRows.some((row) => row.original.id === item.id),
-    )
-    setData(updatedData)
+    // const selectedRows = table.getSelectedRowModel().rows
+    // const updatedData = data.filter(
+    //   (item) => !selectedRows.some((row) => row.original.id === item.id),
+    // )
+    // setData(updatedData)
     table.resetRowSelection()
   }
 
@@ -316,34 +319,34 @@ export function ProductsTable() {
       {/* Filters */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          {/* Filter by name or email */}
+          {/* Filter by title */}
           <div className="relative">
             <Input
               id={`${id}-input`}
               ref={inputRef}
               className={cn(
                 'peer min-w-60 ps-9',
-                Boolean(table.getColumn('name')?.getFilterValue()) && 'pe-9',
+                Boolean(table.getColumn('title')?.getFilterValue()) && 'pe-9',
               )}
               value={
-                (table.getColumn('name')?.getFilterValue() ?? '') as string
+                (table.getColumn('title')?.getFilterValue() ?? '') as string
               }
               onChange={(e) =>
-                table.getColumn('name')?.setFilterValue(e.target.value)
+                table.getColumn('title')?.setFilterValue(e.target.value)
               }
-              placeholder="Filter by name or email..."
+              placeholder="Filter by title"
               type="text"
-              aria-label="Filter by name or email"
+              aria-label="Filter by title"
             />
             <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
               <ListFilterIcon size={16} aria-hidden="true" />
             </div>
-            {Boolean(table.getColumn('name')?.getFilterValue()) && (
+            {Boolean(table.getColumn('title')?.getFilterValue()) && (
               <button
                 className="absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-md text-muted-foreground/80 outline-none transition-[color,box-shadow] hover:text-foreground focus:z-10 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
                 aria-label="Clear filter"
                 onClick={() => {
-                  table.getColumn('name')?.setFilterValue('')
+                  table.getColumn('title')?.setFilterValue('')
                   if (inputRef.current) {
                     inputRef.current.focus()
                   }
@@ -387,7 +390,7 @@ export function ProductsTable() {
                       />
                       <Label
                         htmlFor={`${id}-${i}`}
-                        className="flex grow justify-between gap-2 font-normal"
+                        className="flex grow cursor-pointer justify-between gap-2 font-normal capitalize"
                       >
                         {value}{' '}
                         <span className="ms-2 text-xs text-muted-foreground">
@@ -421,14 +424,16 @@ export function ProductsTable() {
                   return (
                     <DropdownMenuCheckboxItem
                       key={column.id}
-                      className="capitalize"
+                      className="cursor-pointer capitalize"
                       checked={column.getIsVisible()}
                       onCheckedChange={(value) =>
                         column.toggleVisibility(!!value)
                       }
                       onSelect={(event) => event.preventDefault()}
                     >
-                      {column.id}
+                      {typeof column.columnDef.header === 'function'
+                        ? column.id
+                        : column.columnDef.header}
                     </DropdownMenuCheckboxItem>
                   )
                 })}
@@ -483,14 +488,16 @@ export function ProductsTable() {
               </AlertDialogContent>
             </AlertDialog>
           )}
-          {/* Add user button */}
-          <Button className="ml-auto" variant="outline">
-            <PlusIcon
-              className="-ms-1 opacity-60"
-              size={16}
-              aria-hidden="true"
-            />
-            Add user
+          {/* Add product button */}
+          <Button className="ml-auto" variant="outline" asChild>
+            <Link href="/products/create">
+              <PlusIcon
+                className="-ms-1 opacity-60"
+                size={16}
+                aria-hidden="true"
+              />
+              Add product
+            </Link>
           </Button>
         </div>
       </div>
@@ -566,12 +573,23 @@ export function ProductsTable() {
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && 'selected'}
+                  className="cursor-pointer"
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id} className="last:py-0">
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
+                    <TableCell key={cell.id} className="py-2 last:py-0">
+                      {cell.column.id !== 'select' &&
+                      cell.column.id !== 'actions' ? (
+                        <Link href={`/products/${row.original.id}`}>
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext(),
+                          )}
+                        </Link>
+                      ) : (
+                        flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )
                       )}
                     </TableCell>
                   ))}
@@ -704,17 +722,6 @@ export function ProductsTable() {
           </Pagination>
         </div>
       </div>
-      <p className="mt-4 text-center text-sm text-muted-foreground">
-        Example of a more complex table made with{' '}
-        <a
-          className="underline hover:text-foreground"
-          href="https://tanstack.com/table"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          TanStack Table
-        </a>
-      </p>
     </div>
   )
 }
@@ -736,43 +743,18 @@ function RowActions({ row }: { row: Row<Item> }) {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuGroup>
-          <DropdownMenuItem>
-            <span>Edit</span>
-            <DropdownMenuShortcut>⌘E</DropdownMenuShortcut>
+          <DropdownMenuItem className="cursor-pointer" asChild>
+            <Link href={`/products/${row.original.id}`}>Edit</Link>
           </DropdownMenuItem>
-          <DropdownMenuItem>
-            <span>Duplicate</span>
-            <DropdownMenuShortcut>⌘D</DropdownMenuShortcut>
+          <DropdownMenuItem className="cursor-pointer">
+            {row.original.status === 'active' && 'Archived'}
+            {row.original.status === 'archived' && 'Activate'}
+            {row.original.status === 'draft' && 'Activate'}
+          </DropdownMenuItem>
+          <DropdownMenuItem className="cursor-pointer text-destructive focus:text-destructive">
+            Delete
           </DropdownMenuItem>
         </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuGroup>
-          <DropdownMenuItem>
-            <span>Archive</span>
-            <DropdownMenuShortcut>⌘A</DropdownMenuShortcut>
-          </DropdownMenuItem>
-          <DropdownMenuSub>
-            <DropdownMenuSubTrigger>More</DropdownMenuSubTrigger>
-            <DropdownMenuPortal>
-              <DropdownMenuSubContent>
-                <DropdownMenuItem>Move to project</DropdownMenuItem>
-                <DropdownMenuItem>Move to folder</DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>Advanced options</DropdownMenuItem>
-              </DropdownMenuSubContent>
-            </DropdownMenuPortal>
-          </DropdownMenuSub>
-        </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuGroup>
-          <DropdownMenuItem>Share</DropdownMenuItem>
-          <DropdownMenuItem>Add to favorites</DropdownMenuItem>
-        </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem className="text-destructive focus:text-destructive">
-          <span>Delete</span>
-          <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
-        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   )

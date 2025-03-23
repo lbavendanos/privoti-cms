@@ -25,6 +25,8 @@ export type Product = {
   subtitle?: string
   handle: string
   description?: string
+  thumbnail?: string
+  stock: number
   status: 'draft' | 'active' | 'archived'
   tags?: string[]
   metadata?: Record<string, string>

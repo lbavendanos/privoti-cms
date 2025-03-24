@@ -211,7 +211,7 @@ const columns: ColumnDef<Item>[] = [
     accessorKey: 'category.name',
     cell: ({ row }) => (
       <div className="flex h-full w-full items-center px-4">
-        <span>{row.getValue('category')}</span>
+        <span>{row.getValue('category') ?? '-'}</span>
       </div>
     ),
     size: 100,
@@ -222,7 +222,7 @@ const columns: ColumnDef<Item>[] = [
     accessorKey: 'type.name',
     cell: ({ row }) => (
       <div className="flex h-full w-full items-center px-4">
-        <span>{row.getValue('type')}</span>
+        <span>{row.getValue('type') ?? '-'}</span>
       </div>
     ),
     size: 100,
@@ -233,7 +233,7 @@ const columns: ColumnDef<Item>[] = [
     accessorKey: 'vendor.name',
     cell: ({ row }) => (
       <div className="flex h-full w-full items-center px-4">
-        <span>{row.getValue('vendor')}</span>
+        <span>{row.getValue('vendor') ?? '-'}</span>
       </div>
     ),
     size: 100,

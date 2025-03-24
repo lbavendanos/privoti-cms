@@ -1,7 +1,7 @@
 'use client'
 
 import { cn } from '@/lib/utils'
-import { useId, useMemo, useRef, useState } from 'react'
+import { useCallback, useId, useMemo, useRef, useState } from 'react'
 import { type Product } from '@/core/types'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
@@ -124,11 +124,13 @@ const columns: ColumnDef<Item>[] = [
       />
     ),
     cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
+      <div className="flex h-full w-full items-center p-4 pr-0">
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Select row"
+        />
+      </div>
     ),
     size: 28,
     enableSorting: false,
@@ -138,7 +140,7 @@ const columns: ColumnDef<Item>[] = [
     header: 'Product',
     accessorKey: 'title',
     cell: ({ row }) => (
-      <div className="flex items-center gap-x-3">
+      <div className="flex h-full w-full items-center gap-x-3 px-4">
         <Avatar className="w-8 rounded-md">
           <AvatarImage
             src={row.original.thumbnail!}
@@ -159,64 +161,91 @@ const columns: ColumnDef<Item>[] = [
     header: 'Status',
     accessorKey: 'status',
     cell: ({ row }) => (
-      <Badge
-        className={cn(
-          'capitalize',
-          row.getValue('status') === 'draft' &&
-            'bg-amber-500 hover:bg-amber-500',
-          row.getValue('status') === 'active' &&
-            'bg-emerald-600 hover:bg-emerald-600',
-          row.getValue('status') === 'archived' &&
-            'bg-gray-500 hover:bg-gray-500',
-        )}
-      >
-        {row.getValue('status')}
-      </Badge>
+      <div className="flex h-full w-full items-center px-4">
+        <Badge
+          className={cn(
+            'capitalize',
+            row.getValue('status') === 'draft' &&
+              'bg-amber-500 hover:bg-amber-500',
+            row.getValue('status') === 'active' &&
+              'bg-emerald-600 hover:bg-emerald-600',
+            row.getValue('status') === 'archived' &&
+              'bg-gray-500 hover:bg-gray-500',
+          )}
+        >
+          {row.getValue('status')}
+        </Badge>
+      </div>
     ),
     size: 100,
     filterFn: statusFilterFn,
   },
   {
+    id: 'invertory',
     header: 'Inventory',
     accessorKey: 'stock',
     cell: ({ row }) => (
-      <>
-        <span
-          className={
-            row.getValue<number>('stock') < 10
-              ? 'text-destructive'
-              : 'text-foreground'
-          }
-        >
-          {row.getValue('stock')} in stock
-        </span>{' '}
-        <span>
-          for {row.original.variants?.length} variant
-          {row.original.variants && row.original.variants?.length > 0 && 's'}
-        </span>
-      </>
+      <div className="flex h-full w-full items-center px-4">
+        <div className="block">
+          <span
+            className={
+              row.getValue<number>('invertory') < 10
+                ? 'text-destructive'
+                : 'text-foreground'
+            }
+          >
+            {row.getValue('invertory')} in stock
+          </span>{' '}
+          <span>
+            for {row.original.variants?.length} variant
+            {row.original.variants && row.original.variants?.length > 0 && 's'}
+          </span>
+        </div>
+      </div>
     ),
     size: 200,
   },
   {
+    id: 'category',
     header: 'Category',
     accessorKey: 'category.name',
+    cell: ({ row }) => (
+      <div className="flex h-full w-full items-center px-4">
+        <span>{row.getValue('category')}</span>
+      </div>
+    ),
     size: 100,
   },
   {
+    id: 'type',
     header: 'Type',
     accessorKey: 'type.name',
+    cell: ({ row }) => (
+      <div className="flex h-full w-full items-center px-4">
+        <span>{row.getValue('type')}</span>
+      </div>
+    ),
     size: 100,
   },
   {
+    id: 'vendor',
     header: 'Vendor',
     accessorKey: 'vendor.name',
+    cell: ({ row }) => (
+      <div className="flex h-full w-full items-center px-4">
+        <span>{row.getValue('vendor')}</span>
+      </div>
+    ),
     size: 100,
   },
   {
     id: 'actions',
     header: () => <span className="sr-only">Actions</span>,
-    cell: ({ row }) => <RowActions row={row} />,
+    cell: ({ row }) => (
+      <div className="flex h-full w-full items-center px-4">
+        <RowActions row={row} />
+      </div>
+    ),
     size: 60,
     enableHiding: false,
   },
@@ -296,23 +325,28 @@ export function ProductsTable({ data }: ProductsTableProps) {
     return filterValue ?? []
   }, [table.getColumn('status')?.getFilterValue()])
 
-  const handleStatusChange = (checked: boolean, value: string) => {
-    const filterValue = table.getColumn('status')?.getFilterValue() as string[]
-    const newFilterValue = filterValue ? [...filterValue] : []
+  const handleStatusChange = useCallback(
+    (checked: boolean, value: string) => {
+      const filterValue = table
+        .getColumn('status')
+        ?.getFilterValue() as string[]
+      const newFilterValue = filterValue ? [...filterValue] : []
 
-    if (checked) {
-      newFilterValue.push(value)
-    } else {
-      const index = newFilterValue.indexOf(value)
-      if (index > -1) {
-        newFilterValue.splice(index, 1)
+      if (checked) {
+        newFilterValue.push(value)
+      } else {
+        const index = newFilterValue.indexOf(value)
+        if (index > -1) {
+          newFilterValue.splice(index, 1)
+        }
       }
-    }
 
-    table
-      .getColumn('status')
-      ?.setFilterValue(newFilterValue.length ? newFilterValue : undefined)
-  }
+      table
+        .getColumn('status')
+        ?.setFilterValue(newFilterValue.length ? newFilterValue : undefined)
+    },
+    [table],
+  )
 
   return (
     <div className="space-y-4">
@@ -431,9 +465,7 @@ export function ProductsTable({ data }: ProductsTableProps) {
                       }
                       onSelect={(event) => event.preventDefault()}
                     >
-                      {typeof column.columnDef.header === 'function'
-                        ? column.id
-                        : column.columnDef.header}
+                      {column.id}
                     </DropdownMenuCheckboxItem>
                   )
                 })}
@@ -576,10 +608,13 @@ export function ProductsTable({ data }: ProductsTableProps) {
                   className="cursor-pointer"
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id} className="py-2 last:py-0">
+                    <TableCell key={cell.id} className="h-14 p-0">
                       {cell.column.id !== 'select' &&
                       cell.column.id !== 'actions' ? (
-                        <Link href={`/products/${row.original.id}`}>
+                        <Link
+                          href={`/products/${row.original.id}`}
+                          className="block h-full w-full"
+                        >
                           {flexRender(
                             cell.column.columnDef.cell,
                             cell.getContext(),

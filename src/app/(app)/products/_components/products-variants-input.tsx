@@ -70,7 +70,14 @@ export function ProductsVariantsInput({
           </TableHeader>
           <TableBody>
             {currentVariants.map((variant) => (
-              <TableRow key={variant.uuid} className="relative">
+              <TableRow
+                key={variant.uuid}
+                className="relative cursor-pointer"
+                onClick={() => {
+                  setSelectedVariant(variant)
+                  setOpen(true)
+                }}
+              >
                 <TableCell>{variant.name}</TableCell>
                 {options.map((o, oIndex) => (
                   <TableCell key={o.uuid} className="w-2/12">
@@ -117,7 +124,7 @@ export function ProductsVariantsInput({
                         <Pencil /> Edit
                       </DropdownMenuItem>
                       <DropdownMenuItem
-                        className="cursor-pointer"
+                        className="cursor-pointer text-destructive focus:text-destructive"
                         onClick={() =>
                           onChange(
                             currentVariants.filter(

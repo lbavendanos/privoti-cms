@@ -56,7 +56,14 @@ export function ProductsOptionsInput({
           </TableHeader>
           <TableBody>
             {currentOptions.map((option) => (
-              <TableRow key={option.uuid} className="relative">
+              <TableRow
+                key={option.uuid}
+                className="relative cursor-pointer"
+                onClick={() => {
+                  setSelectedOption(option)
+                  setOpen(true)
+                }}
+              >
                 <TableCell>{option.name}</TableCell>
                 <TableCell className="space-x-1 space-y-1">
                   {option.values.map((value) => (
@@ -92,7 +99,7 @@ export function ProductsOptionsInput({
                         <Pencil /> Edit
                       </DropdownMenuItem>
                       <DropdownMenuItem
-                        className="cursor-pointer"
+                        className="cursor-pointer text-destructive focus:text-destructive"
                         onClick={() =>
                           onChange(
                             currentOptions.filter(

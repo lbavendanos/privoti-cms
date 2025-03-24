@@ -8,7 +8,7 @@ import { ProductsTable } from './products-table'
 
 export function Products() {
   const { data: products } = useSuspenseQuery({
-    queryKey: ['products'],
+    queryKey: ['product-list'],
     queryFn: () => getProducts(),
   })
 

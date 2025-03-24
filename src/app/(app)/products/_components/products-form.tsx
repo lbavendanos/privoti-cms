@@ -354,7 +354,7 @@ type ProductsFormProps = {
 
 export function ProductsForm({ productId }: ProductsFormProps) {
   const { data: product } = useSuspenseQuery({
-    queryKey: ['products', { id: productId }],
+    queryKey: ['product-detail', { id: productId }],
     queryFn: () => (productId ? getProduct(productId) : null),
   })
 
@@ -394,13 +394,15 @@ export function ProductsForm({ productId }: ProductsFormProps) {
 
         if (state.data) {
           queryClient.setQueryData(
-            ['products', { id: `${state.data.id}` }],
+            ['product-detail', { id: `${state.data.id}` }],
             state.data,
           )
 
           queryClient.invalidateQueries({
-            queryKey: ['products', { id: `${state.data.id}` }],
+            queryKey: ['product-detail', { id: `${state.data.id}` }],
           })
+
+          queryClient.invalidateQueries({ queryKey: ['product-list'] })
 
           if (!product) {
             router.replace(`/products/${state.data.id}`)

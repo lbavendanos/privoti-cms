@@ -12,7 +12,7 @@ export default function ProductsPage() {
   const queryClient = getQueryClient()
 
   queryClient.prefetchQuery({
-    queryKey: ['products'],
+    queryKey: ['product-list'],
     queryFn: () => getProducts(),
   })
 

@@ -29,7 +29,7 @@ export default async function EidtProductPage({
   const queryClient = getQueryClient()
 
   queryClient.prefetchQuery({
-    queryKey: ['products', { id: productId }],
+    queryKey: ['product-detail', { id: productId }],
     queryFn: () => getProductCached(productId),
   })
 

@@ -4,7 +4,7 @@ import { useDebounce } from '@/hooks/use-debounce'
 import { getVendors } from '@/core/actions/vendor'
 import { useMemo, useState } from 'react'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
-import { SearchSelect } from '@/components/ui/search-select'
+import { SearchableSelect } from '@/components/ui/searchable-select'
 
 type Vendor = {
   id: string
@@ -42,7 +42,7 @@ export function ProductsVendorInput({
   )
 
   return (
-    <SearchSelect
+    <SearchableSelect
       {...props}
       options={options}
       value={

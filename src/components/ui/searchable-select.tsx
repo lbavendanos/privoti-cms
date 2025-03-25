@@ -1,8 +1,7 @@
 'use client'
 
-import { useDebounce } from '@/hooks/use-debounce'
 import { blank, cn, filled } from '@/lib/utils'
-import { useState, useEffect, useCallback } from 'react'
+import { useCallback, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from './skeleton'
 import {
@@ -25,36 +24,34 @@ type Option = {
   value: string
 }
 
-type SearchSelectProps = {
+type SearchableSelectProps = {
   id?: string
   name?: string
+  options?: Option[]
   value?: Option | null
   placeholder?: string
-  options?: Option[]
+  shouldFilter?: boolean
+  isLoading?: boolean
+  searchTerm?: string
   emptyIndicator?: React.ReactNode
-  delay?: number
-  onSearch?: (value: string) => Promise<Option[]>
+  onSearchTermChange?: (value: string) => void
   onChange?: (option: Option | null) => void
 }
 
 export function SearchableSelect({
   id,
   name,
+  options,
   value: currentOption,
   placeholder,
-  options: defaultOptions,
+  shouldFilter,
+  isLoading,
+  searchTerm,
   emptyIndicator,
-  delay = 500,
-  onSearch,
+  onSearchTermChange,
   onChange,
-}: SearchSelectProps) {
-  const [options, setOptions] = useState<Option[]>(defaultOptions ?? [])
-  const [searchTerm, setSearchTerm] = useState<string>('')
-
-  const [isOpen, setIsOpen] = useState<boolean>(false)
-  const [isLoading, setIsLoading] = useState<boolean>(false)
-
-  const debouncedSearchTerm = useDebounce(searchTerm, delay)
+}: SearchableSelectProps) {
+  const [open, setOpen] = useState<boolean>(false)
 
   const handleSelect = useCallback(
     (newValue: string) => {
@@ -62,43 +59,28 @@ export function SearchableSelect({
 
       if (newValue === currentValue) {
         onChange?.(null)
-        setIsOpen(false)
+        setOpen(false)
 
         return
       }
 
-      const newOption = options.find((o) => o.value === newValue)
+      const newOption = options?.find((o) => o.value === newValue)
 
       onChange?.(newOption ?? null)
-      setIsOpen(false)
+      setOpen(false)
     },
     [currentOption, options, onChange],
   )
 
-  useEffect(() => {
-    if (!onSearch) return
-
-    const doSearch = async () => {
-      setIsLoading(true)
-
-      const newOptions = await onSearch?.(debouncedSearchTerm)
-
-      setOptions(newOptions ?? [])
-      setIsLoading(false)
-    }
-
-    void doSearch()
-  }, [debouncedSearchTerm, onSearch])
-
   return (
-    <Popover open={isOpen} onOpenChange={setIsOpen}>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
           id={id}
           variant="outline"
           role="combobox"
-          aria-expanded={isOpen}
-          className="relative w-full justify-between border-input bg-background px-3 font-normal outline-none outline-offset-0 hover:bg-background focus-visible:outline-[3px]"
+          aria-expanded={open}
+          className="w-full justify-between border-input bg-background px-3 font-normal outline-none outline-offset-0 hover:bg-background focus-visible:outline-[3px]"
         >
           <span
             className={cn(
@@ -116,7 +98,7 @@ export function SearchableSelect({
                 onClick={(e) => {
                   e.preventDefault()
 
-                  setSearchTerm('')
+                  onSearchTermChange?.('')
                   onChange?.(null)
                 }}
               >
@@ -135,12 +117,12 @@ export function SearchableSelect({
         className="w-full min-w-[var(--radix-popper-anchor-width)] border-input p-0"
         align="start"
       >
-        <Command shouldFilter={!onSearch}>
+        <Command shouldFilter={shouldFilter}>
           <div className="relative w-full">
             <CommandInput
               placeholder={name ? `Search ${name}` : 'Search...'}
               value={searchTerm}
-              onValueChange={setSearchTerm}
+              onValueChange={onSearchTermChange}
             />
             {isLoading && (
               <div className="absolute right-3 top-1/2 flex -translate-y-1/2 transform items-center">
@@ -149,14 +131,14 @@ export function SearchableSelect({
             )}
           </div>
           <CommandList>
-            {isLoading && options.length === 0 && <DefaultLoadingSkeleton />}
-            {!isLoading && options.length === 0 && (
+            {isLoading && options?.length === 0 && <DefaultLoadingSkeleton />}
+            {!isLoading && options?.length === 0 && (
               <CommandEmpty>
                 {emptyIndicator ?? 'No results found.'}
               </CommandEmpty>
             )}
             <CommandGroup>
-              {options.map((option) => (
+              {options?.map((option) => (
                 <CommandItem
                   key={option.value}
                   value={option.value}

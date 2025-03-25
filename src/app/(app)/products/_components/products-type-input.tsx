@@ -4,7 +4,7 @@ import { useDebounce } from '@/hooks/use-debounce'
 import { getProductTypes } from '@/core/actions/product-type'
 import { useMemo, useState } from 'react'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
-import { SearchSelect } from '@/components/ui/search-select'
+import { SearchableSelect } from '@/components/ui/searchable-select'
 
 type Type = {
   id: string
@@ -42,7 +42,7 @@ export function ProductsTypeInput({
   )
 
   return (
-    <SearchSelect
+    <SearchableSelect
       {...props}
       options={options}
       value={

@@ -1,8 +1,10 @@
 'use client'
 
-import { useCallback } from 'react'
+import { useDebounce } from '@/hooks/use-debounce'
 import { getProductTypes } from '@/core/actions/product-type'
-import { SearchableSelect } from '@/components/ui/searchable-select'
+import { useMemo, useState } from 'react'
+import { keepPreviousData, useQuery } from '@tanstack/react-query'
+import { SearchSelect } from '@/components/ui/search-select'
 
 type Type = {
   id: string
@@ -11,7 +13,7 @@ type Type = {
 
 type ProductsTypeInputProps = {
   value?: Type | null
-  onChange?: (type: Type | null) => void
+  onChange?: (value: Type | null) => void
 }
 
 export function ProductsTypeInput({
@@ -19,26 +21,38 @@ export function ProductsTypeInput({
   onChange,
   ...props
 }: ProductsTypeInputProps) {
-  const handleSearch = useCallback(async (value: string) => {
-    const types = await getProductTypes({
-      search: value,
-      fields: 'id,name',
-      name: 'type',
-    })
+  const [searchTerm, setSearchTerm] = useState<string>('')
+  const debouncedSearchTerm = useDebounce(searchTerm, 500)
 
-    return types.map((type) => ({
-      label: type.name,
-      value: type.id.toString(),
-    }))
-  }, [])
+  const { data: types, isFetching } = useQuery({
+    queryKey: debouncedSearchTerm
+      ? ['product-type-list', { search: debouncedSearchTerm }]
+      : ['product-type-list'],
+    queryFn: () => getProductTypes({ search: debouncedSearchTerm }),
+    placeholderData: keepPreviousData,
+  })
+
+  const options = useMemo(
+    () =>
+      types?.map((type) => ({
+        label: type.name,
+        value: `${type.id}`,
+      })),
+    [types],
+  )
 
   return (
-    <SearchableSelect
+    <SearchSelect
       {...props}
-      emptyIndicator="No types found"
+      options={options}
       value={
         currentType ? { label: currentType.name, value: currentType.id } : null
       }
+      shouldFilter={false}
+      isLoading={isFetching}
+      searchTerm={searchTerm}
+      emptyIndicator="No types found"
+      onSearchTermChange={setSearchTerm}
       onChange={(newOption) => {
         if (newOption) {
           onChange?.({ id: newOption.value, name: newOption.label })
@@ -46,7 +60,6 @@ export function ProductsTypeInput({
           onChange?.(null)
         }
       }}
-      onSearch={handleSearch}
     />
   )
 }

@@ -1,5 +1,6 @@
 'use client'
 
+import { useQuery } from '@tanstack/react-query'
 import { blank, cn, filled } from '@/lib/utils'
 import { getProductCategories } from '@/core/actions/product-category'
 import { useCallback, useEffect, useMemo, useState } from 'react'
@@ -40,18 +41,32 @@ interface ProductsCategoryInputProps {
   onChange?: (category: Category | null) => void
 }
 
+const params = { all: '1', fields: 'id,name,parent_id' }
+
 export function ProductsCategoryInput({
   id,
   value: currentCategory,
   onChange,
 }: ProductsCategoryInputProps) {
-  const [categories, setCategories] = useState<Category[]>([])
+  const { data, isLoading } = useQuery({
+    queryKey: ['product-category-list', params],
+    queryFn: () => getProductCategories(params),
+  })
+
   const [currentParent, setCurrentParent] = useState<Category | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
-  const [categoriesLoaded, setCategoriesLoaded] = useState(false)
 
   const [isOpen, setIsOpen] = useState(false)
-  const [isLoading, setIsLoading] = useState(true)
+
+  const categories: Category[] = useMemo(
+    () =>
+      data?.map((c) => ({
+        id: `${c.id}`,
+        name: c.name,
+        parentId: c.parent_id ? `${c.parent_id}` : null,
+      })) ?? [],
+    [data],
+  )
 
   const findCategory = useCallback(
     (categoryId: string) => {
@@ -116,30 +131,6 @@ export function ProductsCategoryInput({
         : getChildren(currentParent),
     [currentParent, categories, searchTerm, getChildren, findCategory],
   )
-
-  useEffect(() => {
-    if (!categoriesLoaded) {
-      setIsLoading(true)
-
-      getProductCategories({
-        all: '1',
-        fields: 'id,name,parent_id',
-        name: 'category',
-      })
-        .then((data) => {
-          const categoryList = data.map((c) => ({
-            id: c.id.toString(),
-            name: c.name,
-            parentId: c.parent_id ? c.parent_id.toString() : null,
-          }))
-
-          setCategories(categoryList)
-          setCategoriesLoaded(true)
-          setIsLoading(false)
-        })
-        .catch(() => setIsLoading(false))
-    }
-  }, [categoriesLoaded])
 
   useEffect(() => {
     if (!isLoading && currentCategory) {

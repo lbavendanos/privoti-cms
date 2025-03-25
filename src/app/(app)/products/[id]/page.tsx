@@ -3,7 +3,7 @@ import { getProduct } from '@/core/actions/product'
 import { getQueryClient } from '@/lib/query'
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query'
 import type { Metadata } from 'next'
-import { ProductsForm } from '../_components/products-form'
+import { ProductsEdit } from '../_components/products-edit'
 
 const getProductCached = cache(getProduct)
 
@@ -35,7 +35,7 @@ export default async function EidtProductPage({
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <ProductsForm productId={productId} />
+      <ProductsEdit productId={productId} />
     </HydrationBoundary>
   )
 }

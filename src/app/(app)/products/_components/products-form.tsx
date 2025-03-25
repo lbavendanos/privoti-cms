@@ -3,20 +3,12 @@
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { useToast } from '@/hooks/use-toast'
+import { useRouter } from 'next/navigation'
 import { blank, uuid } from '@/lib/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useCallback } from 'react'
-import { notFound, useRouter } from 'next/navigation'
-import {
-  useMutation,
-  useQueryClient,
-  useSuspenseQuery,
-} from '@tanstack/react-query'
-import {
-  getProduct,
-  createProduct,
-  updateProduct,
-} from '@/core/actions/product'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { createProduct, updateProduct } from '@/core/actions/product'
 import { type Product } from '@/core/types'
 import Link from 'next/link'
 import {
@@ -349,19 +341,10 @@ function generateFormData(values: z.infer<typeof formSchema>): FormData {
 }
 
 type ProductsFormProps = {
-  productId?: string
+  product?: Product
 }
 
-export function ProductsForm({ productId }: ProductsFormProps) {
-  const { data: product } = useSuspenseQuery({
-    queryKey: ['product-detail', { id: productId }],
-    queryFn: () => (productId ? getProduct(productId) : null),
-  })
-
-  if (productId && !product) {
-    notFound()
-  }
-
+export function ProductsForm({ product }: ProductsFormProps) {
   const router = useRouter()
   const { toast } = useToast()
 

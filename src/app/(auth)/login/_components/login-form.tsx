@@ -16,7 +16,7 @@ export function LoginForm() {
   const { toast } = useToast()
 
   useEffect(() => {
-    if (!isPending && state && state.isServerError) {
+    if (!isPending && state && (state.isServerError || state.isUnknown)) {
       toast({
         variant: 'destructive',
         description: state?.message,

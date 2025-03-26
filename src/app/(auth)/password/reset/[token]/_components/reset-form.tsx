@@ -20,7 +20,7 @@ export function ResetForm() {
   const searchParams = useSearchParams()
 
   useEffect(() => {
-    if (!isPending && state && state.isServerError) {
+    if (!isPending && state && (state.isServerError || state.isUnknown)) {
       toast({
         variant: 'destructive',
         description: state?.message,

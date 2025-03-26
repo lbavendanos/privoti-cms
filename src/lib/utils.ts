@@ -130,3 +130,32 @@ export function capitalize(str: string) {
 export function uuid(): string {
   return crypto.randomUUID()
 }
+
+/**
+ * Create a debounce function that delays invoking
+ * the provided function until after `delay` milliseconds
+ * have elapsed since the last time the debounce function was invoked.
+ *
+ * @param fn - The function to debounce.
+ * @param delay - The delay in milliseconds.
+ * @param immediate - Whether to execute the function immediately.
+ * @returns The debounced function.
+ */
+export function debounce<T extends (...args: Parameters<T>) => ReturnType<T>>(
+  fn: T,
+  delay: number,
+  immediate?: boolean,
+): (...args: Parameters<T>) => void {
+  let timeout: ReturnType<typeof setTimeout> | null = null
+
+  return function (this: ThisParameterType<T>, ...args: Parameters<T>): void {
+    if (timeout) clearTimeout(timeout)
+
+    if (immediate && !timeout) fn.apply(this, args)
+
+    timeout = setTimeout(() => {
+      timeout = null
+      if (!immediate) fn.apply(this, args)
+    }, delay)
+  }
+}

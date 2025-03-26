@@ -1,3 +1,4 @@
+import { filled } from '@/lib/utils'
 import { getProducts } from '@/core/actions/product'
 import { getQueryClient } from '@/lib/query'
 import type { Metadata } from 'next'
@@ -8,12 +9,17 @@ export const metadata: Metadata = {
   title: 'Products',
 }
 
-export default function ProductsPage() {
+export default async function ProductsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string }>
+}) {
+  const params = await searchParams
   const queryClient = getQueryClient()
 
-  queryClient.prefetchQuery({
-    queryKey: ['product-list'],
-    queryFn: () => getProducts(),
+  await queryClient.prefetchQuery({
+    queryKey: filled(params) ? ['product-list', params] : ['product-list'],
+    queryFn: () => getProducts(params),
   })
 
   return (

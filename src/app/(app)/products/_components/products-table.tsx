@@ -91,12 +91,12 @@ import {
 type Item = Product
 
 // Custom filter function for multi-column searching
-const multiColumnFilterFn: FilterFn<Item> = (row, columnId, filterValue) => {
-  const searchableRowContent = `${row.original.title}`.toLowerCase()
-  const searchTerm = (filterValue ?? '').toLowerCase()
-
-  return searchableRowContent.includes(searchTerm)
-}
+// const multiColumnFilterFn: FilterFn<Item> = (row, columnId, filterValue) => {
+//   const searchableRowContent = `${row.original.title}`.toLowerCase()
+//   const searchTerm = (filterValue ?? '').toLowerCase()
+//
+//   return searchableRowContent.includes(searchTerm)
+// }
 
 const statusFilterFn: FilterFn<Item> = (
   row,
@@ -154,7 +154,7 @@ const columns: ColumnDef<Item>[] = [
       </div>
     ),
     size: 220,
-    filterFn: multiColumnFilterFn,
+    // filterFn: multiColumnFilterFn,
     enableHiding: false,
   },
   {
@@ -253,9 +253,17 @@ const columns: ColumnDef<Item>[] = [
 
 type ProductsTableProps = {
   data: Item[]
+  searchTerm?: string
+  onSearchTermChange?: (searchTerm: string) => void
+  onClearSearchTerm?: () => void
 }
 
-export function ProductsTable({ data }: ProductsTableProps) {
+export function ProductsTable({
+  data,
+  searchTerm,
+  onSearchTermChange,
+  onClearSearchTerm,
+}: ProductsTableProps) {
   const id = useId()
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
@@ -360,14 +368,17 @@ export function ProductsTable({ data }: ProductsTableProps) {
               ref={inputRef}
               className={cn(
                 'peer min-w-60 ps-9',
-                Boolean(table.getColumn('title')?.getFilterValue()) && 'pe-9',
+                searchTerm && 'pe-9',
+                // Boolean(table.getColumn('title')?.getFilterValue()) && 'pe-9',
               )}
-              value={
-                (table.getColumn('title')?.getFilterValue() ?? '') as string
-              }
-              onChange={(e) =>
-                table.getColumn('title')?.setFilterValue(e.target.value)
-              }
+              value={searchTerm}
+              onChange={(e) => onSearchTermChange?.(e.target.value)}
+              // value={
+              //   (table.getColumn('title')?.getFilterValue() ?? '') as string
+              // }
+              // onChange={(e) =>
+              //   table.getColumn('title')?.setFilterValue(e.target.value)
+              // }
               placeholder="Filter by title"
               type="text"
               aria-label="Filter by title"
@@ -375,12 +386,16 @@ export function ProductsTable({ data }: ProductsTableProps) {
             <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
               <ListFilterIcon size={16} aria-hidden="true" />
             </div>
-            {Boolean(table.getColumn('title')?.getFilterValue()) && (
+            {/* {Boolean(table.getColumn('title')?.getFilterValue()) && ( */}
+            {searchTerm && (
               <button
                 className="absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-md text-muted-foreground/80 outline-none transition-[color,box-shadow] hover:text-foreground focus:z-10 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
                 aria-label="Clear filter"
                 onClick={() => {
-                  table.getColumn('title')?.setFilterValue('')
+                  onClearSearchTerm?.()
+                  // onSearchTermChange?.('')
+                  // table.getColumn('title')?.setFilterValue('')
+
                   if (inputRef.current) {
                     inputRef.current.focus()
                   }

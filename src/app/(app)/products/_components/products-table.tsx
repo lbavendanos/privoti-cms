@@ -657,7 +657,7 @@ export function ProductsTable({
               <SelectValue placeholder="Select number of results" />
             </SelectTrigger>
             <SelectContent className="[&_*[role=option]>span]:end-2 [&_*[role=option]>span]:start-auto [&_*[role=option]]:pe-8 [&_*[role=option]]:ps-2">
-              {[5, 10, 15, 25, 50].map((perPageOption) => (
+              {[5, 15, 25, 50].map((perPageOption) => (
                 <SelectItem
                   key={perPageOption}
                   value={perPageOption.toString()}

@@ -111,3 +111,17 @@ export type Vendor = {
   updated_at?: string
   created_at?: string
 }
+
+export type Meta = {
+  current_page: number
+  from: number | null
+  last_page: number
+  per_page: number
+  to: number | null
+  total: number
+}
+
+export type List<T> = {
+  data: T[]
+  meta: Meta
+}

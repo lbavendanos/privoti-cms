@@ -58,7 +58,6 @@ import {
   ColumnDef,
   ColumnFiltersState,
   FilterFn,
-  PaginationState,
   Row,
   SortingState,
   VisibilityState,
@@ -66,7 +65,6 @@ import {
   getCoreRowModel,
   getFacetedUniqueValues,
   getFilteredRowModel,
-  getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table'
@@ -89,14 +87,6 @@ import {
 } from 'lucide-react'
 
 type Item = Product
-
-// Custom filter function for multi-column searching
-// const multiColumnFilterFn: FilterFn<Item> = (row, columnId, filterValue) => {
-//   const searchableRowContent = `${row.original.title}`.toLowerCase()
-//   const searchTerm = (filterValue ?? '').toLowerCase()
-//
-//   return searchableRowContent.includes(searchTerm)
-// }
 
 const statusFilterFn: FilterFn<Item> = (
   row,
@@ -154,7 +144,6 @@ const columns: ColumnDef<Item>[] = [
       </div>
     ),
     size: 220,
-    // filterFn: multiColumnFilterFn,
     enableHiding: false,
   },
   {
@@ -251,34 +240,42 @@ const columns: ColumnDef<Item>[] = [
   },
 ]
 
+type TablePagination = {
+  from: number | null
+  to: number | null
+  lastPage: number
+  total: number
+}
+
 type ProductsTableProps = {
   data: Item[]
   searchTerm?: string
+  perPage?: number
+  page?: number
+  pagination?: TablePagination
   onSearchTermChange?: (searchTerm: string) => void
   onClearSearchTerm?: () => void
+  onPerPageChange?: (perPage: number) => void
+  onPageChange?: (page: number) => void
 }
 
 export function ProductsTable({
   data,
   searchTerm,
+  perPage,
+  page,
+  pagination,
   onSearchTermChange,
   onClearSearchTerm,
+  onPerPageChange,
+  onPageChange,
 }: ProductsTableProps) {
   const id = useId()
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 10,
-  })
   const inputRef = useRef<HTMLInputElement>(null)
 
-  const [sorting, setSorting] = useState<SortingState>([
-    {
-      id: 'title',
-      desc: false,
-    },
-  ])
+  const [sorting, setSorting] = useState<SortingState>([])
 
   const handleDeleteRows = () => {
     // const selectedRows = table.getSelectedRowModel().rows
@@ -296,15 +293,12 @@ export function ProductsTable({
     getSortedRowModel: getSortedRowModel(),
     onSortingChange: setSorting,
     enableSortingRemoval: false,
-    getPaginationRowModel: getPaginationRowModel(),
-    onPaginationChange: setPagination,
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
     getFilteredRowModel: getFilteredRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
     state: {
       sorting,
-      pagination,
       columnFilters,
       columnVisibility,
     },
@@ -366,19 +360,9 @@ export function ProductsTable({
             <Input
               id={`${id}-input`}
               ref={inputRef}
-              className={cn(
-                'peer min-w-60 ps-9',
-                searchTerm && 'pe-9',
-                // Boolean(table.getColumn('title')?.getFilterValue()) && 'pe-9',
-              )}
+              className={cn('peer min-w-60 ps-9', searchTerm && 'pe-9')}
               value={searchTerm}
               onChange={(e) => onSearchTermChange?.(e.target.value)}
-              // value={
-              //   (table.getColumn('title')?.getFilterValue() ?? '') as string
-              // }
-              // onChange={(e) =>
-              //   table.getColumn('title')?.setFilterValue(e.target.value)
-              // }
               placeholder="Filter by title"
               type="text"
               aria-label="Filter by title"
@@ -386,15 +370,12 @@ export function ProductsTable({
             <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
               <ListFilterIcon size={16} aria-hidden="true" />
             </div>
-            {/* {Boolean(table.getColumn('title')?.getFilterValue()) && ( */}
             {searchTerm && (
               <button
                 className="absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-md text-muted-foreground/80 outline-none transition-[color,box-shadow] hover:text-foreground focus:z-10 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
                 aria-label="Clear filter"
                 onClick={() => {
                   onClearSearchTerm?.()
-                  // onSearchTermChange?.('')
-                  // table.getColumn('title')?.setFilterValue('')
 
                   if (inputRef.current) {
                     inputRef.current.focus()
@@ -667,110 +648,103 @@ export function ProductsTable({
             Rows per page
           </Label>
           <Select
-            value={table.getState().pagination.pageSize.toString()}
+            value={perPage?.toString()}
             onValueChange={(value) => {
-              table.setPageSize(Number(value))
+              onPerPageChange?.(Number(value))
             }}
           >
             <SelectTrigger id={id} className="w-fit whitespace-nowrap">
               <SelectValue placeholder="Select number of results" />
             </SelectTrigger>
             <SelectContent className="[&_*[role=option]>span]:end-2 [&_*[role=option]>span]:start-auto [&_*[role=option]]:pe-8 [&_*[role=option]]:ps-2">
-              {[5, 10, 25, 50].map((pageSize) => (
-                <SelectItem key={pageSize} value={pageSize.toString()}>
-                  {pageSize}
+              {[5, 10, 15, 25, 50].map((perPageOption) => (
+                <SelectItem
+                  key={perPageOption}
+                  value={perPageOption.toString()}
+                  className="cursor-pointer"
+                >
+                  {perPageOption}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
         </div>
         {/* Page number information */}
-        <div className="flex grow justify-end whitespace-nowrap text-sm text-muted-foreground">
-          <p
-            className="whitespace-nowrap text-sm text-muted-foreground"
-            aria-live="polite"
-          >
-            <span className="text-foreground">
-              {table.getState().pagination.pageIndex *
-                table.getState().pagination.pageSize +
-                1}
-              -
-              {Math.min(
-                Math.max(
-                  table.getState().pagination.pageIndex *
-                    table.getState().pagination.pageSize +
-                    table.getState().pagination.pageSize,
-                  0,
-                ),
-                table.getRowCount(),
-              )}
-            </span>{' '}
-            of{' '}
-            <span className="text-foreground">
-              {table.getRowCount().toString()}
-            </span>
-          </p>
-        </div>
+        {pagination && pagination.from && pagination.to && (
+          <div className="flex grow justify-end whitespace-nowrap text-sm text-muted-foreground">
+            <p
+              className="whitespace-nowrap text-sm text-muted-foreground"
+              aria-live="polite"
+            >
+              <span className="text-foreground">
+                {pagination.from} - {pagination.to}
+              </span>{' '}
+              of <span className="text-foreground">{pagination.total}</span>
+            </p>
+          </div>
+        )}
 
         {/* Pagination buttons */}
-        <div>
-          <Pagination>
-            <PaginationContent>
-              {/* First page button */}
-              <PaginationItem>
-                <Button
-                  size="icon"
-                  variant="outline"
-                  className="disabled:pointer-events-none disabled:opacity-50"
-                  onClick={() => table.firstPage()}
-                  disabled={!table.getCanPreviousPage()}
-                  aria-label="Go to first page"
-                >
-                  <ChevronFirstIcon size={16} aria-hidden="true" />
-                </Button>
-              </PaginationItem>
-              {/* Previous page button */}
-              <PaginationItem>
-                <Button
-                  size="icon"
-                  variant="outline"
-                  className="disabled:pointer-events-none disabled:opacity-50"
-                  onClick={() => table.previousPage()}
-                  disabled={!table.getCanPreviousPage()}
-                  aria-label="Go to previous page"
-                >
-                  <ChevronLeftIcon size={16} aria-hidden="true" />
-                </Button>
-              </PaginationItem>
-              {/* Next page button */}
-              <PaginationItem>
-                <Button
-                  size="icon"
-                  variant="outline"
-                  className="disabled:pointer-events-none disabled:opacity-50"
-                  onClick={() => table.nextPage()}
-                  disabled={!table.getCanNextPage()}
-                  aria-label="Go to next page"
-                >
-                  <ChevronRightIcon size={16} aria-hidden="true" />
-                </Button>
-              </PaginationItem>
-              {/* Last page button */}
-              <PaginationItem>
-                <Button
-                  size="icon"
-                  variant="outline"
-                  className="disabled:pointer-events-none disabled:opacity-50"
-                  onClick={() => table.lastPage()}
-                  disabled={!table.getCanNextPage()}
-                  aria-label="Go to last page"
-                >
-                  <ChevronLastIcon size={16} aria-hidden="true" />
-                </Button>
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
-        </div>
+        {page && pagination && pagination.lastPage && (
+          <div>
+            <Pagination>
+              <PaginationContent>
+                {/* First page button */}
+                <PaginationItem>
+                  <Button
+                    size="icon"
+                    variant="outline"
+                    className="disabled:pointer-events-none disabled:opacity-50"
+                    onClick={() => onPageChange?.(1)}
+                    disabled={page === 1}
+                    aria-label="Go to first page"
+                  >
+                    <ChevronFirstIcon size={16} aria-hidden="true" />
+                  </Button>
+                </PaginationItem>
+                {/* Previous page button */}
+                <PaginationItem>
+                  <Button
+                    size="icon"
+                    variant="outline"
+                    className="disabled:pointer-events-none disabled:opacity-50"
+                    onClick={() => onPageChange?.(page - 1)}
+                    disabled={page === 1}
+                    aria-label="Go to previous page"
+                  >
+                    <ChevronLeftIcon size={16} aria-hidden="true" />
+                  </Button>
+                </PaginationItem>
+                {/* Next page button */}
+                <PaginationItem>
+                  <Button
+                    size="icon"
+                    variant="outline"
+                    className="disabled:pointer-events-none disabled:opacity-50"
+                    onClick={() => onPageChange?.(page + 1)}
+                    disabled={page === pagination.lastPage}
+                    aria-label="Go to next page"
+                  >
+                    <ChevronRightIcon size={16} aria-hidden="true" />
+                  </Button>
+                </PaginationItem>
+                {/* Last page button */}
+                <PaginationItem>
+                  <Button
+                    size="icon"
+                    variant="outline"
+                    className="disabled:pointer-events-none disabled:opacity-50"
+                    onClick={() => onPageChange?.(pagination.lastPage)}
+                    disabled={page === pagination.lastPage}
+                    aria-label="Go to last page"
+                  >
+                    <ChevronLastIcon size={16} aria-hidden="true" />
+                  </Button>
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
+        )}
       </div>
     </div>
   )

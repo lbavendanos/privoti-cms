@@ -7,26 +7,24 @@ import {
   handleActionError,
   handleActionSuccess,
 } from '@/lib/action'
-import { type Product } from '../types'
+import type { List, Meta, Product } from '../types'
 
 export async function getProducts(
   params: Record<string, string> = {},
-): Promise<Product[]> {
+): Promise<List<Product>> {
   const sessionToken = await getSessionToken()
 
   console.info('Fetching products')
 
   try {
-    const {
-      data: { data },
-    } = await api.get<{ data: Product[] }>('/products', {
+    const { data } = await api.get<List<Product>>('/products', {
       params,
       sessionToken,
     })
 
     return data
   } catch {
-    return []
+    return { data: [], meta: {} as Meta } as List<Product>
   }
 }
 

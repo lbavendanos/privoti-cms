@@ -9,21 +9,47 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { ProductsTable } from './products-table'
 
+const DEFAULT_PER_PAGE = 15
+const DEFAULT_PAGE = 1
+
 export function Products() {
   const pathname = usePathname()
   const searchParams = useSearchParams()
 
   const params: {
     search?: string
+    per_page?: string
+    page?: string
   } = useMemo(() => Object.fromEntries(searchParams.entries()), [searchParams])
 
   const [searchTerm, setSearchTerm] = useState(params.search ?? '')
+  const [perPage, setPerPage] = useState(
+    params.per_page ? Number(params.per_page) : DEFAULT_PER_PAGE,
+  )
+  const [page, setPage] = useState(
+    params.page ? Number(params.page) : DEFAULT_PAGE,
+  )
 
-  const { data: products } = useQuery({
+  const { data } = useQuery({
     queryKey: filled(params) ? ['product-list', params] : ['product-list'],
     queryFn: () => getProducts(params),
     placeholderData: keepPreviousData,
   })
+
+  const products = useMemo(() => data?.data, [data])
+  const meta = useMemo(() => data?.meta, [data])
+  const pagination = useMemo(
+    () =>
+      meta
+        ? {
+            from: meta.from,
+            to: meta.to,
+            lastPage: meta.last_page,
+            total: meta.total,
+          }
+        : undefined,
+    [meta],
+  )
 
   const updateQueryParams = useCallback(
     (name: string, value: string) => {
@@ -66,6 +92,22 @@ export function Products() {
     updateQueryParams('search', '')
   }, [updateQueryParams])
 
+  const handlePerPageChange = useCallback(
+    (newPerPage: number) => {
+      setPerPage(newPerPage)
+      updateQueryParams('per_page', `${newPerPage}`)
+    },
+    [updateQueryParams],
+  )
+
+  const handlePageChange = useCallback(
+    (newPage: number) => {
+      setPage(newPage)
+      updateQueryParams('page', `${newPage}`)
+    },
+    [updateQueryParams],
+  )
+
   return (
     <div className="container my-4 h-full lg:my-6">
       <div className="grid h-full grid-cols-12 gap-6">
@@ -88,8 +130,13 @@ export function Products() {
               <ProductsTable
                 data={products ?? []}
                 searchTerm={searchTerm}
+                perPage={perPage}
+                page={page}
+                pagination={pagination}
                 onSearchTermChange={handleSearchTermChange}
                 onClearSearchTerm={handleClearSearchTerm}
+                onPerPageChange={handlePerPageChange}
+                onPageChange={handlePageChange}
               />
             )}
           </div>

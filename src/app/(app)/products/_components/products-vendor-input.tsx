@@ -26,9 +26,9 @@ export function ProductsVendorInput({
 
   const { data: vendors, isFetching } = useQuery({
     queryKey: debouncedSearchTerm
-      ? ['product-vendor-list', { search: debouncedSearchTerm }]
+      ? ['product-vendor-list', { q: debouncedSearchTerm }]
       : ['product-vendor-list'],
-    queryFn: () => getVendors({ search: debouncedSearchTerm }),
+    queryFn: () => getVendors({ q: debouncedSearchTerm }),
     placeholderData: keepPreviousData,
   })
 

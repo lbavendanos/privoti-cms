@@ -17,12 +17,12 @@ export function Products() {
   const searchParams = useSearchParams()
 
   const params: {
-    search?: string
+    q?: string
     per_page?: string
     page?: string
   } = useMemo(() => Object.fromEntries(searchParams.entries()), [searchParams])
 
-  const [searchTerm, setSearchTerm] = useState(params.search ?? '')
+  const [searchTerm, setSearchTerm] = useState(params.q ?? '')
   const [perPage, setPerPage] = useState(
     params.per_page ? Number(params.per_page) : DEFAULT_PER_PAGE,
   )
@@ -73,10 +73,9 @@ export function Products() {
   const debouncedUpdateSearchTerm = useMemo(
     () =>
       debounce((newSearchTerm: string) => {
-        if (newSearchTerm !== params.search)
-          updateQueryParams('search', newSearchTerm)
+        if (newSearchTerm !== params.q) updateQueryParams('q', newSearchTerm)
       }, 500),
-    [params.search, updateQueryParams],
+    [params.q, updateQueryParams],
   )
 
   const handleSearchTermChange = useCallback(
@@ -89,7 +88,7 @@ export function Products() {
 
   const handleClearSearchTerm = useCallback(() => {
     setSearchTerm('')
-    updateQueryParams('search', '')
+    updateQueryParams('q', '')
   }, [updateQueryParams])
 
   const handlePerPageChange = useCallback(

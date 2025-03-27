@@ -26,9 +26,9 @@ export function ProductsTypeInput({
 
   const { data: types, isFetching } = useQuery({
     queryKey: debouncedSearchTerm
-      ? ['product-type-list', { search: debouncedSearchTerm }]
+      ? ['product-type-list', { q: debouncedSearchTerm }]
       : ['product-type-list'],
-    queryFn: () => getProductTypes({ search: debouncedSearchTerm }),
+    queryFn: () => getProductTypes({ q: debouncedSearchTerm }),
     placeholderData: keepPreviousData,
   })
 

@@ -59,13 +59,11 @@ import {
   ColumnFiltersState,
   FilterFn,
   Row,
-  SortingState,
   VisibilityState,
   flexRender,
   getCoreRowModel,
   getFacetedUniqueValues,
   getFilteredRowModel,
-  getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table'
 import Link from 'next/link'
@@ -168,6 +166,7 @@ const columns: ColumnDef<Item>[] = [
     ),
     size: 100,
     filterFn: statusFilterFn,
+    enableSorting: false,
   },
   {
     id: 'invertory',
@@ -193,6 +192,7 @@ const columns: ColumnDef<Item>[] = [
       </div>
     ),
     size: 200,
+    enableSorting: false,
   },
   {
     id: 'category',
@@ -204,6 +204,7 @@ const columns: ColumnDef<Item>[] = [
       </div>
     ),
     size: 100,
+    enableSorting: false,
   },
   {
     id: 'type',
@@ -215,6 +216,7 @@ const columns: ColumnDef<Item>[] = [
       </div>
     ),
     size: 100,
+    enableSorting: false,
   },
   {
     id: 'vendor',
@@ -226,6 +228,7 @@ const columns: ColumnDef<Item>[] = [
       </div>
     ),
     size: 100,
+    enableSorting: false,
   },
   {
     id: 'actions',
@@ -247,14 +250,21 @@ type TablePagination = {
   total: number
 }
 
+type Order = {
+  column: string
+  direction: string
+}
+
 type ProductsTableProps = {
   data: Item[]
   searchTerm?: string
+  order?: Order | null
   perPage?: number
   page?: number
   pagination?: TablePagination
   onSearchTermChange?: (searchTerm: string) => void
   onClearSearchTerm?: () => void
+  onOrderChange?: (order: Order) => void
   onPerPageChange?: (perPage: number) => void
   onPageChange?: (page: number) => void
 }
@@ -262,20 +272,22 @@ type ProductsTableProps = {
 export function ProductsTable({
   data,
   searchTerm,
+  order,
   perPage,
   page,
   pagination,
   onSearchTermChange,
   onClearSearchTerm,
+  onOrderChange,
   onPerPageChange,
   onPageChange,
 }: ProductsTableProps) {
   const id = useId()
+
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
-  const inputRef = useRef<HTMLInputElement>(null)
 
-  const [sorting, setSorting] = useState<SortingState>([])
+  const inputRef = useRef<HTMLInputElement>(null)
 
   const handleDeleteRows = () => {
     // const selectedRows = table.getSelectedRowModel().rows
@@ -290,15 +302,11 @@ export function ProductsTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    onSortingChange: setSorting,
-    enableSortingRemoval: false,
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
     getFilteredRowModel: getFilteredRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
     state: {
-      sorting,
       columnFilters,
       columnVisibility,
     },
@@ -549,7 +557,17 @@ export function ProductsTable({
                             header.column.getCanSort() &&
                               'flex h-full cursor-pointer select-none items-center justify-between gap-2',
                           )}
-                          onClick={header.column.getToggleSortingHandler()}
+                          onClick={() =>
+                            onOrderChange?.({
+                              column: header.column.id,
+                              direction:
+                                order?.column === header.column.id
+                                  ? order.direction === 'asc'
+                                    ? 'desc'
+                                    : 'asc'
+                                  : 'asc',
+                            })
+                          }
                           onKeyDown={(e) => {
                             // Enhanced keyboard handling for sorting
                             if (
@@ -557,7 +575,16 @@ export function ProductsTable({
                               (e.key === 'Enter' || e.key === ' ')
                             ) {
                               e.preventDefault()
-                              header.column.getToggleSortingHandler()?.(e)
+
+                              onOrderChange?.({
+                                column: header.column.id,
+                                direction:
+                                  order?.column === header.column.id
+                                    ? order.direction === 'asc'
+                                      ? 'desc'
+                                      : 'asc'
+                                    : 'asc',
+                              })
                             }
                           }}
                           tabIndex={header.column.getCanSort() ? 0 : undefined}
@@ -581,7 +608,10 @@ export function ProductsTable({
                                 aria-hidden="true"
                               />
                             ),
-                          }[header.column.getIsSorted() as string] ?? null}
+                          }[
+                            (order?.column === header.column.id &&
+                              order.direction) as string
+                          ] ?? null}
                         </div>
                       ) : (
                         flexRender(

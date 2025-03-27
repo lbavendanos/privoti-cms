@@ -16,6 +16,7 @@ export function Products() {
   const params: {
     search?: string
   } = useMemo(() => Object.fromEntries(searchParams.entries()), [searchParams])
+
   const [searchTerm, setSearchTerm] = useState(params.search ?? '')
 
   const { data: products } = useQuery({
@@ -26,7 +27,7 @@ export function Products() {
 
   const updateQueryParams = useCallback(
     (name: string, value: string) => {
-      const newParams = new URLSearchParams(searchParams.toString())
+      const newParams = new URLSearchParams(searchParams)
 
       if (value) {
         newParams.set(name, value)
@@ -34,7 +35,11 @@ export function Products() {
         newParams.delete(name)
       }
 
-      window.history.pushState(null, '', `${pathname}?${newParams}`)
+      const newUrl = newParams.toString()
+        ? `${pathname}?${newParams.toString()}`
+        : pathname
+
+      window.history.pushState(null, '', newUrl)
     },
     [searchParams, pathname],
   )

@@ -60,7 +60,7 @@ export function ProductsCategoryInput({
 
   const categories: Category[] = useMemo(
     () =>
-      data?.map((c) => ({
+      data?.data.map((c) => ({
         id: `${c.id}`,
         name: c.name,
         parentId: c.parent_id ? `${c.parent_id}` : null,

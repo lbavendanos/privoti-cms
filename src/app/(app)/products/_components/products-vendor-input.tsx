@@ -24,7 +24,7 @@ export function ProductsVendorInput({
   const [searchTerm, setSearchTerm] = useState<string>('')
   const debouncedSearchTerm = useDebounce(searchTerm, 500)
 
-  const { data: vendors, isFetching } = useQuery({
+  const { data, isFetching } = useQuery({
     queryKey: debouncedSearchTerm
       ? ['product-vendor-list', { q: debouncedSearchTerm }]
       : ['product-vendor-list'],
@@ -32,6 +32,7 @@ export function ProductsVendorInput({
     placeholderData: keepPreviousData,
   })
 
+  const vendors = useMemo(() => data?.data, [data])
   const options = useMemo(
     () =>
       vendors?.map((vendor) => ({

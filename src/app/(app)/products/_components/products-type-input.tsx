@@ -24,7 +24,7 @@ export function ProductsTypeInput({
   const [searchTerm, setSearchTerm] = useState<string>('')
   const debouncedSearchTerm = useDebounce(searchTerm, 500)
 
-  const { data: types, isFetching } = useQuery({
+  const { data, isFetching } = useQuery({
     queryKey: debouncedSearchTerm
       ? ['product-type-list', { q: debouncedSearchTerm }]
       : ['product-type-list'],
@@ -32,6 +32,7 @@ export function ProductsTypeInput({
     placeholderData: keepPreviousData,
   })
 
+  const types = useMemo(() => data?.data, [data])
   const options = useMemo(
     () =>
       types?.map((type) => ({

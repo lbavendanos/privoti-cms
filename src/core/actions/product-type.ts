@@ -2,23 +2,21 @@
 
 import { api } from '@/lib/http'
 import { getSessionToken } from '@/lib/session'
-import { type ProductType } from '../types'
+import type { List, Meta, ProductType } from '../types'
 
 export async function getProductTypes(
   params: Record<string, string> = {},
-): Promise<ProductType[]> {
+): Promise<List<ProductType>> {
   const sessionToken = await getSessionToken()
 
   try {
-    const {
-      data: { data },
-    } = await api.get<{ data: ProductType[] }>('/types', {
+    const { data } = await api.get<List<ProductType>>('/types', {
       params,
       sessionToken,
     })
 
     return data
   } catch {
-    return []
+    return { data: [], meta: {} as Meta } as List<ProductType>
   }
 }

@@ -123,5 +123,5 @@ export type Meta = {
 
 export type List<T> = {
   data: T[]
-  meta: Meta
+  meta?: Meta
 }

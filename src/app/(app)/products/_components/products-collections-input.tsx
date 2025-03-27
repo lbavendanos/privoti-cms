@@ -20,7 +20,7 @@ export function ProductsCollectionsInput({
   ...props
 }: ProductsCollectionsInputProps) {
   const handleSearch = useCallback(async (value: string) => {
-    const collections = await getCollections({
+    const { data: collections } = await getCollections({
       q: value,
       fields: 'id,title',
       name: 'collections',

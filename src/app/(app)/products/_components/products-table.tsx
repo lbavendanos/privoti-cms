@@ -25,6 +25,7 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
@@ -800,11 +801,20 @@ function RowActions({ row }: { row: Row<Item> }) {
           <DropdownMenuItem className="cursor-pointer" asChild>
             <Link href={`/products/${row.original.id}`}>Edit</Link>
           </DropdownMenuItem>
-          <DropdownMenuItem className="cursor-pointer">
-            {row.original.status === 'active' && 'Archived'}
-            {row.original.status === 'archived' && 'Activate'}
-            {row.original.status === 'draft' && 'Activate'}
-          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuGroup>
+            <DropdownMenuItem className="cursor-pointer">
+              {row.original.status === 'active' && 'Archived'}
+              {row.original.status === 'archived' && 'Activate'}
+              {row.original.status === 'draft' && 'Activate'}
+            </DropdownMenuItem>
+            {['active', 'archived'].includes(row.original.status) && (
+              <DropdownMenuItem className="cursor-pointer text-amber-500 focus:text-amber-500">
+                Draft
+              </DropdownMenuItem>
+            )}
+          </DropdownMenuGroup>
+          <DropdownMenuSeparator />
           <DropdownMenuItem className="cursor-pointer text-destructive focus:text-destructive">
             Delete
           </DropdownMenuItem>

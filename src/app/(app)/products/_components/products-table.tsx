@@ -1,6 +1,6 @@
 'use client'
 
-import { cn } from '@/lib/utils'
+import { capitalize, cn } from '@/lib/utils'
 import { useCallback, useId, useMemo, useRef, useState } from 'react'
 import { type Product } from '@/core/types'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -152,7 +152,6 @@ const columns: ColumnDef<Item>[] = [
       <div className="flex h-full w-full items-center px-4">
         <Badge
           className={cn(
-            'capitalize',
             row.getValue('status') === 'draft' &&
               'bg-amber-500 hover:bg-amber-500',
             row.getValue('status') === 'active' &&
@@ -161,7 +160,7 @@ const columns: ColumnDef<Item>[] = [
               'bg-gray-500 hover:bg-gray-500',
           )}
         >
-          {row.getValue('status')}
+          {capitalize(row.getValue('status'))}
         </Badge>
       </div>
     ),
@@ -244,7 +243,7 @@ const columns: ColumnDef<Item>[] = [
   },
 ]
 
-type TablePagination = {
+type PaginationInfo = {
   from: number | null
   to: number | null
   lastPage: number
@@ -259,12 +258,14 @@ type Order = {
 type ProductsTableProps = {
   data: Item[]
   searchTerm?: string
+  status?: string[]
   order?: Order | null
   perPage?: number
   page?: number
-  pagination?: TablePagination
+  pagination?: PaginationInfo
   onSearchTermChange?: (searchTerm: string) => void
   onClearSearchTerm?: () => void
+  onStatusChange?: (status: string[]) => void
   onOrderChange?: (order: Order) => void
   onPerPageChange?: (perPage: number) => void
   onPageChange?: (page: number) => void
@@ -273,12 +274,14 @@ type ProductsTableProps = {
 export function ProductsTable({
   data,
   searchTerm,
+  status,
   order,
   perPage,
   page,
   pagination,
   onSearchTermChange,
   onClearSearchTerm,
+  onStatusChange,
   onOrderChange,
   onPerPageChange,
   onPageChange,
@@ -429,9 +432,9 @@ export function ProductsTable({
                       />
                       <Label
                         htmlFor={`${id}-${i}`}
-                        className="flex grow cursor-pointer justify-between gap-2 font-normal capitalize"
+                        className="flex grow cursor-pointer justify-between gap-2 font-normal"
                       >
-                        {value}{' '}
+                        {capitalize(value)}{' '}
                         <span className="ms-2 text-xs text-muted-foreground">
                           {statusCounts.get(value)}
                         </span>
@@ -463,14 +466,14 @@ export function ProductsTable({
                   return (
                     <DropdownMenuCheckboxItem
                       key={column.id}
-                      className="cursor-pointer capitalize"
+                      className="cursor-pointer"
                       checked={column.getIsVisible()}
                       onCheckedChange={(value) =>
                         column.toggleVisibility(!!value)
                       }
                       onSelect={(event) => event.preventDefault()}
                     >
-                      {column.id}
+                      {capitalize(column.id)}
                     </DropdownMenuCheckboxItem>
                   )
                 })}
@@ -803,16 +806,17 @@ function RowActions({ row }: { row: Row<Item> }) {
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
-            <DropdownMenuItem className="cursor-pointer">
-              {row.original.status === 'active' && 'Archived'}
-              {row.original.status === 'archived' && 'Activate'}
-              {row.original.status === 'draft' && 'Activate'}
-            </DropdownMenuItem>
-            {['active', 'archived'].includes(row.original.status) && (
-              <DropdownMenuItem className="cursor-pointer text-amber-500 focus:text-amber-500">
-                Draft
-              </DropdownMenuItem>
-            )}
+            {['draft', 'archived', 'active'].map((status) => {
+              if (status !== row.original.status) {
+                return (
+                  <DropdownMenuItem key={status} className="cursor-pointer">
+                    {capitalize(status)}
+                  </DropdownMenuItem>
+                )
+              }
+
+              return null
+            })}
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuItem className="cursor-pointer text-destructive focus:text-destructive">

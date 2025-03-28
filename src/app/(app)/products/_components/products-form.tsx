@@ -9,7 +9,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useCallback } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { createProduct, updateProduct } from '@/core/actions/product'
-import { type Product } from '@/core/types'
+import type { Product } from '@/core/types'
 import Link from 'next/link'
 import {
   Card,
@@ -380,10 +380,6 @@ export function ProductsForm({ product }: ProductsFormProps) {
             ['product-detail', { id: `${state.data.id}` }],
             state.data,
           )
-
-          queryClient.invalidateQueries({
-            queryKey: ['product-detail', { id: `${state.data.id}` }],
-          })
 
           queryClient.invalidateQueries({ queryKey: ['product-list'] })
 

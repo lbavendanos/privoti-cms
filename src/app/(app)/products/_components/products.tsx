@@ -18,12 +18,16 @@ export function Products() {
 
   const params: {
     q?: string
+    status?: string
     order?: string
     per_page?: string
     page?: string
   } = useMemo(() => Object.fromEntries(searchParams.entries()), [searchParams])
 
   const [searchTerm, setSearchTerm] = useState(params.q ?? '')
+  const [status, setStatus] = useState<string[] | null>(
+    () => params.status?.split(',') ?? null,
+  )
   const [order, setOrder] = useState<{
     column: string
     direction: string
@@ -103,6 +107,14 @@ export function Products() {
     updateQueryParams('q', '')
   }, [updateQueryParams])
 
+  const handleStatusChange = useCallback(
+    (newStatus: string[]) => {
+      setStatus(newStatus)
+      updateQueryParams('status', newStatus.join(','))
+    },
+    [updateQueryParams],
+  )
+
   const handleOrderChange = useCallback(
     (newOrder: { column: string; direction: string } | null) => {
       setOrder(newOrder)
@@ -154,12 +166,14 @@ export function Products() {
               <ProductsTable
                 data={products ?? []}
                 searchTerm={searchTerm}
+                status={status}
                 order={order}
                 perPage={perPage}
                 page={page}
                 pagination={pagination}
                 onSearchTermChange={handleSearchTermChange}
                 onClearSearchTerm={handleClearSearchTerm}
+                onStatusChange={handleStatusChange}
                 onOrderChange={handleOrderChange}
                 onPerPageChange={handlePerPageChange}
                 onPageChange={handlePageChange}

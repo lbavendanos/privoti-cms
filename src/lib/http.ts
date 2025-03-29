@@ -150,6 +150,18 @@ class Api {
       this.#handleResponse<TData>(response),
     )
   }
+
+  async delete<TData>(
+    url: string | URL,
+    config: ApiRequestConfig = {},
+  ): Promise<ApiResponse<TData>> {
+    const input = this.#handleInput(url, config)
+    const init = this.#handleInit('DELETE', {}, config)
+
+    return fetch(input, init).then((response) =>
+      this.#handleResponse<TData>(response),
+    )
+  }
 }
 
 export function isApiError<TData>(error: unknown): error is ApiError<TData> {

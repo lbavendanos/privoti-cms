@@ -2,11 +2,8 @@
 
 import { api } from '@/lib/http'
 import { getSessionToken } from '@/lib/session'
-import {
-  type ActionResponse,
-  handleActionError,
-  handleActionSuccess,
-} from '@/lib/action'
+import { handleActionError, handleActionSuccess } from '@/lib/action'
+import type { ActionResponse } from '@/lib/action'
 import type { List, Meta, Product } from '../types'
 
 export async function getProducts(
@@ -81,5 +78,21 @@ export async function updateProduct(
     return handleActionSuccess(status, data)
   } catch (error) {
     return handleActionError(error, formData)
+  }
+}
+
+export async function deleteProduct(
+  id: number | string,
+): Promise<ActionResponse<unknown>> {
+  const sessionToken = await getSessionToken()
+
+  try {
+    const { status } = await api.delete(`/products/${id}`, {
+      sessionToken,
+    })
+
+    return handleActionSuccess(status)
+  } catch (error) {
+    return handleActionError(error)
   }
 }

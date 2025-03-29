@@ -1,10 +1,16 @@
 'use client'
 
-import { getProducts } from '@/core/actions/product'
+import { useToast } from '@/hooks/use-toast'
 import { blank, debounce, filled } from '@/lib/utils'
-import { keepPreviousData, useQuery } from '@tanstack/react-query'
+import { deleteProduct, getProducts } from '@/core/actions/product'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { useCallback, useMemo, useState } from 'react'
+import {
+  useQuery,
+  useQueryClient,
+  keepPreviousData,
+  useMutation,
+} from '@tanstack/react-query'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { ProductsTable } from './products-table'
@@ -15,6 +21,9 @@ const DEFAULT_PAGE = 1
 export function Products() {
   const pathname = usePathname()
   const searchParams = useSearchParams()
+  const queryClient = useQueryClient()
+
+  const { toast } = useToast()
 
   const params: {
     q?: string
@@ -66,6 +75,39 @@ export function Products() {
         : undefined,
     [meta],
   )
+
+  const { mutate } = useMutation({
+    mutationFn: async (id: number) => {
+      const state = await deleteProduct(id)
+
+      return { id, state }
+    },
+    onSuccess: ({ id, state }) => {
+      if (state.isClientError || state.isServerError) {
+        toast({
+          variant: 'destructive',
+          description: state.message,
+        })
+      }
+
+      if (state.isSuccess) {
+        toast({
+          description: 'Product deleted successfully.',
+        })
+
+        queryClient.invalidateQueries({
+          queryKey: ['product-detail', { id: `${id}` }],
+        })
+        queryClient.invalidateQueries({ queryKey: ['product-list'] })
+      }
+    },
+    onError: (error) => {
+      toast({
+        variant: 'destructive',
+        description: error.message,
+      })
+    },
+  })
 
   const updateQueryParams = useCallback(
     (name: string, value: string) => {
@@ -144,6 +186,13 @@ export function Products() {
     [updateQueryParams],
   )
 
+  const handleDeleteRow = useCallback(
+    async (id: number) => {
+      mutate(id)
+    },
+    [mutate],
+  )
+
   return (
     <div className="container my-4 h-full lg:my-6">
       <div className="grid h-full grid-cols-12 gap-6">
@@ -177,6 +226,7 @@ export function Products() {
                 onOrderChange={handleOrderChange}
                 onPerPageChange={handlePerPageChange}
                 onPageChange={handlePageChange}
+                onDeleteRow={handleDeleteRow}
               />
             )}
           </div>

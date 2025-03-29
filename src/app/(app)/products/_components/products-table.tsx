@@ -1,8 +1,14 @@
 'use client'
 
 import { capitalize, cn } from '@/lib/utils'
-import { useId, useRef, useState } from 'react'
-import { type Product } from '@/core/types'
+import { useId, useMemo, useRef, useState } from 'react'
+import {
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+} from '@tanstack/react-table'
+import type { Product } from '@/core/types'
+import type { ColumnDef, Row, VisibilityState } from '@tanstack/react-table'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
   AlertDialog,
@@ -55,14 +61,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import {
-  ColumnDef,
-  Row,
-  VisibilityState,
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-} from '@tanstack/react-table'
 import Link from 'next/link'
 import {
   ChevronDownIcon,
@@ -83,148 +81,157 @@ import {
 
 type Item = Product
 
-const columns: ColumnDef<Item>[] = [
-  {
-    id: 'select',
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && 'indeterminate')
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <div className="flex h-full w-full items-center p-4 pr-0">
+function makeColumns({
+  onDelete,
+}: {
+  onDelete: (row: Row<Item>) => void
+}): ColumnDef<Item>[] {
+  return [
+    {
+      id: 'select',
+      header: ({ table }) => (
         <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label="Select row"
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && 'indeterminate')
+          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Select all"
         />
-      </div>
-    ),
-    size: 28,
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    header: 'Product',
-    accessorKey: 'title',
-    cell: ({ row }) => (
-      <div className="flex h-full w-full items-center gap-x-3 px-4">
-        <Avatar className="w-8 rounded-md">
-          <AvatarImage
-            src={row.original.thumbnail!}
-            alt={row.getValue('title')}
+      ),
+      cell: ({ row }) => (
+        <div className="flex h-full w-full items-center p-4 pr-0">
+          <Checkbox
+            checked={row.getIsSelected()}
+            onCheckedChange={(value) => row.toggleSelected(!!value)}
+            aria-label="Select row"
           />
-          <AvatarFallback className="w-8 rounded-md">
-            {row.getValue<string>('title').charAt(0).toUpperCase()}
-          </AvatarFallback>
-        </Avatar>
-        <div className="font-medium">{row.getValue('title')}</div>
-      </div>
-    ),
-    size: 220,
-    enableHiding: false,
-  },
-  {
-    header: 'Status',
-    accessorKey: 'status',
-    cell: ({ row }) => (
-      <div className="flex h-full w-full items-center px-4">
-        <Badge
-          className={cn(
-            row.getValue('status') === 'draft' &&
-              'bg-amber-500 hover:bg-amber-500',
-            row.getValue('status') === 'active' &&
-              'bg-emerald-600 hover:bg-emerald-600',
-            row.getValue('status') === 'archived' &&
-              'bg-gray-500 hover:bg-gray-500',
-          )}
-        >
-          {capitalize(row.getValue('status'))}
-        </Badge>
-      </div>
-    ),
-    size: 100,
-    enableSorting: false,
-  },
-  {
-    id: 'invertory',
-    header: 'Inventory',
-    accessorKey: 'stock',
-    cell: ({ row }) => (
-      <div className="flex h-full w-full items-center px-4">
-        <div className="block">
-          <span
-            className={
-              row.getValue<number>('invertory') < 10
-                ? 'text-destructive'
-                : 'text-foreground'
-            }
-          >
-            {row.getValue('invertory')} in stock
-          </span>{' '}
-          <span>
-            for {row.original.variants?.length} variant
-            {row.original.variants && row.original.variants?.length > 0 && 's'}
-          </span>
         </div>
-      </div>
-    ),
-    size: 200,
-    enableSorting: false,
-  },
-  {
-    id: 'category',
-    header: 'Category',
-    accessorKey: 'category.name',
-    cell: ({ row }) => (
-      <div className="flex h-full w-full items-center px-4">
-        <span>{row.getValue('category') ?? '-'}</span>
-      </div>
-    ),
-    size: 100,
-    enableSorting: false,
-  },
-  {
-    id: 'type',
-    header: 'Type',
-    accessorKey: 'type.name',
-    cell: ({ row }) => (
-      <div className="flex h-full w-full items-center px-4">
-        <span>{row.getValue('type') ?? '-'}</span>
-      </div>
-    ),
-    size: 100,
-    enableSorting: false,
-  },
-  {
-    id: 'vendor',
-    header: 'Vendor',
-    accessorKey: 'vendor.name',
-    cell: ({ row }) => (
-      <div className="flex h-full w-full items-center px-4">
-        <span>{row.getValue('vendor') ?? '-'}</span>
-      </div>
-    ),
-    size: 100,
-    enableSorting: false,
-  },
-  {
-    id: 'actions',
-    header: () => <span className="sr-only">Actions</span>,
-    cell: ({ row }) => (
-      <div className="flex h-full w-full items-center px-4">
-        <RowActions row={row} />
-      </div>
-    ),
-    size: 60,
-    enableHiding: false,
-  },
-]
+      ),
+      size: 28,
+      enableSorting: false,
+      enableHiding: false,
+    },
+    {
+      header: 'Product',
+      accessorKey: 'title',
+      cell: ({ row }) => (
+        <div className="flex h-full w-full items-center gap-x-3 px-4">
+          <Avatar className="w-8 rounded-md">
+            <AvatarImage
+              src={row.original.thumbnail!}
+              alt={row.getValue('title')}
+            />
+            <AvatarFallback className="w-8 rounded-md">
+              {row.getValue<string>('title').charAt(0).toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
+          <div className="font-medium">{row.getValue('title')}</div>
+        </div>
+      ),
+      size: 220,
+      enableHiding: false,
+    },
+    {
+      header: 'Status',
+      accessorKey: 'status',
+      cell: ({ row }) => (
+        <div className="flex h-full w-full items-center px-4">
+          <Badge
+            className={cn(
+              row.getValue('status') === 'draft' &&
+                'bg-amber-500 hover:bg-amber-500',
+              row.getValue('status') === 'active' &&
+                'bg-emerald-600 hover:bg-emerald-600',
+              row.getValue('status') === 'archived' &&
+                'bg-gray-500 hover:bg-gray-500',
+            )}
+          >
+            {capitalize(row.getValue('status'))}
+          </Badge>
+        </div>
+      ),
+      size: 100,
+      enableSorting: false,
+    },
+    {
+      id: 'invertory',
+      header: 'Inventory',
+      accessorKey: 'stock',
+      cell: ({ row }) => (
+        <div className="flex h-full w-full items-center px-4">
+          <div className="block">
+            <span
+              className={
+                row.getValue<number>('invertory') < 10
+                  ? 'text-destructive'
+                  : 'text-foreground'
+              }
+            >
+              {row.getValue('invertory')} in stock
+            </span>{' '}
+            <span>
+              for {row.original.variants?.length} variant
+              {row.original.variants &&
+                row.original.variants?.length > 0 &&
+                's'}
+            </span>
+          </div>
+        </div>
+      ),
+      size: 200,
+      enableSorting: false,
+    },
+    {
+      id: 'category',
+      header: 'Category',
+      accessorFn: (row) => row.category?.name ?? null,
+      cell: ({ row }) => (
+        <div className="flex h-full w-full items-center px-4">
+          <span>{row.getValue('category') ?? '-'}</span>
+        </div>
+      ),
+      size: 100,
+      enableSorting: false,
+    },
+    {
+      id: 'type',
+      header: 'Type',
+      accessorFn: (row) => row.type?.name ?? null,
+      cell: ({ row }) => (
+        <div className="flex h-full w-full items-center px-4">
+          <span>{row.getValue('type') ?? '-'}</span>
+        </div>
+      ),
+      size: 100,
+      enableSorting: false,
+    },
+    {
+      id: 'vendor',
+      header: 'Vendor',
+      accessorFn: (row) => row.vendor?.name ?? null,
+      cell: ({ row }) => (
+        <div className="flex h-full w-full items-center px-4">
+          <span>{row.getValue('vendor') ?? '-'}</span>
+        </div>
+      ),
+      size: 100,
+      enableSorting: false,
+    },
+    {
+      id: 'actions',
+      header: () => <span className="sr-only">Actions</span>,
+      cell: ({ row }) => (
+        <div className="flex h-full w-full items-center px-4">
+          <RowActions row={row} onDeleteSelect={onDelete} />
+        </div>
+      ),
+      size: 60,
+      enableHiding: false,
+      enableSorting: false,
+    },
+  ]
+}
 
 type PaginationInfo = {
   from: number | null
@@ -252,6 +259,8 @@ type ProductsTableProps = {
   onOrderChange?: (order: Order) => void
   onPerPageChange?: (perPage: number) => void
   onPageChange?: (page: number) => void
+  onDeleteRow?: (id: number) => void
+  onDeleteRows?: (ids: number[]) => void
 }
 
 export function ProductsTable({
@@ -268,10 +277,15 @@ export function ProductsTable({
   onOrderChange,
   onPerPageChange,
   onPageChange,
+  onDeleteRow,
+  onDeleteRows,
 }: ProductsTableProps) {
   const id = useId()
 
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
+
+  const [selectedRow, setSelectedRow] = useState<Row<Item>>()
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false)
 
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -283,6 +297,17 @@ export function ProductsTable({
     // setData(updatedData)
     table.resetRowSelection()
   }
+
+  const columns = useMemo(
+    () =>
+      makeColumns({
+        onDelete: (row: Row<Item>) => {
+          setSelectedRow(row)
+          setOpenDeleteDialog(true)
+        },
+      }),
+    [],
+  )
 
   const table = useReactTable({
     data,
@@ -714,11 +739,42 @@ export function ProductsTable({
           </div>
         )}
       </div>
+      <AlertDialog open={openDeleteDialog} onOpenChange={setOpenDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              You are about to delete the product{' '}
+              <strong>{selectedRow?.original.title}</strong>. This action cannot
+              be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={() => {
+                if (selectedRow) {
+                  onDeleteRow?.(selectedRow.original.id)
+                }
+              }}
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }
 
-function RowActions({ row }: { row: Row<Item> }) {
+function RowActions({
+  row,
+  onDeleteSelect,
+}: {
+  row: Row<Item>
+  onDeleteSelect?: (row: Row<Item>) => void
+}) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -753,7 +809,10 @@ function RowActions({ row }: { row: Row<Item> }) {
             })}
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
-          <DropdownMenuItem className="cursor-pointer text-destructive focus:text-destructive">
+          <DropdownMenuItem
+            className="cursor-pointer text-destructive focus:text-destructive"
+            onSelect={() => onDeleteSelect?.(row)}
+          >
             Delete
           </DropdownMenuItem>
         </DropdownMenuGroup>

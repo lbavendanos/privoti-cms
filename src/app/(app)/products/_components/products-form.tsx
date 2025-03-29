@@ -389,6 +389,12 @@ export function ProductsForm({ product }: ProductsFormProps) {
         }
       }
     },
+    onError: (error) => {
+      toast({
+        variant: 'destructive',
+        description: error.message,
+      })
+    },
   })
 
   const handleSubmit = useCallback(

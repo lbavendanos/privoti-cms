@@ -62,22 +62,22 @@ export async function createProduct(
 
 export async function updateProduct(
   id: number | string,
-  formData: FormData,
+  data: object | FormData,
 ): Promise<ActionResponse<Product>> {
   const sessionToken = await getSessionToken()
   const params = { _method: 'PUT' }
 
   try {
     const {
-      status,
-      data: { data },
+      status: responseStatus,
+      data: { data: responseData },
     } = await api.post<{
       data: Product
-    }>(`/products/${id}`, formData, { params, sessionToken })
+    }>(`/products/${id}`, data, { params, sessionToken })
 
-    return handleActionSuccess(status, data)
+    return handleActionSuccess(responseStatus, responseData)
   } catch (error) {
-    return handleActionError(error, formData)
+    return handleActionError(error, data)
   }
 }
 

@@ -6,6 +6,7 @@ import { usePathname, useSearchParams } from 'next/navigation'
 import { useCallback, useMemo, useState } from 'react'
 import {
   getProducts,
+  updateProduct,
   deleteProduct,
   deleteProducts,
 } from '@/core/actions/product'
@@ -79,6 +80,39 @@ export function Products() {
         : undefined,
     [meta],
   )
+
+  const { mutate: updateProductMutate } = useMutation({
+    mutationFn: async ({ id, status }: { id: number; status: string }) => {
+      const state = await updateProduct(id, { status })
+
+      return { id, state }
+    },
+    onSuccess: ({ id, state }) => {
+      if (state.isClientError || state.isServerError) {
+        toast({
+          variant: 'destructive',
+          description: state.message,
+        })
+      }
+      if (state.isSuccess) {
+        toast({
+          description: 'Product updated successfully.',
+        })
+
+        queryClient.setQueryData(
+          ['product-detail', { id: `${id}` }],
+          state.data,
+        )
+        queryClient.invalidateQueries({ queryKey: ['product-list'] })
+      }
+    },
+    onError: (error) => {
+      toast({
+        variant: 'destructive',
+        description: error.message,
+      })
+    },
+  })
 
   const { mutate: deleteProductMutate } = useMutation({
     mutationFn: async (id: number) => {
@@ -225,6 +259,13 @@ export function Products() {
     [updateQueryParams],
   )
 
+  const handleRowStatusChange = useCallback(
+    (id: number, status: string) => {
+      updateProductMutate({ id, status })
+    },
+    [updateProductMutate],
+  )
+
   const handleDeleteRow = useCallback(
     (id: number) => {
       deleteProductMutate(id)
@@ -272,6 +313,7 @@ export function Products() {
                 onOrderChange={handleOrderChange}
                 onPerPageChange={handlePerPageChange}
                 onPageChange={handlePageChange}
+                onRowStatusChange={handleRowStatusChange}
                 onDeleteRows={handleDeleteRows}
                 onDeleteRow={handleDeleteRow}
               />

@@ -82,8 +82,14 @@ import {
 type Item = Product
 
 function makeColumns({
+  onActive,
+  onDraft,
+  onArchived,
   onDelete,
 }: {
+  onActive?: (row: Row<Item>) => void
+  onDraft?: (row: Row<Item>) => void
+  onArchived?: (row: Row<Item>) => void
   onDelete: (row: Row<Item>) => void
 }): ColumnDef<Item>[] {
   return [
@@ -223,7 +229,13 @@ function makeColumns({
       header: () => <span className="sr-only">Actions</span>,
       cell: ({ row }) => (
         <div className="flex h-full w-full items-center px-4">
-          <RowActions row={row} onDeleteSelect={onDelete} />
+          <RowActions
+            row={row}
+            onActiveSelect={onActive}
+            onDraftSelect={onDraft}
+            onArchivedSelect={onArchived}
+            onDeleteSelect={onDelete}
+          />
         </div>
       ),
       size: 60,
@@ -259,6 +271,7 @@ type ProductsTableProps = {
   onOrderChange?: (order: Order) => void
   onPerPageChange?: (perPage: number) => void
   onPageChange?: (page: number) => void
+  onRowStatusChange?: (id: number, status: string) => void
   onDeleteRow?: (id: number) => void
   onDeleteRows?: (ids: number[]) => void
 }
@@ -277,6 +290,7 @@ export function ProductsTable({
   onOrderChange,
   onPerPageChange,
   onPageChange,
+  onRowStatusChange,
   onDeleteRow,
   onDeleteRows,
 }: ProductsTableProps) {
@@ -291,12 +305,24 @@ export function ProductsTable({
   const columns = useMemo(
     () =>
       makeColumns({
+        onActive: (row: Row<Item>) => {
+          setSelectedRow(row)
+          onRowStatusChange?.(row.original.id, 'active')
+        },
+        onDraft: (row: Row<Item>) => {
+          setSelectedRow(row)
+          onRowStatusChange?.(row.original.id, 'draft')
+        },
+        onArchived: (row: Row<Item>) => {
+          setSelectedRow(row)
+          onRowStatusChange?.(row.original.id, 'archived')
+        },
         onDelete: (row: Row<Item>) => {
           setSelectedRow(row)
           setOpenDeleteDialog(true)
         },
       }),
-    [],
+    [onRowStatusChange],
   )
 
   const table = useReactTable({
@@ -770,9 +796,16 @@ export function ProductsTable({
 
 function RowActions({
   row,
+  onStatusSelect,
+  onActiveSelect,
+  onDraftSelect,
+  onArchivedSelect,
   onDeleteSelect,
 }: {
   row: Row<Item>
+  onActiveSelect?: (row: Row<Item>) => void
+  onDraftSelect?: (row: Row<Item>) => void
+  onArchivedSelect?: (row: Row<Item>) => void
   onDeleteSelect?: (row: Row<Item>) => void
 }) {
   return (
@@ -796,10 +829,22 @@ function RowActions({
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
-            {['draft', 'archived', 'active'].map((status) => {
+            {['active', 'draft', 'archived'].map((status) => {
               if (status !== row.original.status) {
                 return (
-                  <DropdownMenuItem key={status} className="cursor-pointer">
+                  <DropdownMenuItem
+                    key={status}
+                    className="cursor-pointer"
+                    onSelect={() => {
+                      if (status === 'active') {
+                        onActiveSelect?.(row)
+                      } else if (status === 'draft') {
+                        onDraftSelect?.(row)
+                      } else if (status === 'archived') {
+                        onArchivedSelect?.(row)
+                      }
+                    }}
+                  >
                     {capitalize(status)}
                   </DropdownMenuItem>
                 )

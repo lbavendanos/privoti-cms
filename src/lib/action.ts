@@ -1,13 +1,13 @@
 import 'server-only'
 import { isApiError } from './http'
 
-export type ActionResponse<TData> = {
+export type ActionResponse<TData, TPayload = unknown> = {
   code?: number
   codeType?: string
   data?: TData
   message?: string
   errors?: Record<string, string[]>
-  payload?: FormData
+  payload?: TPayload
   isInformational?: boolean
   isSuccess?: boolean
   isRedirection?: boolean
@@ -42,13 +42,13 @@ export function getCodeType(code: number): string {
   )
 }
 
-function createActionResponse<TData>(
+function createActionResponse<TData, TPayload>(
   code: number,
   data?: TData,
   message?: string,
   errors?: Record<string, string[]>,
-  payload?: FormData,
-): ActionResponse<TData> {
+  payload?: TPayload,
+): ActionResponse<TData, TPayload> {
   const codeType = getCodeType(code ?? 0)
 
   return {
@@ -77,10 +77,10 @@ export function handleActionSuccess<TData>(
   return createActionResponse(code, data as TData, message || defaultMessage)
 }
 
-export function handleActionError<TData>(
+export function handleActionError<TData, TPayload>(
   error: unknown,
-  payload?: FormData,
-): ActionResponse<TData> {
+  payload?: TPayload,
+): ActionResponse<TData, TPayload> {
   const defaultMessage =
     'There was a problem with the server. Please try again.'
 

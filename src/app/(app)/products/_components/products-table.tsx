@@ -1,7 +1,7 @@
 'use client'
 
 import { capitalize, cn } from '@/lib/utils'
-import { useId, useMemo, useRef, useState } from 'react'
+import { useCallback, useId, useMemo, useRef, useState } from 'react'
 import {
   flexRender,
   getCoreRowModel,
@@ -282,21 +282,11 @@ export function ProductsTable({
 }: ProductsTableProps) {
   const id = useId()
 
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
-
   const [selectedRow, setSelectedRow] = useState<Row<Item>>()
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false)
 
   const inputRef = useRef<HTMLInputElement>(null)
-
-  const handleDeleteRows = () => {
-    // const selectedRows = table.getSelectedRowModel().rows
-    // const updatedData = data.filter(
-    //   (item) => !selectedRows.some((row) => row.original.id === item.id),
-    // )
-    // setData(updatedData)
-    table.resetRowSelection()
-  }
 
   const columns = useMemo(
     () =>
@@ -318,6 +308,19 @@ export function ProductsTable({
       columnVisibility,
     },
   })
+
+  const handleDeleteRows = useCallback(() => {
+    const selectedRows = table.getSelectedRowModel().rows
+    const selectedIds = selectedRows.map((row) => row.original.id)
+
+    onDeleteRows?.(selectedIds)
+  }, [table, onDeleteRows])
+
+  const handleDeleteRow = useCallback(() => {
+    if (selectedRow) {
+      onDeleteRow?.(selectedRow.original.id)
+    }
+  }, [selectedRow, onDeleteRow])
 
   return (
     <div className="space-y-4">
@@ -469,12 +472,13 @@ export function ProductsTable({
                       Are you absolutely sure?
                     </AlertDialogTitle>
                     <AlertDialogDescription>
-                      This action cannot be undone. This will permanently delete{' '}
-                      {table.getSelectedRowModel().rows.length} selected{' '}
+                      This will permanently delete{' '}
+                      <strong>{table.getSelectedRowModel().rows.length}</strong>{' '}
+                      selected{' '}
                       {table.getSelectedRowModel().rows.length === 1
-                        ? 'row'
-                        : 'rows'}
-                      .
+                        ? 'product'
+                        : 'products'}
+                      . This action cannot be undone.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                 </div>
@@ -753,11 +757,7 @@ export function ProductsTable({
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              onClick={() => {
-                if (selectedRow) {
-                  onDeleteRow?.(selectedRow.original.id)
-                }
-              }}
+              onClick={handleDeleteRow}
             >
               Delete
             </AlertDialogAction>

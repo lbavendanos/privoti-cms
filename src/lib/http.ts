@@ -153,10 +153,11 @@ class Api {
 
   async delete<TData>(
     url: string | URL,
+    data: object = {},
     config: ApiRequestConfig = {},
   ): Promise<ApiResponse<TData>> {
     const input = this.#handleInput(url, config)
-    const init = this.#handleInit('DELETE', {}, config)
+    const init = this.#handleInit('DELETE', data, config)
 
     return fetch(input, init).then((response) =>
       this.#handleResponse<TData>(response),

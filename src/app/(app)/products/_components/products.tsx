@@ -2,9 +2,13 @@
 
 import { useToast } from '@/hooks/use-toast'
 import { blank, debounce, filled } from '@/lib/utils'
-import { deleteProduct, getProducts } from '@/core/actions/product'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { useCallback, useMemo, useState } from 'react'
+import {
+  getProducts,
+  deleteProduct,
+  deleteProducts,
+} from '@/core/actions/product'
 import {
   useQuery,
   useQueryClient,
@@ -76,7 +80,7 @@ export function Products() {
     [meta],
   )
 
-  const { mutate } = useMutation({
+  const { mutate: deleteProductMutate } = useMutation({
     mutationFn: async (id: number) => {
       const state = await deleteProduct(id)
 
@@ -97,6 +101,41 @@ export function Products() {
 
         queryClient.invalidateQueries({
           queryKey: ['product-detail', { id: `${id}` }],
+        })
+        queryClient.invalidateQueries({ queryKey: ['product-list'] })
+      }
+    },
+    onError: (error) => {
+      toast({
+        variant: 'destructive',
+        description: error.message,
+      })
+    },
+  })
+
+  const { mutate: deleteProductsMutate } = useMutation({
+    mutationFn: async (ids: number[]) => {
+      const state = await deleteProducts(ids)
+
+      return { ids, state }
+    },
+    onSuccess: ({ ids, state }) => {
+      if (state.isClientError || state.isServerError) {
+        toast({
+          variant: 'destructive',
+          description: state.message,
+        })
+      }
+
+      if (state.isSuccess) {
+        toast({
+          description: 'Products deleted successfully.',
+        })
+
+        ids.forEach((id) => {
+          queryClient.invalidateQueries({
+            queryKey: ['product-detail', { id: `${id}` }],
+          })
         })
         queryClient.invalidateQueries({ queryKey: ['product-list'] })
       }
@@ -187,10 +226,17 @@ export function Products() {
   )
 
   const handleDeleteRow = useCallback(
-    async (id: number) => {
-      mutate(id)
+    (id: number) => {
+      deleteProductMutate(id)
     },
-    [mutate],
+    [deleteProductMutate],
+  )
+
+  const handleDeleteRows = useCallback(
+    (ids: number[]) => {
+      deleteProductsMutate(ids)
+    },
+    [deleteProductsMutate],
   )
 
   return (
@@ -226,6 +272,7 @@ export function Products() {
                 onOrderChange={handleOrderChange}
                 onPerPageChange={handlePerPageChange}
                 onPageChange={handlePageChange}
+                onDeleteRows={handleDeleteRows}
                 onDeleteRow={handleDeleteRow}
               />
             )}

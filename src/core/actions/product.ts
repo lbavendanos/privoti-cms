@@ -87,9 +87,21 @@ export async function deleteProduct(
   const sessionToken = await getSessionToken()
 
   try {
-    const { status } = await api.delete(`/products/${id}`, {
-      sessionToken,
-    })
+    const { status } = await api.delete(`/products/${id}`, {}, { sessionToken })
+
+    return handleActionSuccess(status)
+  } catch (error) {
+    return handleActionError(error)
+  }
+}
+
+export async function deleteProducts(
+  ids: number[] | string[],
+): Promise<ActionResponse<unknown>> {
+  const sessionToken = await getSessionToken()
+
+  try {
+    const { status } = await api.delete('/products', { ids }, { sessionToken })
 
     return handleActionSuccess(status)
   } catch (error) {

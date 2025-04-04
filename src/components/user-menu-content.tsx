@@ -1,21 +1,35 @@
 'use client'
 
+import { logout } from '@/core/actions/new/auth'
+import { useRouter } from 'next/navigation'
 import { useSidebar } from '@/components/ui/sidebar'
-import { logout } from '@/core/actions/auth'
-import { type User } from '@/core/types'
+import { useQueryClient } from '@tanstack/react-query'
+import { startTransition, useCallback } from 'react'
+import type { User } from '@/core/types'
+import Link from 'next/link'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
-  DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
+  DropdownMenuGroup,
   DropdownMenuLabel,
+  DropdownMenuContent,
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu'
-import Link from 'next/link'
 import { User as UserIcon, Bell, LogOut } from 'lucide-react'
 
 export function UserMenuContent({ user }: { user: User }) {
+  const router = useRouter()
+  const queryClient = useQueryClient()
   const { isMobile } = useSidebar()
+
+  const handleLogout = useCallback(() => {
+    startTransition(async () => {
+      await logout()
+
+      queryClient.clear()
+      router.push('/login')
+    })
+  }, [router, queryClient])
 
   return (
     <DropdownMenuContent
@@ -54,7 +68,7 @@ export function UserMenuContent({ user }: { user: User }) {
         </DropdownMenuItem>
       </DropdownMenuGroup>
       <DropdownMenuSeparator />
-      <DropdownMenuItem className="cursor-pointer" onSelect={logout}>
+      <DropdownMenuItem className="cursor-pointer" onSelect={handleLogout}>
         <LogOut />
         Log out
       </DropdownMenuItem>

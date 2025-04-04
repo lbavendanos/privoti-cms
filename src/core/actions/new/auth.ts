@@ -1,8 +1,8 @@
 'use server'
 
 import { api } from '@/lib/http'
-import { getSessionToken, setSession } from '@/lib/session'
 import { handleActionError, handleActionSuccess } from '@/lib/new/action'
+import { getSessionToken, removeSession, setSession } from '@/lib/session'
 import type { User } from '@/core/types'
 import type { SessionData } from '@/lib/session'
 import type { ActionResponse } from '@/lib/new/action'
@@ -43,4 +43,11 @@ export async function login(data: {
   } catch (error) {
     return handleActionError(error)
   }
+}
+
+export async function logout() {
+  const sessionToken = await getSessionToken()
+
+  await api.post('/auth/logout', {}, { sessionToken }).catch(() => {})
+  await removeSession()
 }

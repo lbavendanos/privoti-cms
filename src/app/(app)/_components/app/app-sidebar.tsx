@@ -1,14 +1,6 @@
 'use client'
 
-import React, { Suspense } from 'react'
-import {
-  BarChart2,
-  Home,
-  Settings,
-  ShoppingCart,
-  Tag,
-  Users,
-} from 'lucide-react'
+import { Suspense } from 'react'
 import {
   Sidebar,
   SidebarContent,
@@ -18,6 +10,14 @@ import {
 import { Item, SidebarNav } from '@/components/ui/sidebar-nav'
 import { AppSidebarHeader } from './app-sidebar-header'
 import { UserMenu, UserMenuSkeleton } from '@/components/user-menu'
+import {
+  Tag,
+  Home,
+  Users,
+  Settings,
+  BarChart2,
+  ShoppingCart,
+} from 'lucide-react'
 
 const PLATFORM_ITEMS: Item[] = [
   {

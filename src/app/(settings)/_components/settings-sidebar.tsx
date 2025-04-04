@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import { Suspense } from 'react'
 import {
   Sidebar,
   SidebarContent,
@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/sidebar'
 import { Item, SidebarNav } from '@/components/ui/sidebar-nav'
 import { SettingsSidebarHeader } from './settings-sidebar-header'
+import { UserMenu, UserMenuSkeleton } from '@/components/user-menu'
 import { ArrowLeft, Bell, Store, User, Users } from 'lucide-react'
 
 const ACCOUNT_ITEMS: Item[] = [
@@ -46,16 +47,9 @@ const FOOTER_ITEMS: Item[] = [
   },
 ]
 
-interface SettingsSidebarProps extends React.ComponentProps<typeof Sidebar> {
-  footerChildren?: React.ReactNode
-}
-
-export function SettingsSidebar({
-  footerChildren,
-  ...props
-}: SettingsSidebarProps) {
+export function SettingsSidebar() {
   return (
-    <Sidebar collapsible="icon" {...props}>
+    <Sidebar collapsible="icon">
       <SidebarHeader>
         <SettingsSidebarHeader />
       </SidebarHeader>
@@ -64,7 +58,11 @@ export function SettingsSidebar({
         <SidebarNav label="General" items={GENERAL_ITEMS} />
         <SidebarNav items={FOOTER_ITEMS} className="mt-auto" />
       </SidebarContent>
-      {footerChildren && <SidebarFooter>{footerChildren}</SidebarFooter>}
+      <SidebarFooter>
+        <Suspense fallback={<UserMenuSkeleton />}>
+          <UserMenu />
+        </Suspense>
+      </SidebarFooter>
       <SidebarRail />
     </Sidebar>
   )

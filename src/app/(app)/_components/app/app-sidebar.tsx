@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { Suspense } from 'react'
 import {
   BarChart2,
   Home,
@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/sidebar'
 import { Item, SidebarNav } from '@/components/ui/sidebar-nav'
 import { AppSidebarHeader } from './app-sidebar-header'
+import { UserMenu, UserMenuSkeleton } from '@/components/user-menu'
 
 const PLATFORM_ITEMS: Item[] = [
   {
@@ -59,19 +60,19 @@ const FOOTER_ITEMS: Item[] = [
   },
 ]
 
-interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
-  footerChildren?: React.ReactNode
-}
-
-export function AppSidebar({ footerChildren, ...props }: AppSidebarProps) {
+export function AppSidebar() {
   return (
-    <Sidebar collapsible="icon" {...props}>
+    <Sidebar collapsible="icon">
       <AppSidebarHeader />
       <SidebarContent>
         <SidebarNav label="Platform" items={PLATFORM_ITEMS} />
         <SidebarNav items={FOOTER_ITEMS} className="mt-auto" />
       </SidebarContent>
-      {footerChildren && <SidebarFooter>{footerChildren}</SidebarFooter>}
+      <SidebarFooter>
+        <Suspense fallback={<UserMenuSkeleton />}>
+          <UserMenu />
+        </Suspense>
+      </SidebarFooter>
       <SidebarRail />
     </Sidebar>
   )

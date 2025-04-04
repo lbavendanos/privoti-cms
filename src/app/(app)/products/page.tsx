@@ -1,8 +1,9 @@
 import { filled } from '@/lib/utils'
+import { dehydrate } from '@tanstack/react-query'
 import { getProducts } from '@/core/actions/product'
 import { getQueryClient } from '@/lib/query'
 import type { Metadata } from 'next'
-import { dehydrate, HydrationBoundary } from '@tanstack/react-query'
+import { HydrationBoundary } from '@tanstack/react-query'
 import { Products } from './_components/products'
 
 export const metadata: Metadata = {

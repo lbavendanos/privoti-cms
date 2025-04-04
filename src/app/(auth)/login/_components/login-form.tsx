@@ -1,73 +1,122 @@
 'use client'
 
-import { useActionState, useEffect } from 'react'
-import { cn } from '@/lib/utils'
-import { login } from '@/core/actions/auth'
+import { z } from 'zod'
+import { login } from '@/core/actions/new/auth'
+import { useForm } from 'react-hook-form'
 import { useToast } from '@/hooks/use-toast'
+import { useRouter } from 'next/navigation'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useCallback, useState, useTransition } from 'react'
+import {
+  Form,
+  FormItem,
+  FormLabel,
+  FormField,
+  FormControl,
+  FormMessage,
+} from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { PasswordInput } from '@/components/ui/password-input'
 import { LoadingButton } from '@/components/ui/loading-button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { AlertCircle } from 'lucide-react'
 
+const formSchema = z.object({
+  email: z.string().email().min(1, { message: 'Email is required' }),
+  password: z.string().min(1, { message: 'Password is required' }),
+})
+
 export function LoginForm() {
-  const [state, formAction, isPending] = useActionState(login, null)
+  const router = useRouter()
   const { toast } = useToast()
 
-  useEffect(() => {
-    if (!isPending && state && (state.isServerError || state.isUnknown)) {
-      toast({
-        variant: 'destructive',
-        description: state?.message,
+  const [isPending, startTransition] = useTransition()
+  const [errorMessage, setErrorMessage] = useState<string>()
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  })
+
+  const handleSubmit = useCallback(
+    (values: z.infer<typeof formSchema>) => {
+      setErrorMessage('')
+
+      startTransition(async () => {
+        const response = await login(values)
+
+        if (response.isServerError || response.isUnknown) {
+          toast({
+            variant: 'destructive',
+            description: response.message,
+          })
+        }
+
+        if (response.isClientError) {
+          setErrorMessage(response.message)
+        }
+
+        if (response.isSuccess) {
+          router.push('/')
+        }
       })
-    }
-  }, [isPending, state, toast])
+    },
+    [router, toast],
+  )
 
   return (
-    <form action={formAction} className="flex flex-col gap-4">
-      {state?.isClientError && (
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>{state.message}</AlertDescription>
-        </Alert>
-      )}
-      <div className="space-y-2">
-        <Label
-          htmlFor="email"
-          className={cn(state?.errors?.email && 'text-destructive')}
-        >
-          Email
-        </Label>
-        <Input
-          id="email"
-          type="email"
+    <Form {...form}>
+      <form
+        className="flex flex-col gap-4"
+        onSubmit={form.handleSubmit(handleSubmit)}
+      >
+        {errorMessage && (
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>{errorMessage}</AlertDescription>
+          </Alert>
+        )}
+        <FormField
+          control={form.control}
           name="email"
-          placeholder="m@example.com"
-          autoComplete="email"
-          defaultValue={state?.payload?.get('email')?.toString()}
-          required
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Email</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="m@example.com"
+                  autoComplete="email"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
         />
-      </div>
-      <div className="space-y-2">
-        <Label
-          htmlFor="password"
-          className={cn(state?.errors?.password && 'text-destructive')}
-        >
-          Password
-        </Label>
-        <PasswordInput
-          id="password"
+        <FormField
+          control={form.control}
           name="password"
-          placeholder="********"
-          autoComplete="current-password"
-          defaultValue={state?.payload?.get('password')?.toString()}
-          required
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Password</FormLabel>
+              <FormControl>
+                <PasswordInput
+                  placeholder="********"
+                  autoComplete="current-password"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
         />
-      </div>
-      <LoadingButton type="submit" className="w-full" loading={isPending}>
-        Login
-      </LoadingButton>
-    </form>
+        <LoadingButton type="submit" className="w-full" loading={isPending}>
+          Login
+        </LoadingButton>
+      </form>
+    </Form>
   )
 }

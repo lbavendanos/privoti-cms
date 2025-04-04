@@ -1,5 +1,8 @@
-import { getUser } from '@/core/actions/auth'
-import { getSessionToken } from '@/lib/session'
+'use client'
+
+import { getUser } from '@/core/actions/new/auth'
+import { redirect } from 'next/navigation'
+import { useSuspenseQuery } from '@tanstack/react-query'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
   DropdownMenu,
@@ -7,16 +10,26 @@ import {
 } from '@/components/ui/dropdown-menu'
 import {
   SidebarMenu,
-  SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuButton,
 } from '@/components/ui/sidebar'
 import { Skeleton } from '@/components/ui/skeleton'
 import { UserMenuContent } from './user-menu-content'
 import { ChevronsUpDown } from 'lucide-react'
 
-export async function UserMenu() {
-  const sessionToken = await getSessionToken()
-  const user = await getUser(sessionToken!)
+export function UserMenu() {
+  const { data: user } = useSuspenseQuery({
+    queryKey: ['auth'],
+    queryFn: () => getUser(),
+  })
+
+  if (!user) {
+    redirect('/login')
+  }
+
+  if (user.email_verified_at === null) {
+    redirect('/verify-email')
+  }
 
   return (
     <SidebarMenu>

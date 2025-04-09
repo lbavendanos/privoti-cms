@@ -94,32 +94,6 @@ export async function updatePassword(
   }
 }
 
-export async function login(
-  _: unknown,
-  formData: FormData,
-): Promise<ActionResponse<object>> {
-  const email = formData.get('email')
-  const password = formData.get('password')
-
-  try {
-    const {
-      data: { data: authTokenData },
-    } = await api.post<{
-      data: SessionData
-    }>('/auth/login', { email, password })
-
-    if (authTokenData) {
-      await setSession(authTokenData)
-
-      revalidateTag(AUTH_USER_TAG)
-    }
-  } catch (error) {
-    return handleActionError(error, formData)
-  }
-
-  redirect('/')
-}
-
 export async function logout() {
   const sessionToken = await getSessionToken()
 
@@ -130,21 +104,6 @@ export async function logout() {
   revalidateTag(AUTH_USER_TAG)
 
   redirect('/login')
-}
-
-export async function forgotPassword(
-  _: unknown,
-  formData: FormData,
-): Promise<ActionResponse<object>> {
-  const email = formData.get('email')
-
-  try {
-    const { status } = await api.post('/auth/forgot-password', { email })
-
-    return handleActionSuccess(status)
-  } catch (error) {
-    return handleActionError(error, formData)
-  }
 }
 
 export async function resetPassword(

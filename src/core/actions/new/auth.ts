@@ -41,6 +41,20 @@ export async function login(data: {
   }
 }
 
+export async function forgotPassword(data: {
+  email: string
+}): Promise<ActionResponse<null>> {
+  const { email } = data
+
+  try {
+    const { status } = await api.post('/auth/forgot-password', { email })
+
+    return handleActionSuccess(status)
+  } catch (error) {
+    return handleActionError(error)
+  }
+}
+
 export async function logout() {
   const sessionToken = await getSessionToken()
 

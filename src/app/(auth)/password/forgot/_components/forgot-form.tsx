@@ -1,64 +1,113 @@
 'use client'
 
-import { useActionState, useEffect } from 'react'
-import { cn } from '@/lib/utils'
+import { z } from 'zod'
+import { useForm } from 'react-hook-form'
 import { useToast } from '@/hooks/use-toast'
-import { forgotPassword } from '@/core/actions/auth'
-import { Label } from '@/components/ui/label'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { forgotPassword } from '@/core/actions/new/auth'
+import { useCallback, useState, useTransition } from 'react'
+import {
+  Form,
+  FormItem,
+  FormLabel,
+  FormField,
+  FormMessage,
+  FormControl,
+} from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { LoadingButton } from '@/components/ui/loading-button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { AlertCircle, CircleCheck } from 'lucide-react'
 
+const formSchema = z.object({
+  email: z.string().email().min(1, { message: 'Email is required' }),
+})
+
 export function ForgotForm() {
-  const [state, formAction, isPending] = useActionState(forgotPassword, null)
   const { toast } = useToast()
 
-  useEffect(() => {
-    if (!isPending && state && (state.isServerError || state.isUnknown)) {
-      toast({
-        variant: 'destructive',
-        description: state?.message,
+  const [isPending, startTransition] = useTransition()
+  const [errorMessage, setErrorMessage] = useState<string>()
+  const [successMessage, setSuccessMessage] = useState<string>()
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      email: '',
+    },
+  })
+
+  const handleSubmit = useCallback(
+    (values: z.infer<typeof formSchema>) => {
+      setErrorMessage('')
+      setSuccessMessage('')
+
+      startTransition(async () => {
+        const response = await forgotPassword(values)
+
+        if (response.isServerError || response.isUnknown) {
+          toast({
+            variant: 'destructive',
+            description: response.message,
+          })
+        }
+
+        if (response.isClientError) {
+          setErrorMessage(response.message)
+        }
+
+        if (response.isSuccess) {
+          form.reset()
+          setSuccessMessage('We have emailed your password reset link.')
+        }
       })
-    }
-  }, [isPending, state, toast])
+    },
+    [form, toast],
+  )
 
   return (
-    <form action={formAction} className="flex flex-col gap-4">
-      {state?.isSuccess && (
-        <Alert variant="success">
-          <CircleCheck className="h-4 w-4" />
-          <AlertDescription>
-            We have emailed your password reset link.
-          </AlertDescription>
-        </Alert>
-      )}
-      {state?.isClientError && (
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>{state.message}</AlertDescription>
-        </Alert>
-      )}
-      <div className="space-y-2">
-        <Label
-          htmlFor="email"
-          className={cn(state?.errors?.email && 'text-destructive')}
-        >
-          Email
-        </Label>
-        <Input
-          id="email"
-          type="email"
+    <Form {...form}>
+      <form
+        className="flex flex-col gap-4"
+        onSubmit={form.handleSubmit(handleSubmit)}
+      >
+        {successMessage && (
+          <Alert variant="success">
+            <CircleCheck className="h-4 w-4" />
+            <AlertDescription>{successMessage}</AlertDescription>
+          </Alert>
+        )}
+        {errorMessage && (
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>{errorMessage}</AlertDescription>
+          </Alert>
+        )}
+        <FormField
+          control={form.control}
           name="email"
-          placeholder="m@example.com"
-          autoComplete="email"
-          defaultValue={state?.payload?.get('email')?.toString()}
-          required
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Email</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="m@example.com"
+                  autoComplete="email"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
         />
-      </div>
-      <LoadingButton type="submit" className="mt-2 w-full" loading={isPending}>
-        Send email
-      </LoadingButton>
-    </form>
+        <LoadingButton
+          type="submit"
+          className="mt-2 w-full"
+          loading={isPending}
+        >
+          Send email
+        </LoadingButton>
+      </form>
+    </Form>
   )
 }

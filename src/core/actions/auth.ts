@@ -12,12 +12,7 @@ import {
   handleActionError,
   handleActionSuccess,
 } from '@/lib/action'
-import {
-  type SessionData,
-  getSessionToken,
-  removeSession,
-  setSession,
-} from '@/lib/session'
+import { getSessionToken, removeSession } from '@/lib/session'
 import { type User } from '../types'
 
 const AUTH_USER_TAG = 'auth-user'
@@ -104,37 +99,6 @@ export async function logout() {
   revalidateTag(AUTH_USER_TAG)
 
   redirect('/login')
-}
-
-export async function resetPassword(
-  _: unknown,
-  formData: FormData,
-): Promise<ActionResponse<object>> {
-  const token = formData.get('token')
-  const email = formData.get('email')
-  const password = formData.get('password')
-  const passwordConfirmation = formData.get('password_confirmation')
-
-  try {
-    const {
-      data: { data: authTokenData },
-    } = await api.post<{
-      data: SessionData
-    }>('/auth/reset-password', {
-      token,
-      email,
-      password,
-      password_confirmation: passwordConfirmation,
-    })
-
-    if (authTokenData) {
-      await setSession(authTokenData)
-    }
-  } catch (error) {
-    return handleActionError(error, formData)
-  }
-
-  redirect('/')
 }
 
 export async function sendEmailVerificationNotification(): Promise<

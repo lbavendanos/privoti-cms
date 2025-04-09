@@ -1,102 +1,154 @@
 'use client'
 
-import { cn } from '@/lib/utils'
+import { z } from 'zod'
+import { useForm } from 'react-hook-form'
 import { useToast } from '@/hooks/use-toast'
-import { resetPassword } from '@/core/actions/auth'
-import { useActionState, useEffect } from 'react'
-import { useParams, useSearchParams } from 'next/navigation'
-import { Label } from '@/components/ui/label'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { resetPassword } from '@/core/actions/new/auth'
+import { useQueryClient } from '@tanstack/react-query'
+import { useCallback, useState, useTransition } from 'react'
+import { useParams, useRouter, useSearchParams } from 'next/navigation'
+import {
+  Form,
+  FormItem,
+  FormLabel,
+  FormField,
+  FormMessage,
+  FormControl,
+} from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { PasswordInput } from '@/components/ui/password-input'
 import { LoadingButton } from '@/components/ui/loading-button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { AlertCircle } from 'lucide-react'
 
-export function ResetForm() {
-  const [state, formAction, isPending] = useActionState(resetPassword, null)
-  const { toast } = useToast()
+const formSchema = z.object({
+  token: z.string().min(1, { message: 'Token is required' }),
+  email: z.string().email().min(1, { message: 'Email is required' }),
+  password: z.string().min(1, { message: 'Password is required' }),
+  passwordConfirmation: z
+    .string()
+    .min(1, { message: 'Password confirmation is required' }),
+})
 
+export function ResetForm() {
+  const router = useRouter()
   const params = useParams<{ token: string }>()
   const searchParams = useSearchParams()
+  const queryClient = useQueryClient()
+  const { toast } = useToast()
 
-  useEffect(() => {
-    if (!isPending && state && (state.isServerError || state.isUnknown)) {
-      toast({
-        variant: 'destructive',
-        description: state?.message,
+  const [isPending, startTransition] = useTransition()
+  const [errorMessage, setErrorMessage] = useState<string>()
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      token: params.token,
+      email: searchParams.get('email') ?? '',
+      password: '',
+      passwordConfirmation: '',
+    },
+  })
+
+  const handleSubmit = useCallback(
+    (values: z.infer<typeof formSchema>) => {
+      setErrorMessage('')
+
+      startTransition(async () => {
+        const response = await resetPassword(values)
+
+        if (response.isServerError || response.isUnknown) {
+          toast({
+            variant: 'destructive',
+            description: response.message,
+          })
+        }
+
+        if (response.isClientError) {
+          setErrorMessage(response.message)
+        }
+
+        if (response.isSuccess) {
+          queryClient.clear()
+          router.push('/')
+        }
       })
-    }
-  }, [isPending, state, toast])
+    },
+    [queryClient, router, toast],
+  )
 
   return (
-    <form action={formAction} className="flex flex-col gap-4">
-      {state?.isClientError && (
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>{state.message}</AlertDescription>
-        </Alert>
-      )}
-      <input type="hidden" name="token" value={params.token} />
-      <div className="space-y-2">
-        <Label
-          htmlFor="email"
-          className={cn(state?.errors?.email && 'text-destructive')}
-        >
-          Email
-        </Label>
-        <Input
-          id="email"
-          type="email"
+    <Form {...form}>
+      <form
+        className="flex flex-col gap-4"
+        onSubmit={form.handleSubmit(handleSubmit)}
+      >
+        {errorMessage && (
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>{errorMessage}</AlertDescription>
+          </Alert>
+        )}
+        <FormField
+          control={form.control}
           name="email"
-          placeholder="m@example.com"
-          autoComplete="email"
-          defaultValue={
-            state?.payload?.get('email')?.toString() ||
-            searchParams.get('email') ||
-            ''
-          }
-          required
-        />
-      </div>
-      <div className="space-y-2">
-        <Label
-          htmlFor="password"
-          className={cn(state?.errors?.password && 'text-destructive')}
-        >
-          Password
-        </Label>
-        <PasswordInput
-          id="password"
-          name="password"
-          placeholder="********"
-          autoComplete="current-password"
-          defaultValue={state?.payload?.get('password')?.toString()}
-          required
-        />
-      </div>
-      <div className="space-y-2">
-        <Label
-          htmlFor="password_confirmation"
-          className={cn(
-            state?.errors?.password_confirmation && 'text-destructive',
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Email</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="m@example.com"
+                  autoComplete="email"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
           )}
-        >
-          Confirm Password
-        </Label>
-        <PasswordInput
-          id="password_confirmation"
-          name="password_confirmation"
-          placeholder="********"
-          autoComplete="current-password"
-          defaultValue={state?.payload
-            ?.get('password_confirmation')
-            ?.toString()}
-          required
         />
-      </div>
-      <LoadingButton type="submit" className="mt-2 w-full" loading={isPending}>
-        Reset password
-      </LoadingButton>
-    </form>
+        <FormField
+          control={form.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Password</FormLabel>
+              <FormControl>
+                <PasswordInput
+                  placeholder="********"
+                  autoComplete="current-password"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="passwordConfirmation"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Confirm Password</FormLabel>
+              <FormControl>
+                <PasswordInput
+                  placeholder="********"
+                  autoComplete="current-password"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <LoadingButton
+          type="submit"
+          className="mt-2 w-full"
+          loading={isPending}
+        >
+          Reset password
+        </LoadingButton>
+      </form>
+    </Form>
   )
 }

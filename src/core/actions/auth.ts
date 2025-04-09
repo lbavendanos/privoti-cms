@@ -101,24 +101,6 @@ export async function logout() {
   redirect('/login')
 }
 
-export async function sendEmailVerificationNotification(): Promise<
-  ActionResponse<object>
-> {
-  const sessionToken = await getSessionToken()
-
-  try {
-    const { status } = await api.post(
-      '/auth/user/email/notification',
-      {},
-      { sessionToken },
-    )
-
-    return handleActionSuccess(status)
-  } catch (error) {
-    return handleActionError(error)
-  }
-}
-
 export async function verifyEmail(params: {
   id: string
   token: string

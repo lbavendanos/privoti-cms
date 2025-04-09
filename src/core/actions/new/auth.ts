@@ -84,6 +84,24 @@ export async function resetPassword(data: {
   }
 }
 
+export async function sendEmailVerificationNotification(): Promise<
+  ActionResponse<null>
+> {
+  const sessionToken = await getSessionToken()
+
+  try {
+    const { status } = await api.post(
+      '/auth/user/email/notification',
+      {},
+      { sessionToken },
+    )
+
+    return handleActionSuccess(status)
+  } catch (error) {
+    return handleActionError(error)
+  }
+}
+
 export async function logout() {
   const sessionToken = await getSessionToken()
 

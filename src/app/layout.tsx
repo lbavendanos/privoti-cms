@@ -2,8 +2,8 @@ import { cn, url } from '@/lib/utils'
 import type { Metadata } from 'next'
 import { Inter as FontSans } from 'next/font/google'
 import { Toaster } from '@/components/ui/toaster'
-import { NoScriptMessage } from '@/components/ui/no-script-message'
 import { QueryProvider } from '@/components/query-provider'
+import { NoScriptMessage } from '@/components/ui/no-script-message'
 
 import './globals.css'
 

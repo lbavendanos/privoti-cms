@@ -108,7 +108,7 @@ class Api {
       headers: response.headers,
     }
 
-    if (!response.ok) throw new ApiError(response.statusText, apiResponse)
+    if (!response.ok) throw new ApiError(apiResponse.statusText, apiResponse)
 
     return apiResponse
   }

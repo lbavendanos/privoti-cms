@@ -6,6 +6,7 @@ import { useForm } from 'react-hook-form'
 import { useToast } from '@/hooks/use-toast'
 import { useRouter } from 'next/navigation'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useQueryClient } from '@tanstack/react-query'
 import { useCallback, useState, useTransition } from 'react'
 import {
   Form,
@@ -28,6 +29,7 @@ const formSchema = z.object({
 
 export function LoginForm() {
   const router = useRouter()
+  const queryClient = useQueryClient()
   const { toast } = useToast()
 
   const [isPending, startTransition] = useTransition()
@@ -60,11 +62,12 @@ export function LoginForm() {
         }
 
         if (response.isSuccess) {
+          queryClient.clear()
           router.push('/')
         }
       })
     },
-    [router, toast],
+    [queryClient, router, toast],
   )
 
   return (

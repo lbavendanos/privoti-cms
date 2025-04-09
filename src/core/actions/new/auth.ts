@@ -12,13 +12,9 @@ export async function getUser(): Promise<User | null> {
 
   const {
     data: { data: user },
-  } = await api
-    .get<{
-      data: User
-    }>('/auth/user', { sessionToken })
-    .catch(() => {
-      return { data: { data: null } }
-    })
+  } = await api.get<{
+    data: User
+  }>('/auth/user', { sessionToken })
 
   return user
 }

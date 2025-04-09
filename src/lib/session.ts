@@ -16,11 +16,9 @@ export function getSessionKey() {
 export async function getSessionToken(): Promise<string | null> {
   const key = getSessionKey()
   const cookieStore = await cookies()
-  const accessToken = cookieStore.get(key)?.value
+  const token = cookieStore.get(key)?.value
 
-  if (!accessToken) return null
-
-  return accessToken
+  return token ?? null
 }
 
 export async function setSession({ access_token, expires_in }: SessionData) {

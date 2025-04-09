@@ -18,10 +18,15 @@ import { UserMenuContent } from './user-menu-content'
 import { ChevronsUpDown } from 'lucide-react'
 
 export function UserMenu() {
-  const { data: user } = useSuspenseQuery({
+  const { data: user, isError } = useSuspenseQuery({
     queryKey: ['auth'],
     queryFn: () => getUser(),
+    retry: false,
   })
+
+  if (isError) {
+    redirect('/login')
+  }
 
   if (!user) {
     redirect('/login')

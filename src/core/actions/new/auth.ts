@@ -102,6 +102,52 @@ export async function sendEmailVerificationNotification(): Promise<
   }
 }
 
+export async function verifyEmail(params: {
+  id: string
+  token: string
+  expires: string
+  signature: string
+}): Promise<ActionResponse<object>> {
+  const sessionToken = await getSessionToken()
+  const { id, token: hash, expires, signature } = params
+
+  try {
+    const { status } = await api.get(`/auth/user/email/verify/${id}/${hash}`, {
+      params: { expires, signature },
+      sessionToken,
+    })
+
+    return handleActionSuccess(status)
+  } catch (error) {
+    return handleActionError(error)
+  }
+}
+
+export async function verifyNewEmail(params: {
+  id: string
+  email: string
+  token: string
+  expires: string
+  signature: string
+}): Promise<ActionResponse<object>> {
+  const sessionToken = await getSessionToken()
+  const { id, email, token: hash, expires, signature } = params
+
+  try {
+    const { status } = await api.get(
+      `/auth/user/email/new/verify/${id}/${email}/${hash}`,
+      {
+        params: { expires, signature },
+        sessionToken,
+      },
+    )
+
+    return handleActionSuccess(status)
+  } catch (error) {
+    return handleActionError(error)
+  }
+}
+
 export async function logout() {
   const sessionToken = await getSessionToken()
 

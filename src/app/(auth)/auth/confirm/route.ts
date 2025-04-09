@@ -1,5 +1,5 @@
 import { url } from '@/lib/utils'
-import { verifyEmail, verifyNewEmail } from '@/core/actions/auth'
+import { verifyEmail, verifyNewEmail } from '@/core/actions/new/auth'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(request: NextRequest) {

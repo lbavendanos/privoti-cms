@@ -12,7 +12,7 @@ import {
   handleActionError,
   handleActionSuccess,
 } from '@/lib/action'
-import { getSessionToken, removeSession } from '@/lib/session'
+import { getSessionToken } from '@/lib/session'
 import { type User } from '../types'
 
 const AUTH_USER_TAG = 'auth-user'
@@ -89,41 +89,6 @@ export async function updatePassword(
   }
 }
 
-export async function logout() {
-  const sessionToken = await getSessionToken()
-
-  await api.post('/auth/logout', {}, { sessionToken }).catch(() => {})
-
-  await removeSession()
-
-  revalidateTag(AUTH_USER_TAG)
-
-  redirect('/login')
-}
-
-export async function verifyEmail(params: {
-  id: string
-  token: string
-  expires: string
-  signature: string
-}): Promise<ActionResponse<object>> {
-  const sessionToken = await getSessionToken()
-  const { id, token: hash, expires, signature } = params
-
-  try {
-    const { status } = await api.get(`/auth/user/email/verify/${id}/${hash}`, {
-      params: { expires, signature },
-      sessionToken,
-    })
-
-    revalidateTag(AUTH_USER_TAG)
-
-    return handleActionSuccess(status)
-  } catch (error) {
-    return handleActionError(error)
-  }
-}
-
 export async function sendEmailChangeVerificationNotification(
   _: unknown,
   formData: FormData,
@@ -141,32 +106,5 @@ export async function sendEmailChangeVerificationNotification(
     return handleActionSuccess(status)
   } catch (error) {
     return handleActionError(error, formData)
-  }
-}
-
-export async function verifyNewEmail(params: {
-  id: string
-  email: string
-  token: string
-  expires: string
-  signature: string
-}): Promise<ActionResponse<object>> {
-  const sessionToken = await getSessionToken()
-  const { id, email, token: hash, expires, signature } = params
-
-  try {
-    const { status } = await api.get(
-      `/auth/user/email/new/verify/${id}/${email}/${hash}`,
-      {
-        params: { expires, signature },
-        sessionToken,
-      },
-    )
-
-    revalidateTag(AUTH_USER_TAG)
-
-    return handleActionSuccess(status)
-  } catch (error) {
-    return handleActionError(error)
   }
 }

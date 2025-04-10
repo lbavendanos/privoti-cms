@@ -3,11 +3,11 @@
 import { useCallback, useState } from 'react'
 import {
   Dialog,
+  DialogTitle,
+  DialogHeader,
+  DialogTrigger,
   DialogContent,
   DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { ProfileNameForm } from './profile-name-form'

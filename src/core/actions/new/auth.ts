@@ -39,6 +39,26 @@ export async function updateUser(data: {
   }
 }
 
+export async function updatePassword(data: {
+  currentPassword: string
+  password: string
+}): Promise<ActionResponse<null>> {
+  const sessionToken = await getSessionToken()
+  const { currentPassword, password } = data
+
+  try {
+    const { status } = await api.post(
+      '/auth/user/password',
+      { current_password: currentPassword, password },
+      { sessionToken: sessionToken },
+    )
+
+    return handleActionSuccess(status)
+  } catch (error) {
+    return handleActionError(error)
+  }
+}
+
 export async function login(data: {
   email: string
   password: string
@@ -146,7 +166,7 @@ export async function verifyEmail(params: {
   token: string
   expires: string
   signature: string
-}): Promise<ActionResponse<object>> {
+}): Promise<ActionResponse<null>> {
   const sessionToken = await getSessionToken()
   const { id, token: hash, expires, signature } = params
 
@@ -168,7 +188,7 @@ export async function verifyNewEmail(params: {
   token: string
   expires: string
   signature: string
-}): Promise<ActionResponse<object>> {
+}): Promise<ActionResponse<null>> {
   const sessionToken = await getSessionToken()
   const { id, email, token: hash, expires, signature } = params
 

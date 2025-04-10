@@ -1,85 +1,139 @@
 'use client'
 
-import { cn } from '@/lib/utils'
+import { z } from 'zod'
+import { useForm } from 'react-hook-form'
 import { useToast } from '@/hooks/use-toast'
-import { updatePassword } from '@/core/actions/auth'
-import { useActionState, useEffect } from 'react'
-import { Label } from '@/components/ui/label'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { updatePassword } from '@/core/actions/new/auth'
+import { useCallback, useTransition } from 'react'
+import {
+  Form,
+  FormItem,
+  FormLabel,
+  FormField,
+  FormControl,
+  FormMessage,
+} from '@/components/ui/form'
 import { LoadingButton } from '@/components/ui/loading-button'
 import { PasswordInput } from '@/components/ui/password-input'
+import { CircleAlert, CircleCheckIcon } from 'lucide-react'
+
+const formSchema = z.object({
+  currentPassword: z
+    .string()
+    .min(1, { message: 'Current password is required' }),
+  password: z.string().min(1, { message: 'New password is required' }),
+})
 
 export function ProfilePasswordForm({ onSuccess }: { onSuccess?: () => void }) {
   const { toast } = useToast()
 
-  const [state, formAction, isPending] = useActionState(updatePassword, null)
+  const [isPending, startTransition] = useTransition()
 
-  useEffect(() => {
-    if (!isPending && state && state.isServerError) {
-      toast({
-        variant: 'destructive',
-        description: state?.message,
-      })
-    }
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      currentPassword: '',
+      password: '',
+    },
+  })
 
-    if (!isPending && state && state.isSuccess) {
-      toast({
-        description: 'Your password has been updated.',
+  const handleSubmit = useCallback(
+    (values: z.infer<typeof formSchema>) => {
+      startTransition(async () => {
+        const response = await updatePassword(values)
+
+        if (response.isServerError || response.isUnknown) {
+          toast({
+            variant: 'destructive',
+            description: response.message,
+          })
+        }
+
+        if (response.isClientError) {
+          toast({
+            description: (
+              <p className="grow text-sm">
+                <CircleAlert
+                  className="-mt-0.5 me-3 inline-flex text-red-500"
+                  size={16}
+                  aria-hidden="true"
+                />
+                {response.message}
+              </p>
+            ),
+          })
+        }
+
+        if (response.isSuccess) {
+          toast({
+            description: (
+              <p className="grow text-sm">
+                <CircleCheckIcon
+                  className="-mt-0.5 me-3 inline-flex text-emerald-500"
+                  size={16}
+                  aria-hidden="true"
+                />
+                Your password has been updated.
+              </p>
+            ),
+          })
+
+          onSuccess?.()
+        }
       })
-      onSuccess?.()
-    }
-  }, [isPending, state, onSuccess, toast])
+    },
+    [toast, onSuccess],
+  )
 
   return (
-    <form action={formAction} className="flex flex-col gap-4">
-      <div className="space-y-2">
-        <Label
-          htmlFor="current_password"
-          className={cn(state?.errors?.name && 'text-destructive')}
-        >
-          Current password
-        </Label>
-        <PasswordInput
-          id="current_password"
-          name="current_password"
-          placeholder="********"
-          autoComplete="current-password"
-          defaultValue={state?.payload?.get('current_password')?.toString()}
-          required
-        />
-        {state?.errors?.current_password && (
-          <p className="text-sm font-medium text-destructive">
-            {state?.errors?.current_password.at(0)}
-          </p>
-        )}
-      </div>
-      <div className="space-y-2">
-        <Label
-          htmlFor="password"
-          className={cn(state?.errors?.name && 'text-destructive')}
-        >
-          New password
-        </Label>
-        <PasswordInput
-          id="password"
-          name="password"
-          placeholder="********"
-          autoComplete="new-password"
-          defaultValue={state?.payload?.get('password')?.toString()}
-          required
-        />
-        {state?.errors?.password && (
-          <p className="text-sm font-medium text-destructive">
-            {state?.errors?.password.at(0)}
-          </p>
-        )}
-      </div>
-      <LoadingButton
-        type="submit"
-        className="w-full md:ml-auto md:w-fit"
-        loading={isPending}
+    <Form {...form}>
+      <form
+        className="flex flex-col gap-4"
+        onSubmit={form.handleSubmit(handleSubmit)}
       >
-        Save changes
-      </LoadingButton>
-    </form>
+        <FormField
+          control={form.control}
+          name="currentPassword"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Current password</FormLabel>
+              <FormControl>
+                <PasswordInput
+                  placeholder="********"
+                  autoComplete="current-password"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>New password</FormLabel>
+              <FormControl>
+                <PasswordInput
+                  placeholder="********"
+                  autoComplete="new-password"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <LoadingButton
+          type="submit"
+          className="w-full md:ml-auto md:w-fit"
+          loading={isPending}
+        >
+          Save changes
+        </LoadingButton>
+      </form>
+    </Form>
   )
 }

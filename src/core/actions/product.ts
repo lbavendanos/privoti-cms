@@ -11,8 +11,6 @@ export async function getProducts(
 ): Promise<List<Product>> {
   const sessionToken = await getSessionToken()
 
-  console.info('Fetching products')
-
   try {
     const { data } = await api.get<List<Product>>('/products', {
       params,
@@ -27,8 +25,6 @@ export async function getProducts(
 
 export async function getProduct(id: number | string): Promise<Product | null> {
   const sessionToken = await getSessionToken()
-
-  console.info('Fetching product', id)
 
   try {
     const {
@@ -56,7 +52,7 @@ export async function createProduct(
 
     return handleActionSuccess(status, data)
   } catch (error) {
-    return handleActionError(error, formData)
+    return handleActionError(error)
   }
 }
 
@@ -77,7 +73,7 @@ export async function updateProduct(
 
     return handleActionSuccess(responseStatus, responseData)
   } catch (error) {
-    return handleActionError(error, data)
+    return handleActionError(error)
   }
 }
 

@@ -6,25 +6,25 @@ import { useToast } from '@/hooks/use-toast'
 import { useRouter } from 'next/navigation'
 import { blank, uuid } from '@/lib/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useCallback } from 'react'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQueryClient } from '@tanstack/react-query'
+import { useCallback, useTransition } from 'react'
 import { createProduct, updateProduct } from '@/core/actions/product'
 import type { Product } from '@/core/types'
 import Link from 'next/link'
 import {
   Card,
+  CardTitle,
+  CardHeader,
   CardContent,
   CardDescription,
-  CardHeader,
-  CardTitle,
 } from '@/components/ui/card'
 import {
   Form,
-  FormControl,
-  FormField,
   FormItem,
+  FormField,
   FormLabel,
   FormMessage,
+  FormControl,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -39,7 +39,7 @@ import { ProductsOptionsInput } from './products-options-input'
 import { ProductsVariantsInput } from './products-variants-input'
 import { ProductsCategoryInput } from './products-category-input'
 import { ProductsCollectionsInput } from './products-collections-input'
-import { ChevronLeft } from 'lucide-react'
+import { ChevronLeft, CircleAlert, CircleCheckIcon } from 'lucide-react'
 
 function getDirtyFields<T extends Record<string, unknown>>(
   dirtyFields: Partial<Record<keyof T, unknown>>,
@@ -147,7 +147,7 @@ const formSchema = z.object({
     .optional(),
 })
 
-function generateDefaultValues(
+function makeDefaultValues(
   product?: Product | null,
 ): z.infer<typeof formSchema> {
   return {
@@ -208,7 +208,7 @@ function generateDefaultValues(
   }
 }
 
-function generateFormData(values: z.infer<typeof formSchema>): FormData {
+function makeFormData(values: z.infer<typeof formSchema>): FormData {
   const formData = new FormData()
 
   Object.keys(values).forEach((key) => {
@@ -346,55 +346,14 @@ type ProductsFormProps = {
 
 export function ProductsForm({ product }: ProductsFormProps) {
   const router = useRouter()
+  const queryClient = useQueryClient()
   const { toast } = useToast()
+
+  const [isPending, startTransition] = useTransition()
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: generateDefaultValues(product),
-  })
-
-  const queryClient = useQueryClient()
-  const { mutate, isPending } = useMutation({
-    mutationFn: (formData: FormData) => {
-      return product
-        ? updateProduct(product.id, formData)
-        : createProduct(formData)
-    },
-    onSuccess: (state) => {
-      if (state.isClientError || state.isServerError) {
-        toast({
-          variant: 'destructive',
-          description: state.message,
-        })
-      }
-
-      if (state.isSuccess) {
-        toast({
-          description: `Product ${product ? 'updated' : 'created'} successfully.`,
-        })
-
-        form.reset(generateDefaultValues(state.data))
-
-        if (state.data) {
-          queryClient.setQueryData(
-            ['product-detail', { id: `${state.data.id}` }],
-            state.data,
-          )
-
-          queryClient.invalidateQueries({ queryKey: ['product-list'] })
-
-          if (!product) {
-            router.replace(`/products/${state.data.id}`)
-          }
-        }
-      }
-    },
-    onError: (error) => {
-      toast({
-        variant: 'destructive',
-        description: error.message,
-      })
-    },
+    defaultValues: makeDefaultValues(product),
   })
 
   const handleSubmit = useCallback(
@@ -404,13 +363,67 @@ export function ProductsForm({ product }: ProductsFormProps) {
         values,
       )
 
-      const formData = generateFormData(
-        dirtyValues as Required<typeof dirtyValues>,
-      )
+      const formData = makeFormData(dirtyValues as Required<typeof dirtyValues>)
 
-      mutate(formData)
+      startTransition(async () => {
+        const response = product
+          ? await updateProduct(product.id, formData)
+          : await createProduct(formData)
+
+        if (response.isServerError || response.isUnknown) {
+          toast({
+            variant: 'destructive',
+            description: response.message,
+          })
+        }
+
+        if (response.isClientError) {
+          toast({
+            description: (
+              <p className="grow text-sm">
+                <CircleAlert
+                  className="-mt-0.5 me-3 inline-flex text-red-500"
+                  size={16}
+                  aria-hidden="true"
+                />
+                {response.message}
+              </p>
+            ),
+          })
+        }
+
+        if (response.isSuccess) {
+          toast({
+            description: (
+              <p className="grow text-sm">
+                <CircleCheckIcon
+                  className="-mt-0.5 me-3 inline-flex text-emerald-500"
+                  size={16}
+                  aria-hidden="true"
+                />
+                Product {product ? 'updated' : 'created'} successfully.
+              </p>
+            ),
+          })
+
+          form.reset(makeDefaultValues(response.data))
+
+          if (response.data) {
+            queryClient.setQueryData(
+              ['product-detail', { id: `${response.data.id}` }],
+              response.data,
+            )
+
+            queryClient.invalidateQueries({ queryKey: ['product-list'] })
+
+            if (!product) {
+              router.replace(`/products/${response.data.id}`)
+            }
+          }
+        }
+      })
     },
-    [form, mutate],
+    [product, form, queryClient, router, toast],
   )
 
   return (

@@ -17,10 +17,9 @@ import {
   FormControl,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { StatusAlert } from '@/components/ui/status-alert'
 import { PasswordInput } from '@/components/ui/password-input'
 import { LoadingButton } from '@/components/ui/loading-button'
-import { Alert, AlertDescription } from '@/components/ui/alert'
-import { AlertCircle } from 'lucide-react'
 
 const formSchema = z.object({
   token: z.string().min(1, { message: 'Token is required' }),
@@ -85,10 +84,7 @@ export function ResetForm() {
         onSubmit={form.handleSubmit(handleSubmit)}
       >
         {errorMessage && (
-          <Alert variant="destructive">
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>{errorMessage}</AlertDescription>
-          </Alert>
+          <StatusAlert variant="error" description={errorMessage} />
         )}
         <FormField
           control={form.control}

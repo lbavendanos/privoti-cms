@@ -17,8 +17,8 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { StatusAlert } from '@/components/ui/status-alert'
 import { LoadingButton } from '@/components/ui/loading-button'
-import { CircleAlert, CircleCheckIcon } from 'lucide-react'
 
 const formSchema = z.object({
   name: z.string().min(1, { message: 'Name is required' }),
@@ -53,14 +53,11 @@ export function ProfileNameForm({ onSuccess }: { onSuccess?: () => void }) {
         if (response.isClientError) {
           toast({
             description: (
-              <p className="grow text-sm">
-                <CircleAlert
-                  className="-mt-0.5 me-3 inline-flex text-red-500"
-                  size={16}
-                  aria-hidden="true"
-                />
-                {response.message}
-              </p>
+              <StatusAlert
+                variant="error"
+                className="rounded-none border-0 p-0 text-foreground"
+                description={response.message}
+              />
             ),
           })
         }
@@ -70,14 +67,11 @@ export function ProfileNameForm({ onSuccess }: { onSuccess?: () => void }) {
 
           toast({
             description: (
-              <p className="grow text-sm">
-                <CircleCheckIcon
-                  className="-mt-0.5 me-3 inline-flex text-emerald-500"
-                  size={16}
-                  aria-hidden="true"
-                />
-                Your name has been updated.
-              </p>
+              <StatusAlert
+                variant="success"
+                className="rounded-none border-0 p-0 text-foreground"
+                description="Your name has been updated."
+              />
             ),
           })
 

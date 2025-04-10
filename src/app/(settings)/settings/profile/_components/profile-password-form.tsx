@@ -14,9 +14,9 @@ import {
   FormControl,
   FormMessage,
 } from '@/components/ui/form'
+import { StatusAlert } from '@/components/ui/status-alert'
 import { LoadingButton } from '@/components/ui/loading-button'
 import { PasswordInput } from '@/components/ui/password-input'
-import { CircleAlert, CircleCheckIcon } from 'lucide-react'
 
 const formSchema = z.object({
   currentPassword: z
@@ -53,14 +53,11 @@ export function ProfilePasswordForm({ onSuccess }: { onSuccess?: () => void }) {
         if (response.isClientError) {
           toast({
             description: (
-              <p className="grow text-sm">
-                <CircleAlert
-                  className="-mt-0.5 me-3 inline-flex text-red-500"
-                  size={16}
-                  aria-hidden="true"
-                />
-                {response.message}
-              </p>
+              <StatusAlert
+                variant="error"
+                className="rounded-none border-0 p-0 text-foreground"
+                description={response.message}
+              />
             ),
           })
         }
@@ -68,14 +65,11 @@ export function ProfilePasswordForm({ onSuccess }: { onSuccess?: () => void }) {
         if (response.isSuccess) {
           toast({
             description: (
-              <p className="grow text-sm">
-                <CircleCheckIcon
-                  className="-mt-0.5 me-3 inline-flex text-emerald-500"
-                  size={16}
-                  aria-hidden="true"
-                />
-                Your password has been updated.
-              </p>
+              <StatusAlert
+                variant="success"
+                className="rounded-none border-0 p-0 text-foreground"
+                description="Your password has been updated."
+              />
             ),
           })
 

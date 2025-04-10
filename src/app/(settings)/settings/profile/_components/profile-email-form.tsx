@@ -15,8 +15,8 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { StatusAlert } from '@/components/ui/status-alert'
 import { LoadingButton } from '@/components/ui/loading-button'
-import { CircleAlert, InfoIcon } from 'lucide-react'
 
 const formSchema = z.object({
   email: z.string().email().min(1, { message: 'Email is required' }),
@@ -49,14 +49,11 @@ export function ProfileEmailForm({ onSuccess }: { onSuccess?: () => void }) {
         if (response.isClientError) {
           toast({
             description: (
-              <p className="grow text-sm">
-                <CircleAlert
-                  className="-mt-0.5 me-3 inline-flex text-red-500"
-                  size={16}
-                  aria-hidden="true"
-                />
-                {response.message}
-              </p>
+              <StatusAlert
+                variant="error"
+                className="rounded-none border-0 p-0 text-foreground"
+                description={response.message}
+              />
             ),
           })
         }
@@ -64,14 +61,11 @@ export function ProfileEmailForm({ onSuccess }: { onSuccess?: () => void }) {
         if (response.isSuccess) {
           toast({
             description: (
-              <p className="grow text-sm">
-                <InfoIcon
-                  className="-mt-0.5 me-3 inline-flex text-blue-500"
-                  size={16}
-                  aria-hidden="true"
-                />
-                Please check your inbox to confirm your new email address.
-              </p>
+              <StatusAlert
+                variant="info"
+                className="rounded-none border-0 p-0 text-foreground"
+                description="Please check your inbox to confirm your new email address."
+              />
             ),
           })
 

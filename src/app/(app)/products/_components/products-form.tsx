@@ -30,6 +30,7 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { MultipleTag } from '@/components/ui/multiple-tag'
+import { StatusAlert } from '@/components/ui/status-alert'
 import { LoadingButton } from '@/components/ui/loading-button'
 import { SortableFileInput } from '@/components/ui/sortable-file-input'
 import { ProductsTypeInput } from './products-type-input'
@@ -39,7 +40,7 @@ import { ProductsOptionsInput } from './products-options-input'
 import { ProductsVariantsInput } from './products-variants-input'
 import { ProductsCategoryInput } from './products-category-input'
 import { ProductsCollectionsInput } from './products-collections-input'
-import { ChevronLeft, CircleAlert, CircleCheckIcon } from 'lucide-react'
+import { ChevronLeft } from 'lucide-react'
 
 function getDirtyFields<T extends Record<string, unknown>>(
   dirtyFields: Partial<Record<keyof T, unknown>>,
@@ -380,33 +381,27 @@ export function ProductsForm({ product }: ProductsFormProps) {
         if (response.isClientError) {
           toast({
             description: (
-              <p className="grow text-sm">
-                <CircleAlert
-                  className="-mt-0.5 me-3 inline-flex text-red-500"
-                  size={16}
-                  aria-hidden="true"
-                />
-                {response.message}
-              </p>
+              <StatusAlert
+                variant="error"
+                className="rounded-none border-0 p-0 text-foreground"
+                description={response.message}
+              />
             ),
           })
         }
 
         if (response.isSuccess) {
+          form.reset(makeDefaultValues(response.data))
+
           toast({
             description: (
-              <p className="grow text-sm">
-                <CircleCheckIcon
-                  className="-mt-0.5 me-3 inline-flex text-emerald-500"
-                  size={16}
-                  aria-hidden="true"
-                />
-                Product {product ? 'updated' : 'created'} successfully.
-              </p>
+              <StatusAlert
+                variant="success"
+                className="rounded-none border-0 p-0 text-foreground"
+                description={`Product ${product ? 'updated' : 'created'} successfully`}
+              />
             ),
           })
-
-          form.reset(makeDefaultValues(response.data))
 
           if (response.data) {
             queryClient.setQueryData(

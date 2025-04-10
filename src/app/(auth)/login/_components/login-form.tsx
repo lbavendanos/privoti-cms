@@ -17,10 +17,9 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { StatusAlert } from '@/components/ui/status-alert'
 import { PasswordInput } from '@/components/ui/password-input'
 import { LoadingButton } from '@/components/ui/loading-button'
-import { Alert, AlertDescription } from '@/components/ui/alert'
-import { AlertCircle } from 'lucide-react'
 
 const formSchema = z.object({
   email: z.string().email().min(1, { message: 'Email is required' }),
@@ -77,10 +76,7 @@ export function LoginForm() {
         onSubmit={form.handleSubmit(handleSubmit)}
       >
         {errorMessage && (
-          <Alert variant="destructive">
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>{errorMessage}</AlertDescription>
-          </Alert>
+          <StatusAlert variant="error" description={errorMessage} />
         )}
         <FormField
           control={form.control}

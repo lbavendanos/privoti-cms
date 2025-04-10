@@ -1,9 +1,9 @@
 'use client'
 
+import { useVendors } from '@/core/hooks/use-vendors'
 import { useDebounce } from '@/hooks/use-debounce'
-import { getVendors } from '@/core/actions/vendor'
+import { keepPreviousData } from '@tanstack/react-query'
 import { useMemo, useState } from 'react'
-import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { SearchableSelect } from '@/components/ui/searchable-select'
 
 type Vendor = {
@@ -24,13 +24,10 @@ export function ProductsVendorInput({
   const [searchTerm, setSearchTerm] = useState<string>('')
   const debouncedSearchTerm = useDebounce(searchTerm, 500)
 
-  const { data, isFetching } = useQuery({
-    queryKey: debouncedSearchTerm
-      ? ['product-vendor-list', { q: debouncedSearchTerm }]
-      : ['product-vendor-list'],
-    queryFn: () => getVendors({ q: debouncedSearchTerm }),
-    placeholderData: keepPreviousData,
-  })
+  const { data, isFetching } = useVendors(
+    debouncedSearchTerm ? { q: debouncedSearchTerm } : {},
+    { placeholderData: keepPreviousData },
+  )
 
   const vendors = useMemo(() => data?.data, [data])
   const options = useMemo(

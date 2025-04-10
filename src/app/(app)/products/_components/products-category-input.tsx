@@ -1,18 +1,17 @@
 'use client'
 
-import { useQuery } from '@tanstack/react-query'
 import { blank, cn, filled } from '@/lib/utils'
-import { getProductCategories } from '@/core/actions/product-category'
+import { useProductCategories } from '@/core/hooks/use-product-categories'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import {
   Command,
+  CommandList,
+  CommandItem,
   CommandEmpty,
   CommandGroup,
   CommandInput,
-  CommandItem,
-  CommandList,
   CommandSeparator,
 } from '@/components/ui/command'
 import {
@@ -21,11 +20,11 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover'
 import {
+  X,
   CheckIcon,
   ChevronDownIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
-  X,
 } from 'lucide-react'
 
 interface Category {
@@ -48,10 +47,7 @@ export function ProductsCategoryInput({
   value: currentCategory,
   onChange,
 }: ProductsCategoryInputProps) {
-  const { data, isLoading } = useQuery({
-    queryKey: ['product-category-list', params],
-    queryFn: () => getProductCategories(params),
-  })
+  const { data, isLoading } = useProductCategories(params)
 
   const [currentParent, setCurrentParent] = useState<Category | null>(null)
   const [searchTerm, setSearchTerm] = useState('')

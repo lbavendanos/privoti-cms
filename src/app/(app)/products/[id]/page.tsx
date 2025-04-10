@@ -1,9 +1,10 @@
 import { cache } from 'react'
+import { dehydrate } from '@tanstack/react-query'
 import { getProduct } from '@/core/actions/product'
 import { getQueryClient } from '@/lib/query'
-import { dehydrate, HydrationBoundary } from '@tanstack/react-query'
 import type { Metadata } from 'next'
 import { ProductsEdit } from '../_components/products-edit'
+import { HydrationBoundary } from '@tanstack/react-query'
 
 const getProductCached = cache(getProduct)
 
@@ -25,17 +26,17 @@ export default async function EidtProductPage({
 }: {
   params: Promise<{ id: string }>
 }) {
-  const { id: productId } = await params
+  const { id } = await params
   const queryClient = getQueryClient()
 
   queryClient.prefetchQuery({
-    queryKey: ['product-detail', { id: productId }],
-    queryFn: () => getProductCached(productId),
+    queryKey: ['product-detail', { id }],
+    queryFn: () => getProductCached(id),
   })
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <ProductsEdit productId={productId} />
+      <ProductsEdit productId={id} />
     </HydrationBoundary>
   )
 }

@@ -1,19 +1,10 @@
 'use client'
 
-import { notFound } from 'next/navigation'
-import { getProduct } from '@/core/actions/product'
-import { useSuspenseQuery } from '@tanstack/react-query'
+import { useProduct } from '@/core/hooks/use-product'
 import { ProductsForm } from './products-form'
 
 export function ProductsEdit({ productId }: { productId: string }) {
-  const { data: product } = useSuspenseQuery({
-    queryKey: ['product-detail', { id: productId }],
-    queryFn: () => getProduct(productId),
-  })
-
-  if (!product) {
-    notFound()
-  }
+  const { product } = useProduct(productId)
 
   return <ProductsForm product={product} />
 }

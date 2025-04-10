@@ -1,12 +1,13 @@
 'use client'
 
 import { z } from 'zod'
+import { useAuth } from '@/core/hooks/use-auth'
 import { useForm } from 'react-hook-form'
 import { useToast } from '@/hooks/use-toast'
+import { updateUser } from '@/core/actions/new/auth'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { getUser, updateUser } from '@/core/actions/new/auth'
+import { useQueryClient } from '@tanstack/react-query'
 import { useCallback, useTransition } from 'react'
-import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query'
 import {
   Form,
   FormItem,
@@ -25,11 +26,7 @@ const formSchema = z.object({
 
 export function ProfileNameForm({ onSuccess }: { onSuccess?: () => void }) {
   const queryClient = useQueryClient()
-  const { data: user } = useSuspenseQuery({
-    queryKey: ['auth'],
-    queryFn: () => getUser(),
-    retry: false,
-  })
+  const { user } = useAuth()
   const { toast } = useToast()
 
   const [isPending, startTransition] = useTransition()

@@ -1,18 +1,13 @@
 'use client'
 
-import { getUser } from '@/core/actions/new/auth'
-import { useSuspenseQuery } from '@tanstack/react-query'
+import { useAuth } from '@/core/hooks/use-auth'
 import { Separator } from '@/components/ui/separator'
 import { ProfileName } from './profile-name'
 import { ProfileEmail } from './profile-email'
 import { ProfilePassword } from './profile-password'
 
 export function ProfileContent() {
-  const { data: user } = useSuspenseQuery({
-    queryKey: ['auth'],
-    queryFn: () => getUser(),
-    retry: false,
-  })
+  const { user } = useAuth()
 
   return (
     <div className="container my-4 lg:my-6">

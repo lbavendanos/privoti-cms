@@ -1,8 +1,6 @@
 'use client'
 
-import { getUser } from '@/core/actions/new/auth'
-import { redirect } from 'next/navigation'
-import { useSuspenseQuery } from '@tanstack/react-query'
+import { useAuth } from '@/core/hooks/use-auth'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
   DropdownMenu,
@@ -18,23 +16,7 @@ import { UserMenuContent } from './user-menu-content'
 import { ChevronsUpDown } from 'lucide-react'
 
 export function UserMenu() {
-  const { data: user, isError } = useSuspenseQuery({
-    queryKey: ['auth'],
-    queryFn: () => getUser(),
-    retry: false,
-  })
-
-  if (isError) {
-    redirect('/login')
-  }
-
-  if (!user) {
-    redirect('/login')
-  }
-
-  if (user.email_verified_at === null) {
-    redirect('/verify-email')
-  }
+  const { user } = useAuth()
 
   return (
     <SidebarMenu>

@@ -1,11 +1,11 @@
 'use server'
 
 import { api } from '@/lib/http'
-import { handleActionError, handleActionSuccess } from '@/lib/new/action'
+import { handleActionError, handleActionSuccess } from '@/lib/action'
 import { getSessionToken, removeSession, setSession } from '@/lib/session'
 import type { User } from '@/core/types'
 import type { SessionData } from '@/lib/session'
-import type { ActionResponse } from '@/lib/new/action'
+import type { ActionResponse } from '@/lib/action'
 
 /**
  * This function is used to get the current user authenticated in the app.

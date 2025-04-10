@@ -1,13 +1,12 @@
 import 'server-only'
 import { isApiError } from './http'
 
-export type ActionResponse<TData, TPayload = unknown> = {
+export type ActionResponse<TData> = {
   code?: number
   codeType?: string
   data?: TData
   message?: string
   errors?: Record<string, string[]>
-  payload?: TPayload
   isInformational?: boolean
   isSuccess?: boolean
   isRedirection?: boolean
@@ -42,13 +41,12 @@ export function getCodeType(code: number): string {
   )
 }
 
-function createActionResponse<TData, TPayload>(
+function createActionResponse<TData>(
   code: number,
   data?: TData,
   message?: string,
   errors?: Record<string, string[]>,
-  payload?: TPayload,
-): ActionResponse<TData, TPayload> {
+): ActionResponse<TData> {
   const codeType = getCodeType(code ?? 0)
 
   return {
@@ -57,7 +55,6 @@ function createActionResponse<TData, TPayload>(
     data,
     message,
     errors,
-    payload,
     isInformational: codeType === CodeTypes.INFORMATIONAL,
     isSuccess: codeType === CodeTypes.SUCCESS,
     isRedirection: codeType === CodeTypes.REDIRECTION,
@@ -77,10 +74,9 @@ export function handleActionSuccess<TData>(
   return createActionResponse(code, data as TData, message || defaultMessage)
 }
 
-export function handleActionError<TData, TPayload>(
+export function handleActionError<TData>(
   error: unknown,
-  payload?: TPayload,
-): ActionResponse<TData, TPayload> {
+): ActionResponse<TData> {
   const defaultMessage =
     'There was a problem with the server. Please try again.'
 
@@ -102,7 +98,6 @@ export function handleActionError<TData, TPayload>(
       {} as TData,
       message || defaultMessage,
       errors || {},
-      payload,
     )
   }
 
@@ -111,6 +106,5 @@ export function handleActionError<TData, TPayload>(
     {} as TData,
     error instanceof Error ? error.message : defaultMessage,
     {},
-    payload,
   )
 }

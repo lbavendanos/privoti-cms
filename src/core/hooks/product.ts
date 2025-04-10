@@ -1,20 +1,12 @@
 import { filled } from '@/lib/utils'
 import { notFound } from 'next/navigation'
+import { useSuspenseQuery } from '@tanstack/react-query'
 import { getProduct, getProducts } from '../actions/product'
-import { useQuery, useSuspenseQuery } from '@tanstack/react-query'
-import type { UseQueryOptions } from '@tanstack/react-query'
 
-export function useProducts(
-  params: Record<string, string> = {},
-  options?: Omit<
-    UseQueryOptions<Awaited<ReturnType<typeof getProducts>>>,
-    'queryKey' | 'queryFn'
-  >,
-) {
-  const { data } = useQuery({
+export function useProducts(params: Record<string, string> = {}) {
+  const { data } = useSuspenseQuery({
     queryKey: filled(params) ? ['product-list', params] : ['product-list'],
     queryFn: () => getProducts(params),
-    ...options,
   })
 
   return { data }

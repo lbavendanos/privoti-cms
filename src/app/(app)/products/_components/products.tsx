@@ -3,18 +3,14 @@
 import { useToast } from '@/hooks/use-toast'
 import { useProducts } from '@/core/hooks/product'
 import { blank, debounce } from '@/lib/utils'
-import { usePathname, useSearchParams } from 'next/navigation'
-import { useCallback, useMemo, useState } from 'react'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { startTransition, useCallback, useMemo, useState } from 'react'
 import {
   updateProduct,
   deleteProduct,
   deleteProducts,
 } from '@/core/actions/product'
-import {
-  useMutation,
-  useQueryClient,
-  keepPreviousData,
-} from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { ProductsTable } from './products-table'
@@ -23,6 +19,7 @@ const DEFAULT_PER_PAGE = 15
 const DEFAULT_PAGE = 1
 
 export function Products() {
+  const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const queryClient = useQueryClient()
@@ -59,7 +56,7 @@ export function Products() {
     params.page ? Number(params.page) : DEFAULT_PAGE,
   )
 
-  const { data } = useProducts(params, { placeholderData: keepPreviousData })
+  const { data } = useProducts(params)
   const products = useMemo(() => data?.data, [data])
   const meta = useMemo(() => data?.meta, [data])
   const pagination = useMemo(
@@ -178,21 +175,23 @@ export function Products() {
 
   const updateQueryParams = useCallback(
     (name: string, value: string) => {
-      const newParams = new URLSearchParams(searchParams)
+      startTransition(() => {
+        const newParams = new URLSearchParams(searchParams)
 
-      if (value) {
-        newParams.set(name, value)
-      } else {
-        newParams.delete(name)
-      }
+        if (value) {
+          newParams.set(name, value)
+        } else {
+          newParams.delete(name)
+        }
 
-      const newUrl = newParams.toString()
-        ? `${pathname}?${newParams.toString()}`
-        : pathname
+        const newUrl = newParams.toString()
+          ? `${pathname}?${newParams.toString()}`
+          : pathname
 
-      window.history.pushState(null, '', newUrl)
+        router.replace(newUrl)
+      })
     },
-    [searchParams, pathname],
+    [searchParams, pathname, router],
   )
 
   const debouncedUpdateSearchTerm = useMemo(

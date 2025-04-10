@@ -1,13 +1,18 @@
 'use client'
 
-import { useProfile } from './profile-context'
+import { getUser } from '@/core/actions/new/auth'
+import { useSuspenseQuery } from '@tanstack/react-query'
 import { Separator } from '@/components/ui/separator'
 import { ProfileName } from './profile-name'
 import { ProfileEmail } from './profile-email'
 import { ProfilePassword } from './profile-password'
 
 export function ProfileContent() {
-  const { user } = useProfile()
+  const { data: user } = useSuspenseQuery({
+    queryKey: ['auth'],
+    queryFn: () => getUser(),
+    retry: false,
+  })
 
   return (
     <div className="container my-4 lg:my-6">
@@ -38,7 +43,7 @@ export function ProfileContent() {
                     {user.email}
                   </p>
                 </div>
-                <ProfileEmail />
+                {/* <ProfileEmail /> */}
               </div>
               <div className="flex flex-col gap-2 md:flex-row md:justify-between">
                 <div className="space-y-2">
@@ -47,7 +52,7 @@ export function ProfileContent() {
                     Change your password to login to your account.
                   </p>
                 </div>
-                <ProfilePassword />
+                {/* <ProfilePassword /> */}
               </div>
             </div>
           </div>

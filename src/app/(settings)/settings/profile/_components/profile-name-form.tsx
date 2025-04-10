@@ -1,66 +1,123 @@
 'use client'
 
-import { cn } from '@/lib/utils'
+import { z } from 'zod'
+import { useForm } from 'react-hook-form'
 import { useToast } from '@/hooks/use-toast'
-import { updateUser } from '@/core/actions/auth'
-import { useProfile } from './profile-context'
-import { useActionState, useEffect } from 'react'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { getUser, updateUser } from '@/core/actions/new/auth'
+import { useCallback, useTransition } from 'react'
+import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query'
+import {
+  Form,
+  FormItem,
+  FormLabel,
+  FormField,
+  FormControl,
+  FormMessage,
+} from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { LoadingButton } from '@/components/ui/loading-button'
+import { CircleAlert, CircleCheckIcon } from 'lucide-react'
+
+const formSchema = z.object({
+  name: z.string().min(1, { message: 'Name is required' }),
+})
 
 export function ProfileNameForm({ onSuccess }: { onSuccess?: () => void }) {
-  const { user } = useProfile()
+  const queryClient = useQueryClient()
+  const { data: user } = useSuspenseQuery({
+    queryKey: ['auth'],
+    queryFn: () => getUser(),
+    retry: false,
+  })
   const { toast } = useToast()
 
-  const [state, formAction, isPending] = useActionState(updateUser, null)
+  const [isPending, startTransition] = useTransition()
 
-  useEffect(() => {
-    if (!isPending && state && state.isServerError) {
-      toast({
-        variant: 'destructive',
-        description: state?.message,
-      })
-    }
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: user.name,
+    },
+  })
 
-    if (!isPending && state && state.isSuccess) {
-      toast({
-        description: 'Your name has been updated.',
+  const handleSubmit = useCallback(
+    (values: z.infer<typeof formSchema>) => {
+      startTransition(async () => {
+        const response = await updateUser(values)
+
+        if (response.isServerError || response.isUnknown) {
+          toast({
+            variant: 'destructive',
+            description: response.message,
+          })
+        }
+
+        if (response.isClientError) {
+          toast({
+            description: (
+              <p className="grow text-sm">
+                <CircleAlert
+                  className="-mt-0.5 me-3 inline-flex text-red-500"
+                  size={16}
+                  aria-hidden="true"
+                />
+                {response.message}
+              </p>
+            ),
+          })
+        }
+
+        if (response.isSuccess) {
+          queryClient.setQueryData(['auth'], response.data)
+
+          toast({
+            description: (
+              <p className="grow text-sm">
+                <CircleCheckIcon
+                  className="-mt-0.5 me-3 inline-flex text-emerald-500"
+                  size={16}
+                  aria-hidden="true"
+                />
+                Your name has been updated.
+              </p>
+            ),
+          })
+
+          onSuccess?.()
+        }
       })
-      onSuccess?.()
-    }
-  }, [isPending, state, onSuccess, toast])
+    },
+    [queryClient, toast, onSuccess],
+  )
 
   return (
-    <form action={formAction} className="flex flex-col gap-4">
-      <div className="space-y-2">
-        <Label
-          htmlFor="name"
-          className={cn(state?.errors?.name && 'text-destructive', 'sr-only')}
-        >
-          Name
-        </Label>
-        <Input
-          id="name"
-          type="text"
-          name="name"
-          autoComplete="name"
-          defaultValue={state?.payload?.get('name')?.toString() || user.name}
-          required
-        />
-        {state?.errors?.name && (
-          <p className="text-sm font-medium text-destructive">
-            {state?.errors?.name.at(0)}
-          </p>
-        )}
-      </div>
-      <LoadingButton
-        type="submit"
-        className="w-full md:ml-auto md:w-fit"
-        loading={isPending}
+    <Form {...form}>
+      <form
+        className="flex flex-col gap-4"
+        onSubmit={form.handleSubmit(handleSubmit)}
       >
-        Save changes
-      </LoadingButton>
-    </form>
+        <FormField
+          control={form.control}
+          name="name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Name</FormLabel>
+              <FormControl>
+                <Input autoComplete="name" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <LoadingButton
+          type="submit"
+          className="w-full md:ml-auto md:w-fit"
+          loading={isPending}
+        >
+          Save changes
+        </LoadingButton>
+      </form>
+    </Form>
   )
 }

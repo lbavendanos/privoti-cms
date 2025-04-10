@@ -1,70 +1,12 @@
 'use server'
 
 import { api } from '@/lib/http'
-import { redirect } from 'next/navigation'
-import {
-  unstable_cacheTag as cacheTag,
-  unstable_cacheLife as cacheLife,
-  revalidateTag,
-} from 'next/cache'
-import {
-  type ActionResponse,
-  handleActionError,
-  handleActionSuccess,
-} from '@/lib/action'
+import { revalidateTag } from 'next/cache'
 import { getSessionToken } from '@/lib/session'
-import { type User } from '../types'
+import { handleActionError, handleActionSuccess } from '@/lib/action'
+import type { ActionResponse } from '@/lib/action'
 
 const AUTH_USER_TAG = 'auth-user'
-
-export async function getUser(sessionToken: string): Promise<User> {
-  'use cache'
-  cacheLife('hours')
-  cacheTag(AUTH_USER_TAG)
-
-  const {
-    data: { data: user },
-  } = await api
-    .get<{
-      data: User
-    }>('/auth/user', { sessionToken })
-    .catch(() => {
-      return { data: { data: null } }
-    })
-
-  if (!user) {
-    redirect('/login')
-  }
-
-  if (user.email_verified_at === null) {
-    redirect('/verify-email')
-  }
-
-  return user
-}
-
-export async function updateUser(
-  _: unknown,
-  formData: FormData,
-): Promise<ActionResponse<User>> {
-  const sessionToken = await getSessionToken()
-  const name = formData.get('name')
-
-  try {
-    const {
-      status,
-      data: { data: user },
-    } = await api.put<{
-      data: User
-    }>('/auth/user', { name }, { sessionToken })
-
-    revalidateTag(AUTH_USER_TAG)
-
-    return handleActionSuccess(status, user)
-  } catch (error) {
-    return handleActionError(error, formData)
-  }
-}
 
 export async function updatePassword(
   _: unknown,

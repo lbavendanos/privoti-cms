@@ -7,7 +7,7 @@ import type { User } from '@/core/types'
 import type { SessionData } from '@/lib/session'
 import type { ActionResponse } from '@/lib/new/action'
 
-export async function getUser(): Promise<User | null> {
+export async function getUser(): Promise<User> {
   const sessionToken = await getSessionToken()
 
   const {
@@ -17,6 +17,26 @@ export async function getUser(): Promise<User | null> {
   }>('/auth/user', { sessionToken })
 
   return user
+}
+
+export async function updateUser(data: {
+  name: string
+}): Promise<ActionResponse<User>> {
+  const sessionToken = await getSessionToken()
+  const { name } = data
+
+  try {
+    const {
+      status,
+      data: { data: user },
+    } = await api.put<{
+      data: User
+    }>('/auth/user', { name }, { sessionToken })
+
+    return handleActionSuccess(status, user)
+  } catch (error) {
+    return handleActionError(error)
+  }
 }
 
 export async function login(data: {

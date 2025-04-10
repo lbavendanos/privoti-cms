@@ -1,6 +1,6 @@
 'use client'
 
-import { useAuth } from '@/core/hooks/use-auth'
+import { useAuth } from '@/core/hooks/auth'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
   DropdownMenu,

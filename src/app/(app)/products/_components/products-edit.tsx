@@ -1,6 +1,6 @@
 'use client'
 
-import { useProduct } from '@/core/hooks/use-product'
+import { useProduct } from '@/core/hooks/product'
 import { ProductsForm } from './products-form'
 
 export function ProductsEdit({ productId }: { productId: string }) {

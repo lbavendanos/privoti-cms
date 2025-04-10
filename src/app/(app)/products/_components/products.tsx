@@ -1,20 +1,19 @@
 'use client'
 
 import { useToast } from '@/hooks/use-toast'
-import { blank, debounce, filled } from '@/lib/utils'
+import { useProducts } from '@/core/hooks/product'
+import { blank, debounce } from '@/lib/utils'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { useCallback, useMemo, useState } from 'react'
 import {
-  getProducts,
   updateProduct,
   deleteProduct,
   deleteProducts,
 } from '@/core/actions/product'
 import {
-  useQuery,
+  useMutation,
   useQueryClient,
   keepPreviousData,
-  useMutation,
 } from '@tanstack/react-query'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
@@ -60,12 +59,7 @@ export function Products() {
     params.page ? Number(params.page) : DEFAULT_PAGE,
   )
 
-  const { data } = useQuery({
-    queryKey: filled(params) ? ['product-list', params] : ['product-list'],
-    queryFn: () => getProducts(params),
-    placeholderData: keepPreviousData,
-  })
-
+  const { data } = useProducts(params, { placeholderData: keepPreviousData })
   const products = useMemo(() => data?.data, [data])
   const meta = useMemo(() => data?.meta, [data])
   const pagination = useMemo(

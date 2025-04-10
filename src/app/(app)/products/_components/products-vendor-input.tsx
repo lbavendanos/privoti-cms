@@ -1,6 +1,6 @@
 'use client'
 
-import { useVendors } from '@/core/hooks/use-vendors'
+import { useVendors } from '@/core/hooks/vendor'
 import { useDebounce } from '@/hooks/use-debounce'
 import { keepPreviousData } from '@tanstack/react-query'
 import { useMemo, useState } from 'react'

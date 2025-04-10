@@ -1,6 +1,6 @@
 'use client'
 
-import { useAuth } from '@/core/hooks/use-auth'
+import { useAuth } from '@/core/hooks/auth'
 import { Separator } from '@/components/ui/separator'
 import { ProfileName } from './profile-name'
 import { ProfileEmail } from './profile-email'

@@ -1,7 +1,7 @@
 'use client'
 
 import { blank, cn, filled } from '@/lib/utils'
-import { useProductCategories } from '@/core/hooks/use-product-categories'
+import { useProductCategories } from '@/core/hooks/product-category'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'

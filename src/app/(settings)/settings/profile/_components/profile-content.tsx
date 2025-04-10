@@ -43,7 +43,7 @@ export function ProfileContent() {
                     {user.email}
                   </p>
                 </div>
-                {/* <ProfileEmail /> */}
+                <ProfileEmail />
               </div>
               <div className="flex flex-col gap-2 md:flex-row md:justify-between">
                 <div className="space-y-2">
@@ -52,7 +52,7 @@ export function ProfileContent() {
                     Change your password to login to your account.
                   </p>
                 </div>
-                {/* <ProfilePassword /> */}
+                <ProfilePassword />
               </div>
             </div>
           </div>

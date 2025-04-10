@@ -122,6 +122,25 @@ export async function sendEmailVerificationNotification(): Promise<
   }
 }
 
+export async function sendEmailChangeVerificationNotification(data: {
+  email: string
+}): Promise<ActionResponse<null>> {
+  const sessionToken = await getSessionToken()
+  const { email } = data
+
+  try {
+    const { status } = await api.post(
+      '/auth/user/email/new/notification',
+      { email },
+      { sessionToken },
+    )
+
+    return handleActionSuccess(status)
+  } catch (error) {
+    return handleActionError(error)
+  }
+}
+
 export async function verifyEmail(params: {
   id: string
   token: string

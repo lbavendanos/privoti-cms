@@ -1,20 +1,26 @@
 'use client'
 
-import { useProfile } from './profile-context'
+import { getUser } from '@/core/actions/new/auth'
+import { useSuspenseQuery } from '@tanstack/react-query'
 import { useCallback, useState } from 'react'
 import {
   Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
   DialogTitle,
+  DialogHeader,
+  DialogContent,
   DialogTrigger,
+  DialogDescription,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { ProfileEmailForm } from './profile-email-form'
 
 export function ProfileEmail() {
-  const { user } = useProfile()
+  const { data: user } = useSuspenseQuery({
+    queryKey: ['auth'],
+    queryFn: () => getUser(),
+    retry: false,
+  })
+
   const [open, setOpen] = useState(false)
 
   const handleSuccess = useCallback(() => {

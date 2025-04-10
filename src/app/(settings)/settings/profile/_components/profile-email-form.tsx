@@ -1,69 +1,118 @@
 'use client'
 
-import { cn } from '@/lib/utils'
+import { z } from 'zod'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { useToast } from '@/hooks/use-toast'
-import { useActionState, useEffect } from 'react'
-import { sendEmailChangeVerificationNotification } from '@/core/actions/auth'
+import { useCallback, useTransition } from 'react'
+import { sendEmailChangeVerificationNotification } from '@/core/actions/new/auth'
+import {
+  Form,
+  FormItem,
+  FormField,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { LoadingButton } from '@/components/ui/loading-button'
+import { CircleAlert, InfoIcon } from 'lucide-react'
+
+const formSchema = z.object({
+  email: z.string().email().min(1, { message: 'Email is required' }),
+})
 
 export function ProfileEmailForm({ onSuccess }: { onSuccess?: () => void }) {
   const { toast } = useToast()
 
-  const [state, formAction, isPending] = useActionState(
-    sendEmailChangeVerificationNotification,
-    null,
+  const [isPending, startTransition] = useTransition()
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      email: '',
+    },
+  })
+
+  const handleSubmit = useCallback(
+    (values: z.infer<typeof formSchema>) => {
+      startTransition(async () => {
+        const response = await sendEmailChangeVerificationNotification(values)
+
+        if (response.isServerError || response.isUnknown) {
+          toast({
+            variant: 'destructive',
+            description: response.message,
+          })
+        }
+
+        if (response.isClientError) {
+          toast({
+            description: (
+              <p className="grow text-sm">
+                <CircleAlert
+                  className="-mt-0.5 me-3 inline-flex text-red-500"
+                  size={16}
+                  aria-hidden="true"
+                />
+                {response.message}
+              </p>
+            ),
+          })
+        }
+
+        if (response.isSuccess) {
+          toast({
+            description: (
+              <p className="grow text-sm">
+                <InfoIcon
+                  className="-mt-0.5 me-3 inline-flex text-blue-500"
+                  size={16}
+                  aria-hidden="true"
+                />
+                Please check your inbox to confirm your new email address.
+              </p>
+            ),
+          })
+
+          onSuccess?.()
+        }
+      })
+    },
+    [toast, onSuccess],
   )
 
-  useEffect(() => {
-    if (!isPending && state && state.isServerError) {
-      toast({
-        variant: 'destructive',
-        description: state?.message,
-      })
-    }
-
-    if (!isPending && state && state.isSuccess) {
-      toast({
-        description:
-          'Please check your inbox to confirm your new email address.',
-      })
-      onSuccess?.()
-    }
-  }, [isPending, state, onSuccess, toast])
-
   return (
-    <form action={formAction} className="flex flex-col gap-4">
-      <div className="space-y-2">
-        <Label
-          htmlFor="email"
-          className={cn(state?.errors?.email && 'text-destructive', 'sr-only')}
-        >
-          Email
-        </Label>
-        <Input
-          id="email"
-          type="email"
-          name="email"
-          placeholder="m@example.com"
-          autoComplete="email"
-          defaultValue={state?.payload?.get('email')?.toString()}
-          required
-        />
-        {state?.errors?.email && (
-          <p className="text-sm font-medium text-destructive">
-            {state?.errors?.email.at(0)}
-          </p>
-        )}
-      </div>
-      <LoadingButton
-        type="submit"
-        className="w-full md:ml-auto md:w-fit"
-        loading={isPending}
+    <Form {...form}>
+      <form
+        className="flex flex-col gap-4"
+        onSubmit={form.handleSubmit(handleSubmit)}
       >
-        Send verification email
-      </LoadingButton>
-    </form>
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="sr-only">Email</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="m@example.com"
+                  autoComplete="email"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <LoadingButton
+          type="submit"
+          className="w-full md:ml-auto md:w-fit"
+          loading={isPending}
+        >
+          Send verification email
+        </LoadingButton>
+      </form>
+    </Form>
   )
 }

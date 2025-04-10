@@ -30,23 +30,3 @@ export async function updatePassword(
     return handleActionError(error, formData)
   }
 }
-
-export async function sendEmailChangeVerificationNotification(
-  _: unknown,
-  formData: FormData,
-): Promise<ActionResponse<object>> {
-  const sessionToken = await getSessionToken()
-  const email = formData.get('email')
-
-  try {
-    const { status } = await api.post(
-      '/auth/user/email/new/notification',
-      { email },
-      { sessionToken },
-    )
-
-    return handleActionSuccess(status)
-  } catch (error) {
-    return handleActionError(error, formData)
-  }
-}

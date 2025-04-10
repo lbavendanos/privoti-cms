@@ -1,4 +1,4 @@
-import { getUser } from '@/core/actions/new/auth'
+import { getUser } from '@/core/actions/auth'
 import { dehydrate } from '@tanstack/react-query'
 import { getQueryClient } from '@/lib/query'
 import { Separator } from '@/components/ui/separator'

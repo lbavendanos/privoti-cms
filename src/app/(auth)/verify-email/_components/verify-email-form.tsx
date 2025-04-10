@@ -2,7 +2,7 @@
 
 import { useForm } from 'react-hook-form'
 import { useToast } from '@/hooks/use-toast'
-import { sendEmailVerificationNotification } from '@/core/actions/new/auth'
+import { sendEmailVerificationNotification } from '@/core/actions/auth'
 import { useCallback, useState, useTransition } from 'react'
 import { Form } from '@/components/ui/form'
 import { LoadingButton } from '@/components/ui/loading-button'

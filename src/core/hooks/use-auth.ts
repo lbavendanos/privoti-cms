@@ -1,4 +1,4 @@
-import { getUser } from '../actions/new/auth'
+import { getUser } from '../actions/auth'
 import { redirect } from 'next/navigation'
 import { useSuspenseQuery } from '@tanstack/react-query'
 

@@ -1,6 +1,6 @@
 'use client'
 
-import { logout } from '@/core/actions/new/auth'
+import { logout } from '@/core/actions/auth'
 import { useRouter } from 'next/navigation'
 import { useSidebar } from '@/components/ui/sidebar'
 import { useQueryClient } from '@tanstack/react-query'

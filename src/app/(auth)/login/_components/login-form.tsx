@@ -1,7 +1,7 @@
 'use client'
 
 import { z } from 'zod'
-import { login } from '@/core/actions/new/auth'
+import { login } from '@/core/actions/auth'
 import { useForm } from 'react-hook-form'
 import { useToast } from '@/hooks/use-toast'
 import { useRouter } from 'next/navigation'

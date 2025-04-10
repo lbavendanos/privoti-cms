@@ -4,7 +4,7 @@ import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { useToast } from '@/hooks/use-toast'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { updatePassword } from '@/core/actions/new/auth'
+import { updatePassword } from '@/core/actions/auth'
 import { useCallback, useTransition } from 'react'
 import {
   Form,

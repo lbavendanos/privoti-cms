@@ -7,6 +7,11 @@ import type { User } from '@/core/types'
 import type { SessionData } from '@/lib/session'
 import type { ActionResponse } from '@/lib/new/action'
 
+/**
+ * This function is used to get the current user authenticated in the app.
+ *
+ * @returns {Promise<User>} The user data.
+ */
 export async function getUser(): Promise<User> {
   const sessionToken = await getSessionToken()
 
@@ -19,6 +24,12 @@ export async function getUser(): Promise<User> {
   return user
 }
 
+/**
+ * This function is used to update the user authenticated in the app.
+ *
+ * @param {Object} data - The user data to update.
+ * @returns {Promise<ActionResponse<User>>} The updated user data.
+ */
 export async function updateUser(data: {
   name: string
 }): Promise<ActionResponse<User>> {
@@ -39,6 +50,12 @@ export async function updateUser(data: {
   }
 }
 
+/**
+ * This function is used to update the user password authenticated in the app.
+ *
+ * @param {Object} data - The password data to update.
+ * @returns {Promise<ActionResponse<null>>} The status of the request.
+ */
 export async function updatePassword(data: {
   currentPassword: string
   password: string
@@ -59,6 +76,12 @@ export async function updatePassword(data: {
   }
 }
 
+/**
+ * This function is used to login a user.
+ *
+ * @param {Object} data - The login data.
+ * @returns {Promise<ActionResponse<null>>} The status of the request.
+ */
 export async function login(data: {
   email: string
   password: string
@@ -81,6 +104,12 @@ export async function login(data: {
   }
 }
 
+/**
+ * This function is used to send a password reset email to the user.
+ *
+ * @param {Object} data - The forgot password data.
+ * @returns {Promise<ActionResponse<null>>} The status of the request.
+ */
 export async function forgotPassword(data: {
   email: string
 }): Promise<ActionResponse<null>> {
@@ -95,6 +124,12 @@ export async function forgotPassword(data: {
   }
 }
 
+/**
+ * This function is used to reset the password of a user.
+ *
+ * @param {Object} data - The password reset data.
+ * @returns {Promise<ActionResponse<null>>} The status of the request.
+ */
 export async function resetPassword(data: {
   token: string
   email: string
@@ -124,6 +159,11 @@ export async function resetPassword(data: {
   }
 }
 
+/**
+ * This function is used to send a verification email to the user authenticated in the app.
+ *
+ * @returns {Promise<ActionResponse<null>>} The status of the request.
+ */
 export async function sendEmailVerificationNotification(): Promise<
   ActionResponse<null>
 > {
@@ -142,6 +182,12 @@ export async function sendEmailVerificationNotification(): Promise<
   }
 }
 
+/**
+ * This function is used to send a verification email to the new email address of the user authenticated in the app.
+ *
+ * @param {Object} data - The email data.
+ * @returns {Promise<ActionResponse<null>>} The status of the request.
+ */
 export async function sendEmailChangeVerificationNotification(data: {
   email: string
 }): Promise<ActionResponse<null>> {
@@ -161,6 +207,12 @@ export async function sendEmailChangeVerificationNotification(data: {
   }
 }
 
+/**
+ * This function is used to verify the email of the user authenticated in the app.
+ *
+ * @param {Object} params - The email verification parameters.
+ * @returns {Promise<ActionResponse<null>>} The status of the request.
+ */
 export async function verifyEmail(params: {
   id: string
   token: string
@@ -182,6 +234,12 @@ export async function verifyEmail(params: {
   }
 }
 
+/**
+ * This function is used to verify the new email of the user authenticated in the app.
+ *
+ * @param {Object} params - The new email verification parameters.
+ * @returns {Promise<ActionResponse<null>>} The status of the request.
+ */
 export async function verifyNewEmail(params: {
   id: string
   email: string
@@ -207,6 +265,9 @@ export async function verifyNewEmail(params: {
   }
 }
 
+/**
+ * This function is used to logout the user authenticated in the app.
+ */
 export async function logout() {
   const sessionToken = await getSessionToken()
 

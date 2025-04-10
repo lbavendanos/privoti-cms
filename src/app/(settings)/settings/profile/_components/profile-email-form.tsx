@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useToast } from '@/hooks/use-toast'
 import { useCallback, useTransition } from 'react'
-import { sendEmailChangeVerificationNotification } from '@/core/actions/new/auth'
+import { sendEmailChangeVerificationNotification } from '@/core/actions/auth'
 import {
   Form,
   FormItem,

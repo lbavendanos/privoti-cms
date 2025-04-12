@@ -159,3 +159,42 @@ export function debounce<T extends (...args: Parameters<T>) => ReturnType<T>>(
     }, delay)
   }
 }
+
+/**
+ * Fetches data from a given URL with optional configuration.
+ *
+ * @template T - The expected return type of the response.
+ * @param {string | URL} path - The path to fetch data from.
+ * @param {RequestInit & { params?: Record<string, string> }} [config] - Optional configuration for the request.
+ * @param {Record<string, string>} [config.params] - Query parameters to append to the URL.
+ * @param {HeadersInit} [config.headers] - Additional headers for the request.
+ * @returns {Promise<T>} - A promise that resolves to the parsed JSON response.
+ * @throws {Error} - Throws an error if the response status is not OK (2xx).
+ */
+export async function fetcher<T>(
+  path: string,
+  config?: RequestInit & { params?: Record<string, string> },
+): Promise<T> {
+  const input = new URL(path, url())
+  const { params = {}, headers: extraHeaders, ...rest } = config ?? {}
+
+  for (const [key, value] of Object.entries(params)) {
+    input.searchParams.append(key, String(value))
+  }
+
+  const headers: HeadersInit = {
+    'Content-Type': 'application/json',
+    Accept: 'application/json',
+    ...extraHeaders,
+  }
+
+  const response = await fetch(input, { ...rest, headers })
+
+  if (!response.ok) {
+    throw new Error(
+      `Error ${response.status}: ${response.statusText} while fetching ${input.toString()}`,
+    )
+  }
+
+  return response.json()
+}

@@ -3,24 +3,20 @@
 import { api } from '@/lib/http'
 import { getSessionToken } from '@/lib/session'
 import { handleActionError, handleActionSuccess } from '@/lib/action'
+import type { List, Product } from '../types'
 import type { ActionResponse } from '@/lib/action'
-import type { List, Meta, Product } from '../types'
 
 export async function getProducts(
   params: Record<string, string> = {},
 ): Promise<List<Product>> {
   const sessionToken = await getSessionToken()
 
-  try {
-    const { data } = await api.get<List<Product>>('/products', {
-      params,
-      sessionToken,
-    })
+  const { data } = await api.get<List<Product>>('/products', {
+    params,
+    sessionToken,
+  })
 
-    return data
-  } catch {
-    return { data: [], meta: {} as Meta } as List<Product>
-  }
+  return data
 }
 
 export async function getProduct(id: number | string): Promise<Product | null> {

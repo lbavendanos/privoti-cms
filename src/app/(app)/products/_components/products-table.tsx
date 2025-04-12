@@ -796,7 +796,6 @@ export function ProductsTable({
 
 function RowActions({
   row,
-  onStatusSelect,
   onActiveSelect,
   onDraftSelect,
   onArchivedSelect,

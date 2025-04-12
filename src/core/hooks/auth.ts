@@ -1,15 +1,19 @@
-import { getUser } from '../actions/auth'
+import { fetcher } from '@/lib/utils'
 import { redirect } from 'next/navigation'
 import { useSuspenseQuery } from '@tanstack/react-query'
+import type { User } from '../types'
 
 export function useAuth() {
-  const { data: user, isError } = useSuspenseQuery({
+  const {
+    data: user,
+    error,
+    isFetching,
+  } = useSuspenseQuery({
     queryKey: ['auth'],
-    queryFn: () => getUser(),
-    retry: false,
+    queryFn: () => fetcher<User>('/api/auth/user'),
   })
 
-  if (isError) {
+  if (error && !isFetching) {
     redirect('/login')
   }
 

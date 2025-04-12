@@ -1,20 +1,18 @@
-import { filled } from '@/lib/utils'
+import { fetcher, filled } from '@/lib/utils'
 import { useQuery } from '@tanstack/react-query'
-import { getProductTypes } from '../actions/product-type'
 import type { UseQueryOptions } from '@tanstack/react-query'
+import type { List, ProductType } from '../types'
 
 export function useProductTypes(
   params: Record<string, string> = {},
-  options?: Omit<
-    UseQueryOptions<Awaited<ReturnType<typeof getProductTypes>>>,
-    'queryKey' | 'queryFn'
-  >,
+  options?: Omit<UseQueryOptions<List<ProductType>>, 'queryKey' | 'queryFn'>,
 ) {
   const { data, isFetching } = useQuery({
     queryKey: filled(params)
       ? ['product-type-list', params]
       : ['product-type-list'],
-    queryFn: () => getProductTypes(params),
+    queryFn: () =>
+      fetcher<List<ProductType>>('/api/products/types', { params }),
     ...options,
   })
 

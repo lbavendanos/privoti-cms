@@ -1,8 +1,9 @@
 'use client'
 
+import { fetcher } from '@/lib/utils'
 import { useCallback } from 'react'
-import { getCollections } from '@/core/actions/collection'
 import { MultipleSelector } from '@/components/ui/multiple-selector'
+import type { List } from '@/core/types'
 
 type Collection = {
   id: string
@@ -20,15 +21,20 @@ export function ProductsCollectionsInput({
   ...props
 }: ProductsCollectionsInputProps) {
   const handleSearch = useCallback(async (value: string) => {
-    const { data: collections } = await getCollections({
-      q: value,
-      fields: 'id,title',
-      name: 'collections',
-    })
+    const { data: collections } = await fetcher<List<Collection>>(
+      '/api/collections',
+      {
+        params: {
+          q: value,
+          fields: 'id,title',
+          name: 'collections',
+        },
+      },
+    )
 
     return collections.map((collection) => ({
       label: collection.title,
-      value: collection.id.toString(),
+      value: `${collection.id}`,
     }))
   }, [])
 

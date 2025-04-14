@@ -24,47 +24,18 @@ class ApiError<TData> extends Error {
 }
 
 class Api {
-  #baseURL = process.env.NEXT_PUBLIC_API_URL || ''
+  #baseURL = process.env.NEXT_PUBLIC_API_URL ?? ''
 
-  #handleURL(url: string | URL, params: Record<string, string> = {}) {
-    const baseURL = this.#baseURL.endsWith('/')
-      ? this.#baseURL
-      : `${this.#baseURL}/`
+  #handleInput(path: string, config: ApiRequestConfig) {
+    const { params = {} } = config
 
-    url =
-      typeof url === 'string'
-        ? url.startsWith('/')
-          ? url.substring(1)
-          : url
-        : url
+    const baseURL = this.#baseURL.replace(/\/?$/, '/') // Ensure trailing slash
+    const normalizedPath = path.replace(/^\/+/, '') // Remove leading slashes
 
-    const input = new URL(url, baseURL)
-
-    Object.entries(params).forEach(([key, value]) =>
-      input.searchParams.append(key, value),
-    )
+    const input = new URL(normalizedPath, baseURL)
+    input.search = new URLSearchParams(params).toString()
 
     return input
-  }
-
-  #handleBody(data: unknown) {
-    return data instanceof FormData ? data : JSON.stringify(data)
-  }
-
-  #getResponseType(headers: Headers) {
-    const contentType = headers.get('Content-Type')
-
-    if (!contentType) return null
-
-    if (contentType.includes('application/json')) return 'json'
-    if (contentType.includes('text')) return 'text'
-    if (contentType.includes('blob')) return 'blob'
-
-    throw new Error(`Fetch does not support content-type ${contentType} yet`)
-  }
-
-  #handleInput(url: string | URL, config: ApiRequestConfig) {
-    return this.#handleURL(url, config.params)
   }
 
   #handleInit(
@@ -72,23 +43,26 @@ class Api {
     data: object = {},
     config: ApiRequestConfig = {},
   ): RequestInit {
-    const { headers: extraHeaders, ...rest } = config
-
     const headers: HeadersInit = {
       Accept: 'application/json',
       ...(data instanceof FormData
         ? {}
         : { 'Content-Type': 'application/json' }),
-      ...(config.sessionToken
-        ? { Authorization: `Bearer ${config.sessionToken}` }
-        : {}),
-      ...extraHeaders,
+      ...(config.sessionToken && {
+        Authorization: `Bearer ${config.sessionToken}`,
+      }),
+      ...config.headers,
     }
 
-    const body = method !== 'GET' ? this.#handleBody(data) : null
+    const body =
+      method !== 'GET'
+        ? data instanceof FormData
+          ? data
+          : JSON.stringify(data)
+        : null
 
     return {
-      ...rest,
+      ...config,
       method,
       body,
       headers,
@@ -98,8 +72,7 @@ class Api {
   async #handleResponse<TData>(
     response: Response,
   ): Promise<ApiResponse<TData>> {
-    const type = this.#getResponseType(response.headers)
-    const data: TData = type ? await response[type]() : {}
+    const data: TData = await response.json()
 
     const apiResponse: ApiResponse<TData> = {
       data,
@@ -113,8 +86,24 @@ class Api {
     return apiResponse
   }
 
+  async fetch<TData>(
+    path: string,
+    config: ApiRequestConfig = {},
+  ): Promise<ApiResponse<TData>> {
+    const input = this.#handleInput(path, config)
+    const init = this.#handleInit(config.method ?? 'GET', {}, config)
+
+    console.log(`[API] ${config.method ?? 'GET'} ${input.toString()}`)
+
+    return fetch(input, init).then((response) => {
+      console.log(`[API] ${response.status} ${response.statusText}`)
+
+      return this.#handleResponse<TData>(response)
+    })
+  }
+
   async get<TData>(
-    url: string | URL,
+    url: string,
     config: ApiRequestConfig = {},
   ): Promise<ApiResponse<TData>> {
     const input = this.#handleInput(url, config)
@@ -126,7 +115,7 @@ class Api {
   }
 
   async post<TData>(
-    url: string | URL,
+    url: string,
     data: object = {},
     config: ApiRequestConfig = {},
   ): Promise<ApiResponse<TData>> {
@@ -139,7 +128,7 @@ class Api {
   }
 
   async put<TData>(
-    url: string | URL,
+    url: string,
     data: object = {},
     config: ApiRequestConfig = {},
   ): Promise<ApiResponse<TData>> {
@@ -152,7 +141,7 @@ class Api {
   }
 
   async delete<TData>(
-    url: string | URL,
+    url: string,
     data: object = {},
     config: ApiRequestConfig = {},
   ): Promise<ApiResponse<TData>> {

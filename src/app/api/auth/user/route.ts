@@ -1,5 +1,5 @@
 import { getUser } from '@/core/actions/auth'
-import { isApiError } from '@/lib/http'
+import { isFetchError } from '@/lib/fetcher/base'
 import { NextResponse } from 'next/server'
 
 export async function GET() {
@@ -8,34 +8,12 @@ export async function GET() {
 
     return NextResponse.json(user)
   } catch (error) {
-    const defaultMessage =
-      'There was a problem with the server. Please try again.'
-
-    if (
-      isApiError<{
-        message?: string
-        errors?: Record<string, string[]>
-      }>(error)
-    ) {
-      const {
-        response: {
-          status,
-          data: { message, errors },
-        },
-      } = error
-
-      return NextResponse.json(
-        {
-          message: message ?? defaultMessage,
-          errors,
-        },
-        { status },
-      )
+    if (isFetchError(error)) {
+      const { status, message, errors } = error
+      return NextResponse.json({ message, errors }, { status })
     }
 
-    return NextResponse.json(
-      { message: error instanceof Error ? error.message : defaultMessage },
-      { status: 500 },
-    )
+    const message = error instanceof Error ? error.message : 'Unknown error'
+    return NextResponse.json({ message }, { status: 500 })
   }
 }

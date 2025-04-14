@@ -1,6 +1,7 @@
 'use server'
 
 import { api } from '@/lib/http'
+import { core } from '@/lib/fetcher/core'
 import { getSessionToken } from '@/lib/session'
 import { handleActionError, handleActionSuccess } from '@/lib/action'
 import type { List, Product } from '../types'
@@ -9,25 +10,16 @@ import type { ActionResponse } from '@/lib/action'
 export async function getProducts(
   params: Record<string, string> = {},
 ): Promise<List<Product>> {
-  const sessionToken = await getSessionToken()
-
-  const { data } = await api.get<List<Product>>('/products', {
-    params,
-    sessionToken,
-  })
-
-  return data
+  return core.fetch<List<Product>>('/products', { params })
 }
 
 export async function getProduct(id: number | string): Promise<Product | null> {
-  const sessionToken = await getSessionToken()
-
   try {
-    const {
-      data: { data },
-    } = await api.get<{ data: Product }>(`/products/${id}`, { sessionToken })
+    const { data: product } = await core.fetch<{ data: Product }>(
+      `/products/${id}`,
+    )
 
-    return data
+    return product
   } catch {
     return null
   }

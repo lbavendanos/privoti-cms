@@ -1,6 +1,7 @@
 'use server'
 
 import { api } from '@/lib/http'
+import { core } from '@/lib/fetcher/core'
 import { handleActionError, handleActionSuccess } from '@/lib/action'
 import { getSessionToken, removeSession, setSession } from '@/lib/session'
 import type { User } from '@/core/types'
@@ -13,13 +14,9 @@ import type { ActionResponse } from '@/lib/action'
  * @returns {Promise<User>} The user data.
  */
 export async function getUser(): Promise<User> {
-  const sessionToken = await getSessionToken()
-
-  const {
-    data: { data: user },
-  } = await api.get<{
+  const { data: user } = await core.fetch<{
     data: User
-  }>('/auth/user', { sessionToken })
+  }>('/auth/user')
 
   return user
 }
@@ -269,8 +266,6 @@ export async function verifyNewEmail(params: {
  * This function is used to logout the user authenticated in the app.
  */
 export async function logout() {
-  const sessionToken = await getSessionToken()
-
-  await api.post('/auth/logout', {}, { sessionToken }).catch(() => {})
+  await core.fetch('/auth/logout', {}).catch(() => {})
   await removeSession()
 }

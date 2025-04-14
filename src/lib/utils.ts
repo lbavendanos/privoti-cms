@@ -1,5 +1,8 @@
-import { type ClassValue, clsx } from 'clsx'
+import { clsx } from 'clsx'
+import { local } from './fetcher/local'
 import { twMerge } from 'tailwind-merge'
+import type { ClassValue } from 'clsx'
+import type { FetchConfig } from './fetcher/base'
 
 /**
  * Utility for constructing className strings conditionally and merging them with Tailwind CSS classes.
@@ -161,40 +164,16 @@ export function debounce<T extends (...args: Parameters<T>) => ReturnType<T>>(
 }
 
 /**
- * Fetches data from a given URL with optional configuration.
+ * Fetches data from the specified path
  *
- * @template T - The expected return type of the response.
- * @param {string | URL} path - The path to fetch data from.
- * @param {RequestInit & { params?: Record<string, string> }} [config] - Optional configuration for the request.
- * @param {Record<string, string>} [config.params] - Query parameters to append to the URL.
- * @param {HeadersInit} [config.headers] - Additional headers for the request.
- * @returns {Promise<T>} - A promise that resolves to the parsed JSON response.
- * @throws {Error} - Throws an error if the response status is not OK (2xx).
+ * @template T - The type of the data to be fetched.
+ * @param {string} path - The API endpoint path to fetch data from.
+ * @param {FetchConfig} [config={}] - Optional configuration for the fetch request.
+ * @returns {Promise<T>} - A promise that resolves to the fetched data of type T.
  */
 export async function fetcher<T>(
   path: string,
-  config?: RequestInit & { params?: Record<string, string> },
+  config: FetchConfig = {},
 ): Promise<T> {
-  const input = new URL(path, url())
-  const { params = {}, headers: extraHeaders, ...rest } = config ?? {}
-
-  for (const [key, value] of Object.entries(params)) {
-    input.searchParams.append(key, String(value))
-  }
-
-  const headers: HeadersInit = {
-    'Content-Type': 'application/json',
-    Accept: 'application/json',
-    ...extraHeaders,
-  }
-
-  const response = await fetch(input, { ...rest, headers })
-
-  if (!response.ok) {
-    throw new Error(
-      `Error ${response.status}: ${response.statusText} while fetching ${input.toString()}`,
-    )
-  }
-
-  return response.json()
+  return local.fetch<T>(path, config)
 }

@@ -2,8 +2,8 @@
 
 import { useToast } from '@/hooks/use-toast'
 import { useProducts } from '@/core/hooks/product'
+import { useQueryClient } from '@tanstack/react-query'
 import { blank, debounce } from '@/lib/utils'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { startTransition, useCallback, useMemo, useState } from 'react'
 import {
@@ -13,6 +13,7 @@ import {
 } from '@/core/actions/product'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
+import { StatusAlert } from '@/components/ui/status-alert'
 import { ProductsTable } from './products-table'
 
 const DEFAULT_PER_PAGE = 15
@@ -23,7 +24,6 @@ export function Products() {
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const queryClient = useQueryClient()
-
   const { toast } = useToast()
 
   const params: {
@@ -71,107 +71,6 @@ export function Products() {
         : undefined,
     [meta],
   )
-
-  const { mutate: updateProductMutate } = useMutation({
-    mutationFn: async ({ id, status }: { id: number; status: string }) => {
-      const state = await updateProduct(id, { status })
-
-      return { id, state }
-    },
-    onSuccess: ({ id, state }) => {
-      if (state.isClientError || state.isServerError) {
-        toast({
-          variant: 'destructive',
-          description: state.message,
-        })
-      }
-      if (state.isSuccess) {
-        toast({
-          description: 'Product updated successfully.',
-        })
-
-        queryClient.setQueryData(
-          ['product-detail', { id: `${id}` }],
-          state.data,
-        )
-        queryClient.invalidateQueries({ queryKey: ['product-list'] })
-      }
-    },
-    onError: (error) => {
-      toast({
-        variant: 'destructive',
-        description: error.message,
-      })
-    },
-  })
-
-  const { mutate: deleteProductMutate } = useMutation({
-    mutationFn: async (id: number) => {
-      const state = await deleteProduct(id)
-
-      return { id, state }
-    },
-    onSuccess: ({ id, state }) => {
-      if (state.isClientError || state.isServerError) {
-        toast({
-          variant: 'destructive',
-          description: state.message,
-        })
-      }
-
-      if (state.isSuccess) {
-        toast({
-          description: 'Product deleted successfully.',
-        })
-
-        queryClient.invalidateQueries({
-          queryKey: ['product-detail', { id: `${id}` }],
-        })
-        queryClient.invalidateQueries({ queryKey: ['product-list'] })
-      }
-    },
-    onError: (error) => {
-      toast({
-        variant: 'destructive',
-        description: error.message,
-      })
-    },
-  })
-
-  const { mutate: deleteProductsMutate } = useMutation({
-    mutationFn: async (ids: number[]) => {
-      const state = await deleteProducts(ids)
-
-      return { ids, state }
-    },
-    onSuccess: ({ ids, state }) => {
-      if (state.isClientError || state.isServerError) {
-        toast({
-          variant: 'destructive',
-          description: state.message,
-        })
-      }
-
-      if (state.isSuccess) {
-        toast({
-          description: 'Products deleted successfully.',
-        })
-
-        ids.forEach((id) => {
-          queryClient.invalidateQueries({
-            queryKey: ['product-detail', { id: `${id}` }],
-          })
-        })
-        queryClient.invalidateQueries({ queryKey: ['product-list'] })
-      }
-    },
-    onError: (error) => {
-      toast({
-        variant: 'destructive',
-        description: error.message,
-      })
-    },
-  })
 
   const updateQueryParams = useCallback(
     (name: string, value: string) => {
@@ -254,23 +153,140 @@ export function Products() {
 
   const handleRowStatusChange = useCallback(
     (id: number, status: string) => {
-      updateProductMutate({ id, status })
+      startTransition(async () => {
+        const response = await updateProduct(id, { status })
+
+        if (response.isServerError) {
+          toast({
+            variant: 'destructive',
+            description: response.message,
+          })
+        }
+
+        if (response.isClientError) {
+          toast({
+            description: (
+              <StatusAlert
+                variant="error"
+                className="rounded-none border-0 p-0 text-foreground"
+                description={response.message}
+              />
+            ),
+          })
+        }
+
+        if (response.isSuccess) {
+          toast({
+            description: (
+              <StatusAlert
+                variant="success"
+                className="rounded-none border-0 p-0 text-foreground"
+                description="Product updated successfully."
+              />
+            ),
+          })
+
+          queryClient.setQueryData(
+            ['product-detail', { id: `${id}` }],
+            response.data,
+          )
+          queryClient.invalidateQueries({ queryKey: ['product-list'] })
+        }
+      })
     },
-    [updateProductMutate],
+    [queryClient, toast],
   )
 
   const handleDeleteRow = useCallback(
     (id: number) => {
-      deleteProductMutate(id)
+      startTransition(async () => {
+        const response = await deleteProduct(id)
+
+        if (response.isServerError) {
+          toast({
+            variant: 'destructive',
+            description: response.message,
+          })
+        }
+
+        if (response.isClientError) {
+          toast({
+            description: (
+              <StatusAlert
+                variant="error"
+                className="rounded-none border-0 p-0 text-foreground"
+                description={response.message}
+              />
+            ),
+          })
+        }
+
+        if (response.isSuccess) {
+          toast({
+            description: (
+              <StatusAlert
+                variant="success"
+                className="rounded-none border-0 p-0 text-foreground"
+                description="Product deleted successfully."
+              />
+            ),
+          })
+
+          queryClient.invalidateQueries({
+            queryKey: ['product-detail', { id: `${id}` }],
+          })
+          queryClient.invalidateQueries({ queryKey: ['product-list'] })
+        }
+      })
     },
-    [deleteProductMutate],
+    [queryClient, toast],
   )
 
   const handleDeleteRows = useCallback(
     (ids: number[]) => {
-      deleteProductsMutate(ids)
+      startTransition(async () => {
+        const response = await deleteProducts(ids)
+
+        if (response.isServerError) {
+          toast({
+            variant: 'destructive',
+            description: response.message,
+          })
+        }
+
+        if (response.isClientError) {
+          toast({
+            description: (
+              <StatusAlert
+                variant="error"
+                className="rounded-none border-0 p-0 text-foreground"
+                description={response.message}
+              />
+            ),
+          })
+        }
+
+        if (response.isSuccess) {
+          toast({
+            description: (
+              <StatusAlert
+                variant="success"
+                className="rounded-none border-0 p-0 text-foreground"
+                description="Products deleted successfully."
+              />
+            ),
+          })
+
+          ids.forEach((id) => {
+            queryClient.invalidateQueries({
+              queryKey: ['product-detail', { id: `${id}` }],
+            })
+          })
+          queryClient.invalidateQueries({ queryKey: ['product-list'] })
+        }
+      })
     },
-    [deleteProductsMutate],
+    [queryClient, toast],
   )
 
   return (

@@ -86,7 +86,10 @@ export class Fetcher {
       )
     }
 
-    return response.json()
+    const contentType = response.headers.get('Content-Type')
+    const isJson = contentType?.includes('application/json')
+
+    return isJson ? response.json() : (null as unknown as TData)
   }
 
   async fetch<TData>(path: string, config: FetchConfig = {}): Promise<TData> {

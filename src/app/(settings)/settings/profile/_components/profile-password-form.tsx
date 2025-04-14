@@ -43,7 +43,7 @@ export function ProfilePasswordForm({ onSuccess }: { onSuccess?: () => void }) {
       startTransition(async () => {
         const response = await updatePassword(values)
 
-        if (response.isServerError || response.isUnknown) {
+        if (response.isServerError) {
           toast({
             variant: 'destructive',
             description: response.message,

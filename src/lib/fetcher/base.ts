@@ -1,4 +1,6 @@
-export type FetchConfig = RequestInit & {
+export type FetchConfig = Omit<RequestInit, 'headers' | 'body'> & {
+  headers?: Record<string, string | null>
+  body?: Record<string, string> | BodyInit | null
   params?: Record<string, string>
 }
 
@@ -43,24 +45,29 @@ export class Fetcher {
   }
 
   #handleInit(config: FetchConfig = {}): RequestInit {
-    const headers = {
+    const headers = new Headers({
       'Content-Type': 'application/json',
       Accept: 'application/json',
-      ...config.headers,
+    })
+
+    for (const [key, value] of Object.entries(config.headers ?? {})) {
+      if (value === null) {
+        headers.delete(key)
+      } else {
+        headers.set(key, value)
+      }
     }
+
+    const body =
+      config.body && headers.get('Content-Type') === 'application/json'
+        ? JSON.stringify(config.body)
+        : config.body
 
     return {
       ...config,
-      ...(config.body
-        ? {
-            body:
-              headers['Content-Type'] === 'application/json'
-                ? JSON.stringify(config.body)
-                : config.body,
-          }
-        : {}),
-      headers: new Headers(headers),
-    }
+      body,
+      headers,
+    } as RequestInit
   }
 
   async #handleResponse<TData>(response: Response): Promise<TData> {

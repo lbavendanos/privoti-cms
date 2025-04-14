@@ -1,9 +1,8 @@
 'use server'
 
-import { api } from '@/lib/http'
 import { core } from '@/lib/fetcher/core'
-import { handleActionError, handleActionSuccess } from '@/lib/action'
-import { getSessionToken, removeSession, setSession } from '@/lib/session'
+import { removeSession, setSession } from '@/lib/session'
+import { errorResponse, successResponse } from '@/lib/action'
 import type { User } from '@/core/types'
 import type { SessionData } from '@/lib/session'
 import type { ActionResponse } from '@/lib/action'
@@ -24,135 +23,119 @@ export async function getUser(): Promise<User> {
 /**
  * This function is used to update the user authenticated in the app.
  *
- * @param {Object} data - The user data to update.
- * @returns {Promise<ActionResponse<User>>} The updated user data.
+ * @param {Object} payload - The user data to update.
+ * @returns {Promise<ActionResponse<User | null>>} The updated user data.
  */
-export async function updateUser(data: {
+export async function updateUser(payload: {
   name: string
-}): Promise<ActionResponse<User>> {
-  const sessionToken = await getSessionToken()
-  const { name } = data
-
+}): Promise<ActionResponse<User | null>> {
   try {
-    const {
-      status,
-      data: { data: user },
-    } = await api.put<{
+    const { data: user } = await core.fetch<{
       data: User
-    }>('/auth/user', { name }, { sessionToken })
+    }>('/auth/user', { method: 'PUT', body: payload })
 
-    return handleActionSuccess(status, user)
+    return successResponse(user)
   } catch (error) {
-    return handleActionError(error)
+    return errorResponse(error)
   }
 }
 
 /**
  * This function is used to update the user password authenticated in the app.
  *
- * @param {Object} data - The password data to update.
- * @returns {Promise<ActionResponse<null>>} The status of the request.
+ * @param {Object} payload - The password data to update.
+ * @returns {Promise<ActionResponse<null>>} The status of the update.
  */
-export async function updatePassword(data: {
+export async function updatePassword(payload: {
   currentPassword: string
   password: string
 }): Promise<ActionResponse<null>> {
-  const sessionToken = await getSessionToken()
-  const { currentPassword, password } = data
-
   try {
-    const { status } = await api.post(
-      '/auth/user/password',
-      { current_password: currentPassword, password },
-      { sessionToken: sessionToken },
-    )
+    await core.fetch('/auth/user/password', {
+      method: 'POST',
+      body: {
+        current_password: payload.currentPassword,
+        password: payload.password,
+      },
+    })
 
-    return handleActionSuccess(status)
+    return successResponse(null)
   } catch (error) {
-    return handleActionError(error)
+    return errorResponse(error)
   }
 }
 
 /**
  * This function is used to login a user.
  *
- * @param {Object} data - The login data.
- * @returns {Promise<ActionResponse<null>>} The status of the request.
+ * @param {Object} payload - The login data.
+ * @returns {Promise<ActionResponse<null>>} The status of the login.
  */
-export async function login(data: {
+export async function login(payload: {
   email: string
   password: string
 }): Promise<ActionResponse<null>> {
-  const { email, password } = data
-
   try {
-    const {
-      status,
-      data: { data: sessionData },
-    } = await api.post<{
+    const { data: sessionData } = await core.fetch<{
       data: SessionData
-    }>('/auth/login', { email, password })
+    }>('/auth/login', { method: 'POST', body: payload })
 
     await setSession(sessionData)
 
-    return handleActionSuccess(status)
+    return successResponse(null)
   } catch (error) {
-    return handleActionError(error)
+    return errorResponse(error)
   }
 }
 
 /**
  * This function is used to send a password reset email to the user.
  *
- * @param {Object} data - The forgot password data.
+ * @param {Object} payload - The forgot password data.
  * @returns {Promise<ActionResponse<null>>} The status of the request.
  */
-export async function forgotPassword(data: {
+export async function forgotPassword(payload: {
   email: string
 }): Promise<ActionResponse<null>> {
-  const { email } = data
-
   try {
-    const { status } = await api.post('/auth/forgot-password', { email })
+    await core.fetch('/auth/forgot-password', { method: 'POST', body: payload })
 
-    return handleActionSuccess(status)
+    return successResponse(null)
   } catch (error) {
-    return handleActionError(error)
+    return errorResponse(error)
   }
 }
 
 /**
  * This function is used to reset the password of a user.
  *
- * @param {Object} data - The password reset data.
- * @returns {Promise<ActionResponse<null>>} The status of the request.
+ * @param {Object} payload - The password reset data.
+ * @returns {Promise<ActionResponse<null>>} The status of the reset.
  */
-export async function resetPassword(data: {
+export async function resetPassword(payload: {
   token: string
   email: string
   password: string
   passwordConfirmation: string
 }): Promise<ActionResponse<null>> {
-  const { token, email, password, passwordConfirmation } = data
-
   try {
-    const {
-      status,
-      data: { data: sessionData },
-    } = await api.post<{
+    const { data: sessionData } = await core.fetch<{
       data: SessionData
     }>('/auth/reset-password', {
-      token,
-      email,
-      password,
-      password_confirmation: passwordConfirmation,
+      method: 'POST',
+      body: {
+        token: payload.token,
+        email: payload.email,
+        password: payload.password,
+        password_confirmation: payload.passwordConfirmation,
+      },
     })
 
     await setSession(sessionData)
 
-    return handleActionSuccess(status)
+    return successResponse(null)
   } catch (error) {
-    return handleActionError(error)
+    return errorResponse(error)
   }
 }
 
@@ -164,101 +147,84 @@ export async function resetPassword(data: {
 export async function sendEmailVerificationNotification(): Promise<
   ActionResponse<null>
 > {
-  const sessionToken = await getSessionToken()
-
   try {
-    const { status } = await api.post(
-      '/auth/user/email/notification',
-      {},
-      { sessionToken },
-    )
+    await core.fetch('/auth/user/email/notification', { method: 'POST' })
 
-    return handleActionSuccess(status)
+    return successResponse(null)
   } catch (error) {
-    return handleActionError(error)
+    return errorResponse(error)
   }
 }
 
 /**
  * This function is used to send a verification email to the new email address of the user authenticated in the app.
  *
- * @param {Object} data - The email data.
+ * @param {Object} payload - The email data.
  * @returns {Promise<ActionResponse<null>>} The status of the request.
  */
-export async function sendEmailChangeVerificationNotification(data: {
+export async function sendEmailChangeVerificationNotification(payload: {
   email: string
 }): Promise<ActionResponse<null>> {
-  const sessionToken = await getSessionToken()
-  const { email } = data
-
   try {
-    const { status } = await api.post(
-      '/auth/user/email/new/notification',
-      { email },
-      { sessionToken },
-    )
+    await core.fetch('/auth/user/email/new/notification', {
+      method: 'POST',
+      body: payload,
+    })
 
-    return handleActionSuccess(status)
+    return successResponse(null)
   } catch (error) {
-    return handleActionError(error)
+    return errorResponse(error)
   }
 }
 
 /**
  * This function is used to verify the email of the user authenticated in the app.
  *
- * @param {Object} params - The email verification parameters.
- * @returns {Promise<ActionResponse<null>>} The status of the request.
+ * @param {Object} payload - The email verification parameters.
+ * @returns {Promise<ActionResponse<null>>} The status of the verification.
  */
-export async function verifyEmail(params: {
+export async function verifyEmail(payload: {
   id: string
   token: string
   expires: string
   signature: string
 }): Promise<ActionResponse<null>> {
-  const sessionToken = await getSessionToken()
-  const { id, token: hash, expires, signature } = params
+  const { id, token: hash, expires, signature } = payload
 
   try {
-    const { status } = await api.get(`/auth/user/email/verify/${id}/${hash}`, {
+    await core.fetch(`/auth/user/email/verify/${id}/${hash}`, {
       params: { expires, signature },
-      sessionToken,
     })
 
-    return handleActionSuccess(status)
+    return successResponse(null)
   } catch (error) {
-    return handleActionError(error)
+    return errorResponse(error)
   }
 }
 
 /**
  * This function is used to verify the new email of the user authenticated in the app.
  *
- * @param {Object} params - The new email verification parameters.
- * @returns {Promise<ActionResponse<null>>} The status of the request.
+ * @param {Object} payload - The new email verification parameters.
+ * @returns {Promise<ActionResponse<null>>} The status of the verification.
  */
-export async function verifyNewEmail(params: {
+export async function verifyNewEmail(payload: {
   id: string
   email: string
   token: string
   expires: string
   signature: string
 }): Promise<ActionResponse<null>> {
-  const sessionToken = await getSessionToken()
-  const { id, email, token: hash, expires, signature } = params
+  const { id, email, token: hash, expires, signature } = payload
 
   try {
-    const { status } = await api.get(
-      `/auth/user/email/new/verify/${id}/${email}/${hash}`,
-      {
-        params: { expires, signature },
-        sessionToken,
-      },
-    )
+    await core.fetch(`/auth/user/email/new/verify/${id}/${email}/${hash}`, {
+      params: { expires, signature },
+    })
 
-    return handleActionSuccess(status)
+    return successResponse(null)
   } catch (error) {
-    return handleActionError(error)
+    return errorResponse(error)
   }
 }
 

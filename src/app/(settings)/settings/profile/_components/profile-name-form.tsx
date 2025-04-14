@@ -43,7 +43,7 @@ export function ProfileNameForm({ onSuccess }: { onSuccess?: () => void }) {
       startTransition(async () => {
         const response = await updateUser(values)
 
-        if (response.isServerError || response.isUnknown) {
+        if (response.isServerError) {
           toast({
             variant: 'destructive',
             description: response.message,

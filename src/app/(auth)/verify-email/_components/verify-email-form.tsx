@@ -25,7 +25,7 @@ export function VerifyEmailForm() {
     startTransition(async () => {
       const response = await sendEmailVerificationNotification()
 
-      if (response.isServerError || response.isUnknown) {
+      if (response.isServerError) {
         toast({
           variant: 'destructive',
           description: response.message,

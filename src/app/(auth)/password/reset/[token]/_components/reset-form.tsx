@@ -57,7 +57,7 @@ export function ResetForm() {
       startTransition(async () => {
         const response = await resetPassword(values)
 
-        if (response.isServerError || response.isUnknown) {
+        if (response.isServerError) {
           toast({
             variant: 'destructive',
             description: response.message,

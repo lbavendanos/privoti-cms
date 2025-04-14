@@ -371,7 +371,7 @@ export function ProductsForm({ product }: ProductsFormProps) {
           ? await updateProduct(product.id, formData)
           : await createProduct(formData)
 
-        if (response.isServerError || response.isUnknown) {
+        if (response.isServerError) {
           toast({
             variant: 'destructive',
             description: response.message,

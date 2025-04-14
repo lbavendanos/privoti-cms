@@ -49,7 +49,7 @@ export function LoginForm() {
       startTransition(async () => {
         const response = await login(values)
 
-        if (response.isServerError || response.isUnknown) {
+        if (response.isServerError) {
           toast({
             variant: 'destructive',
             description: response.message,

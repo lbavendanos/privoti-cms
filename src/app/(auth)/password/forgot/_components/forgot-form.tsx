@@ -44,7 +44,7 @@ export function ForgotForm() {
       startTransition(async () => {
         const response = await forgotPassword(values)
 
-        if (response.isServerError || response.isUnknown) {
+        if (response.isServerError) {
           toast({
             variant: 'destructive',
             description: response.message,

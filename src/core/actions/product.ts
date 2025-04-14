@@ -1,9 +1,7 @@
 'use server'
 
-import { api } from '@/lib/http'
 import { core } from '@/lib/fetcher/core'
-import { getSessionToken } from '@/lib/session'
-import { handleActionError, handleActionSuccess } from '@/lib/action'
+import { errorResponse, successResponse } from '@/lib/action'
 import type { List, Product } from '../types'
 import type { ActionResponse } from '@/lib/action'
 
@@ -26,69 +24,63 @@ export async function getProduct(id: number | string): Promise<Product | null> {
 }
 
 export async function createProduct(
-  formData: FormData,
-): Promise<ActionResponse<Product>> {
-  const sessionToken = await getSessionToken()
-
+  payload: FormData,
+): Promise<ActionResponse<Product | null>> {
   try {
-    const {
-      status,
-      data: { data },
-    } = await api.post<{
+    const { data: product } = await core.fetch<{
       data: Product
-    }>('/products', formData, { sessionToken })
+    }>('/products', { method: 'POST', body: payload })
 
-    return handleActionSuccess(status, data)
+    return successResponse(product)
   } catch (error) {
-    return handleActionError(error)
+    return errorResponse(error)
   }
 }
 
 export async function updateProduct(
   id: number | string,
-  data: object | FormData,
-): Promise<ActionResponse<Product>> {
-  const sessionToken = await getSessionToken()
+  payload: Record<string, string> | FormData,
+): Promise<ActionResponse<Product | null>> {
   const params = { _method: 'PUT' }
 
   try {
-    const {
-      status: responseStatus,
-      data: { data: responseData },
-    } = await api.post<{
+    const { data: product } = await core.fetch<{
       data: Product
-    }>(`/products/${id}`, data, { params, sessionToken })
+    }>(`/products/${id}`, {
+      method: 'POST',
+      body: payload,
+      params,
+    })
 
-    return handleActionSuccess(responseStatus, responseData)
+    return successResponse(product)
   } catch (error) {
-    return handleActionError(error)
+    return errorResponse(error)
   }
 }
 
 export async function deleteProduct(
   id: number | string,
-): Promise<ActionResponse<unknown>> {
-  const sessionToken = await getSessionToken()
-
+): Promise<ActionResponse<null>> {
   try {
-    const { status } = await api.delete(`/products/${id}`, {}, { sessionToken })
+    await core.fetch(`/products/${id}`, { method: 'DELETE' })
 
-    return handleActionSuccess(status)
+    return successResponse(null)
   } catch (error) {
-    return handleActionError(error)
+    return errorResponse(error)
   }
 }
 
 export async function deleteProducts(
   ids: number[] | string[],
-): Promise<ActionResponse<unknown>> {
-  const sessionToken = await getSessionToken()
-
+): Promise<ActionResponse<null>> {
   try {
-    const { status } = await api.delete('/products', { ids }, { sessionToken })
+    await core.fetch('/products', {
+      method: 'DELETE',
+      body: { ids } as unknown as BodyInit,
+    })
 
-    return handleActionSuccess(status)
+    return successResponse(null)
   } catch (error) {
-    return handleActionError(error)
+    return errorResponse(error)
   }
 }

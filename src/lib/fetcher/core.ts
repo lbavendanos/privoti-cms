@@ -13,6 +13,7 @@ export class CoreFetcher extends Fetcher {
     const headers = {
       ...(sessionToken ? { Authorization: `Bearer ${sessionToken}` } : {}),
       ...config.headers,
+      ...(config.body instanceof FormData ? { 'Content-Type': null } : {}),
     }
 
     return super.fetch(path, {

@@ -39,7 +39,7 @@ export function ProfileEmailForm({ onSuccess }: { onSuccess?: () => void }) {
       startTransition(async () => {
         const response = await sendEmailChangeVerificationNotification(values)
 
-        if (response.isServerError || response.isUnknown) {
+        if (response.isServerError) {
           toast({
             variant: 'destructive',
             description: response.message,

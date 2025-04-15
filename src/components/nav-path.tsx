@@ -3,6 +3,7 @@
 import { capitalize } from '@/lib/utils'
 import { usePathname } from 'next/navigation'
 import React from 'react'
+import Link from 'next/link'
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -11,7 +12,6 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb'
-import Link from 'next/link'
 
 export function NavPath() {
   const pathname = usePathname()

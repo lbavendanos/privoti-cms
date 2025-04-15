@@ -1,13 +1,14 @@
 'use client'
 
+import type { Item } from '@/components/ui/sidebar-nav'
 import { Suspense } from 'react'
 import {
   Sidebar,
-  SidebarContent,
-  SidebarFooter,
   SidebarRail,
+  SidebarFooter,
+  SidebarContent,
 } from '@/components/ui/sidebar'
-import { Item, SidebarNav } from '@/components/ui/sidebar-nav'
+import { SidebarNav } from '@/components/ui/sidebar-nav'
 import { AppSidebarHeader } from './app-sidebar-header'
 import { UserMenu, UserMenuSkeleton } from '@/components/user-menu'
 import {

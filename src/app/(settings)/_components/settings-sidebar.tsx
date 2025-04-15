@@ -1,14 +1,14 @@
 'use client'
 
+import type { Item } from '@/components/ui/sidebar-nav'
 import { Suspense } from 'react'
 import {
   Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
   SidebarRail,
+  SidebarFooter,
+  SidebarContent,
 } from '@/components/ui/sidebar'
-import { Item, SidebarNav } from '@/components/ui/sidebar-nav'
+import { SidebarNav } from '@/components/ui/sidebar-nav'
 import { SettingsSidebarHeader } from './settings-sidebar-header'
 import { UserMenu, UserMenuSkeleton } from '@/components/user-menu'
 import { ArrowLeft, Bell, Store, User, Users } from 'lucide-react'
@@ -50,9 +50,7 @@ const FOOTER_ITEMS: Item[] = [
 export function SettingsSidebar() {
   return (
     <Sidebar collapsible="icon">
-      <SidebarHeader>
-        <SettingsSidebarHeader />
-      </SidebarHeader>
+      <SettingsSidebarHeader />
       <SidebarContent>
         <SidebarNav label="Account" items={ACCOUNT_ITEMS} />
         <SidebarNav label="General" items={GENERAL_ITEMS} />

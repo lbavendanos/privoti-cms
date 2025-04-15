@@ -1,13 +1,13 @@
 import { getUser } from '@/core/actions/auth'
 import { dehydrate } from '@tanstack/react-query'
 import { getQueryClient } from '@/lib/query'
-import { Separator } from '@/components/ui/separator'
 import {
   SidebarInset,
   SidebarTrigger,
   SidebarProvider,
 } from '@/components/ui/sidebar'
 import { NavPath } from '@/components/nav-path'
+import { Separator } from '@/components/ui/separator'
 import { AppSidebar } from './_components/app/app-sidebar'
 import { HydrationBoundary } from '@tanstack/react-query'
 

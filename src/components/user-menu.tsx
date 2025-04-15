@@ -1,7 +1,6 @@
 'use client'
 
 import { useAuth } from '@/core/hooks/auth'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -13,6 +12,7 @@ import {
 } from '@/components/ui/sidebar'
 import { Skeleton } from '@/components/ui/skeleton'
 import { UserMenuContent } from './user-menu-content'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { ChevronsUpDown } from 'lucide-react'
 
 export function UserMenu() {

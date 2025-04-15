@@ -7,7 +7,6 @@ import { useQueryClient } from '@tanstack/react-query'
 import { startTransition, useCallback } from 'react'
 import type { User } from '@/core/types'
 import Link from 'next/link'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
   DropdownMenuItem,
   DropdownMenuGroup,
@@ -15,6 +14,7 @@ import {
   DropdownMenuContent,
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { User as UserIcon, Bell, LogOut } from 'lucide-react'
 
 export function UserMenuContent({ user }: { user: User }) {

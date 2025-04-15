@@ -1,24 +1,25 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { usePathname } from 'next/navigation'
+import React from 'react'
+import Link from 'next/link'
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@/components/ui/collapsible'
 import {
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
+  SidebarGroup,
   SidebarMenuSub,
-  SidebarMenuSubButton,
+  SidebarMenuItem,
+  SidebarMenuButton,
+  SidebarGroupLabel,
   SidebarMenuSubItem,
+  SidebarGroupContent,
+  SidebarMenuSubButton,
 } from '@/components/ui/sidebar'
-import Link from 'next/link'
 import { ChevronRight, type LucideIcon } from 'lucide-react'
 
 export type Item = {
@@ -29,7 +30,7 @@ export type Item = {
   isActive?: boolean
 }
 
-function generateItems(items: Item[], pathname: string): Item[] {
+function makeItems(items: Item[], pathname: string): Item[] {
   return items.map((item) => {
     if (item.url === pathname) {
       return { ...item, isActive: true }
@@ -61,20 +62,15 @@ function generateItems(items: Item[], pathname: string): Item[] {
   })
 }
 
-function SidebarNavItems({ item }: { item: Item }) {
-  const [isActive, setIsActive] = useState(item.isActive)
-
-  useEffect(() => {
-    setIsActive(item.isActive)
-  }, [item.isActive])
+const SidebarNavItems = React.memo(({ item }: { item: Item }) => {
+  const [isOpen, setIsOpen] = useState(item.isActive)
 
   return (
     <Collapsible
-      asChild
+      open={isOpen}
+      onOpenChange={setIsOpen}
       className="group/collapsible"
-      open={isActive}
-      defaultOpen={item.isActive}
-      onOpenChange={(value) => setIsActive(value)}
+      asChild
     >
       <SidebarMenuItem>
         <CollapsibleTrigger asChild>
@@ -102,9 +98,10 @@ function SidebarNavItems({ item }: { item: Item }) {
       </SidebarMenuItem>
     </Collapsible>
   )
-}
+})
+SidebarNavItems.displayName = 'SidebarNavItems'
 
-function SidebarNavItem({ item }: { item: Item }) {
+const SidebarNavItem = React.memo(({ item }: { item: Item }) => {
   return (
     <SidebarMenuItem>
       {item.url && (
@@ -121,10 +118,10 @@ function SidebarNavItem({ item }: { item: Item }) {
       )}
     </SidebarMenuItem>
   )
-}
+})
+SidebarNavItem.displayName = 'SidebarNavItem'
 
-interface SidebarNavProps
-  extends React.ComponentPropsWithoutRef<typeof SidebarGroup> {
+type SidebarNavProps = React.ComponentProps<typeof SidebarGroup> & {
   label?: string
   items: Item[]
 }
@@ -135,7 +132,7 @@ export function SidebarNav({
   ...props
 }: SidebarNavProps) {
   const pathname = usePathname()
-  const items = generateItems(itemsProp, pathname)
+  const items = makeItems(itemsProp, pathname)
 
   return (
     <SidebarGroup {...props}>

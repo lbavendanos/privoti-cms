@@ -5,9 +5,8 @@ import { useToast } from '@/hooks/use-toast'
 import { sendEmailVerificationNotification } from '@/core/actions/auth'
 import { useCallback, useState, useTransition } from 'react'
 import { Form } from '@/components/ui/form'
+import { StatusAlert } from '@/components/ui/status-alert'
 import { LoadingButton } from '@/components/ui/loading-button'
-import { AlertCircle, CircleCheck } from 'lucide-react'
-import { Alert, AlertDescription } from '@/components/ui/alert'
 
 export function VerifyEmailForm() {
   const { toast } = useToast()
@@ -51,16 +50,10 @@ export function VerifyEmailForm() {
         onSubmit={form.handleSubmit(handleSubmit)}
       >
         {successMessage && (
-          <Alert variant="success">
-            <CircleCheck className="h-4 w-4" />
-            <AlertDescription>{successMessage}</AlertDescription>
-          </Alert>
+          <StatusAlert variant="success" description={successMessage} />
         )}
         {errorMessage && (
-          <Alert variant="destructive">
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>{errorMessage}</AlertDescription>
-          </Alert>
+          <StatusAlert variant="error" description={errorMessage} />
         )}
         <LoadingButton
           type="submit"

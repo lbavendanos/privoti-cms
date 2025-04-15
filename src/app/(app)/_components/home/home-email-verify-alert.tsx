@@ -4,12 +4,12 @@ import { useCallback, useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import {
   AlertDialog,
+  AlertDialogTitle,
   AlertDialogAction,
-  AlertDialogContent,
-  AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
-  AlertDialogTitle,
+  AlertDialogContent,
+  AlertDialogDescription,
 } from '@/components/ui/alert-dialog'
 
 export function HomeEmailVerifyAlert() {

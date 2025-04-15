@@ -4,42 +4,42 @@ import { capitalize, cn } from '@/lib/utils'
 import { useCallback, useId, useMemo, useRef, useState } from 'react'
 import {
   flexRender,
-  getCoreRowModel,
   useReactTable,
+  getCoreRowModel,
 } from '@tanstack/react-table'
 import type { Product } from '@/core/types'
 import type { ColumnDef, Row, VisibilityState } from '@tanstack/react-table'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
   AlertDialog,
+  AlertDialogTitle,
   AlertDialogAction,
   AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
-  AlertDialogTitle,
   AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogDescription,
 } from '@/components/ui/alert-dialog'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
   DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
+  DropdownMenuGroup,
   DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuSeparator,
+  DropdownMenuCheckboxItem,
 } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
   Pagination,
-  PaginationContent,
   PaginationItem,
+  PaginationContent,
 } from '@/components/ui/pagination'
 import {
   Popover,
@@ -48,35 +48,35 @@ import {
 } from '@/components/ui/popover'
 import {
   Select,
-  SelectContent,
   SelectItem,
-  SelectTrigger,
   SelectValue,
+  SelectTrigger,
+  SelectContent,
 } from '@/components/ui/select'
 import {
   Table,
+  TableRow,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
-  TableRow,
 } from '@/components/ui/table'
 import Link from 'next/link'
 import {
-  ChevronDownIcon,
-  ChevronFirstIcon,
-  ChevronLastIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  ChevronUpIcon,
-  CircleAlertIcon,
+  PlusIcon,
+  TrashIcon,
+  FilterIcon,
   CircleXIcon,
   Columns3Icon,
   EllipsisIcon,
-  FilterIcon,
+  ChevronUpIcon,
   ListFilterIcon,
-  PlusIcon,
-  TrashIcon,
+  ChevronDownIcon,
+  ChevronLastIcon,
+  ChevronLeftIcon,
+  CircleAlertIcon,
+  ChevronFirstIcon,
+  ChevronRightIcon,
 } from 'lucide-react'
 
 type Item = Product
@@ -365,12 +365,12 @@ export function ProductsTable({
               type="text"
               aria-label="Filter by title"
             />
-            <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
+            <div className="text-muted-foreground/80 pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 peer-disabled:opacity-50">
               <ListFilterIcon size={16} aria-hidden="true" />
             </div>
             {searchTerm && (
               <button
-                className="absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-md text-muted-foreground/80 outline-none transition-[color,box-shadow] hover:text-foreground focus:z-10 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
+                className="text-muted-foreground/80 hover:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-md transition-[color,box-shadow] outline-none focus:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
                 aria-label="Clear filter"
                 onClick={() => {
                   onClearSearchTerm?.()
@@ -395,7 +395,7 @@ export function ProductsTable({
                 />
                 Status
                 {status && status.length > 0 && (
-                  <span className="-me-1 inline-flex h-5 max-h-full items-center rounded border bg-background px-1 font-[inherit] text-[0.625rem] font-medium text-muted-foreground/70">
+                  <span className="bg-background text-muted-foreground/70 -me-1 inline-flex h-5 max-h-full items-center rounded border px-1 font-[inherit] text-[0.625rem] font-medium">
                     {status.join(', ')}
                   </span>
                 )}
@@ -403,7 +403,7 @@ export function ProductsTable({
             </PopoverTrigger>
             <PopoverContent className="w-auto min-w-36 p-3" align="start">
               <div className="space-y-3">
-                <div className="text-xs font-medium text-muted-foreground">
+                <div className="text-muted-foreground text-xs font-medium">
                   Filters
                 </div>
                 <div className="space-y-3">
@@ -480,7 +480,7 @@ export function ProductsTable({
                     aria-hidden="true"
                   />
                   Delete
-                  <span className="-me-1 inline-flex h-5 max-h-full items-center rounded border bg-background px-1 font-[inherit] text-[0.625rem] font-medium text-muted-foreground/70">
+                  <span className="bg-background text-muted-foreground/70 -me-1 inline-flex h-5 max-h-full items-center rounded border px-1 font-[inherit] text-[0.625rem] font-medium">
                     {table.getSelectedRowModel().rows.length}
                   </span>
                 </Button>
@@ -532,7 +532,7 @@ export function ProductsTable({
       </div>
 
       {/* Table */}
-      <div className="overflow-hidden rounded-md border bg-background">
+      <div className="bg-background overflow-hidden rounded-md border">
         <Table className="table-fixed">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -548,7 +548,7 @@ export function ProductsTable({
                         <div
                           className={cn(
                             header.column.getCanSort() &&
-                              'flex h-full cursor-pointer select-none items-center justify-between gap-2',
+                              'flex h-full cursor-pointer items-center justify-between gap-2 select-none',
                           )}
                           onClick={() =>
                             onOrderChange?.({
@@ -679,7 +679,7 @@ export function ProductsTable({
             <SelectTrigger id={id} className="w-fit whitespace-nowrap">
               <SelectValue placeholder="Select number of results" />
             </SelectTrigger>
-            <SelectContent className="[&_*[role=option]>span]:end-2 [&_*[role=option]>span]:start-auto [&_*[role=option]]:pe-8 [&_*[role=option]]:ps-2">
+            <SelectContent className="[&_*[role=option]]:ps-2 [&_*[role=option]]:pe-8 [&_*[role=option]>span]:start-auto [&_*[role=option]>span]:end-2">
               {[5, 15, 25, 50].map((perPageOption) => (
                 <SelectItem
                   key={perPageOption}
@@ -694,9 +694,9 @@ export function ProductsTable({
         </div>
         {/* Page number information */}
         {pagination && pagination.from && pagination.to && (
-          <div className="flex grow justify-end whitespace-nowrap text-sm text-muted-foreground">
+          <div className="text-muted-foreground flex grow justify-end text-sm whitespace-nowrap">
             <p
-              className="whitespace-nowrap text-sm text-muted-foreground"
+              className="text-muted-foreground text-sm whitespace-nowrap"
               aria-live="polite"
             >
               <span className="text-foreground">
@@ -854,7 +854,7 @@ function RowActions({
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuItem
-            className="cursor-pointer text-destructive focus:text-destructive"
+            className="text-destructive focus:text-destructive cursor-pointer"
             onSelect={() => onDeleteSelect?.(row)}
           >
             Delete

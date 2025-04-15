@@ -168,7 +168,7 @@ export function Products() {
             description: (
               <StatusAlert
                 variant="error"
-                className="rounded-none border-0 p-0 text-foreground"
+                className="text-foreground rounded-none border-0 p-0"
                 description={response.message}
               />
             ),
@@ -180,7 +180,7 @@ export function Products() {
             description: (
               <StatusAlert
                 variant="success"
-                className="rounded-none border-0 p-0 text-foreground"
+                className="text-foreground rounded-none border-0 p-0"
                 description="Product updated successfully."
               />
             ),
@@ -214,7 +214,7 @@ export function Products() {
             description: (
               <StatusAlert
                 variant="error"
-                className="rounded-none border-0 p-0 text-foreground"
+                className="text-foreground rounded-none border-0 p-0"
                 description={response.message}
               />
             ),
@@ -226,7 +226,7 @@ export function Products() {
             description: (
               <StatusAlert
                 variant="success"
-                className="rounded-none border-0 p-0 text-foreground"
+                className="text-foreground rounded-none border-0 p-0"
                 description="Product deleted successfully."
               />
             ),
@@ -259,7 +259,7 @@ export function Products() {
             description: (
               <StatusAlert
                 variant="error"
-                className="rounded-none border-0 p-0 text-foreground"
+                className="text-foreground rounded-none border-0 p-0"
                 description={response.message}
               />
             ),
@@ -271,7 +271,7 @@ export function Products() {
             description: (
               <StatusAlert
                 variant="success"
-                className="rounded-none border-0 p-0 text-foreground"
+                className="text-foreground rounded-none border-0 p-0"
                 description="Products deleted successfully."
               />
             ),
@@ -290,44 +290,42 @@ export function Products() {
   )
 
   return (
-    <div className="container my-4 h-full lg:my-6">
-      <div className="grid h-full grid-cols-12 gap-6">
-        <div className="col-span-12 md:col-span-10 md:col-start-2">
-          <div className="flex h-full flex-col gap-4">
-            <h1 className="text-lg font-semibold md:text-2xl">Products</h1>
-            {blank(params) && products?.length === 0 ? (
-              <div className="flex grow flex-col items-center justify-center gap-1 rounded-lg border border-dashed bg-white p-4 shadow-sm">
-                <h3 className="text-2xl font-bold tracking-tight">
-                  You have no products
-                </h3>
-                <p className="text-sm text-muted-foreground">
-                  You can start selling as soon as you add a product.
-                </p>
-                <Button className="mt-4" asChild>
-                  <Link href="/products/create">Add product</Link>
-                </Button>
-              </div>
-            ) : (
-              <ProductsTable
-                data={products ?? []}
-                searchTerm={searchTerm}
-                status={status}
-                order={order}
-                perPage={perPage}
-                page={page}
-                pagination={pagination}
-                onSearchTermChange={handleSearchTermChange}
-                onClearSearchTerm={handleClearSearchTerm}
-                onStatusChange={handleStatusChange}
-                onOrderChange={handleOrderChange}
-                onPerPageChange={handlePerPageChange}
-                onPageChange={handlePageChange}
-                onRowStatusChange={handleRowStatusChange}
-                onDeleteRows={handleDeleteRows}
-                onDeleteRow={handleDeleteRow}
-              />
-            )}
-          </div>
+    <div className="@container mx-auto my-4 grid size-full max-w-7xl grid-cols-12 gap-6 px-4 lg:my-6">
+      <div className="col-span-12 @md:col-span-10 @md:col-start-2">
+        <div className="flex h-full flex-col gap-4">
+          <h1 className="text-lg font-semibold md:text-2xl">Products</h1>
+          {blank(params) && products?.length === 0 ? (
+            <div className="flex grow flex-col items-center justify-center gap-1 rounded-lg border border-dashed bg-white p-4 shadow-sm">
+              <h3 className="text-2xl font-bold tracking-tight">
+                You have no products
+              </h3>
+              <p className="text-muted-foreground text-sm">
+                You can start selling as soon as you add a product.
+              </p>
+              <Button className="mt-4" asChild>
+                <Link href="/products/create">Add product</Link>
+              </Button>
+            </div>
+          ) : (
+            <ProductsTable
+              data={products ?? []}
+              searchTerm={searchTerm}
+              status={status}
+              order={order}
+              perPage={perPage}
+              page={page}
+              pagination={pagination}
+              onSearchTermChange={handleSearchTermChange}
+              onClearSearchTerm={handleClearSearchTerm}
+              onStatusChange={handleStatusChange}
+              onOrderChange={handleOrderChange}
+              onPerPageChange={handlePerPageChange}
+              onPageChange={handlePageChange}
+              onRowStatusChange={handleRowStatusChange}
+              onDeleteRows={handleDeleteRows}
+              onDeleteRow={handleDeleteRow}
+            />
+          )}
         </div>
       </div>
     </div>

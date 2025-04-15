@@ -1,11 +1,11 @@
-import { Button, type ButtonProps } from '@/components/ui/button'
+import { Button } from '@/components/ui/button'
 import { LoaderCircle } from 'lucide-react'
 
-interface LoadingButtonProps extends ButtonProps {
+type LoadingButtonProps = React.ComponentProps<typeof Button> & {
   loading?: boolean
 }
 
-export function LoadingButton({
+function LoadingButton({
   loading,
   disabled,
   children,
@@ -15,9 +15,8 @@ export function LoadingButton({
     <Button {...props} disabled={loading || disabled}>
       {loading && (
         <LoaderCircle
-          className="-ms-1 me-2 animate-spin"
+          className="-ms-1 animate-spin"
           size={16}
-          strokeWidth={2}
           aria-hidden="true"
         />
       )}
@@ -25,3 +24,5 @@ export function LoadingButton({
     </Button>
   )
 }
+
+export { LoadingButton }

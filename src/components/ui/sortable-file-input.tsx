@@ -37,7 +37,7 @@ type SortableFileInputProps = {
   onChange: React.Dispatch<React.SetStateAction<FileItem[]>>
 }
 
-export function SortableFileInput({
+function SortableFileInput({
   id,
   name,
   value,
@@ -159,7 +159,7 @@ export function SortableFileInput({
         htmlFor={id}
         onDrop={handleDrop}
         onDragOver={handleDragOver}
-        className="block cursor-pointer rounded-md border-2 border-dashed border-input p-5 text-center hover:border-ring"
+        className="border-input hover:border-ring block cursor-pointer rounded-md border-2 border-dashed p-5 text-center"
       >
         <input
           id={id}
@@ -176,7 +176,7 @@ export function SortableFileInput({
             <Upload className="h-3.5 w-3.5" />
             <p className="text-base font-medium">Upload images</p>
           </div>
-          <p className="text-xs text-muted-foreground">
+          <p className="text-muted-foreground text-xs">
             Drag and drop images or videos here or click to upload.
           </p>
         </div>
@@ -233,7 +233,7 @@ const SortableItem: React.FC<SortableItemProps> = ({ id, file, onDelete }) => {
           <source src={file.url} type={file.file?.type} />
         </video>
       )}
-      <div className="absolute right-2 top-2 flex">
+      <div className="absolute top-2 right-2 flex">
         <Button
           type="button"
           variant="ghost"
@@ -255,3 +255,5 @@ const SortableItem: React.FC<SortableItemProps> = ({ id, file, onDelete }) => {
     </li>
   )
 }
+
+export { SortableFileInput }

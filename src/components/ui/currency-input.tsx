@@ -1,7 +1,7 @@
 'use client'
 
-import { Input } from '@/components/ui/input'
 import { withMask } from 'use-mask-input'
+import { Input } from '@/components/ui/input'
 
 export function CurrencyInput({
   onChange,

@@ -2,16 +2,18 @@
 
 import { cn } from '@/lib/utils'
 import { useCallback, useState } from 'react'
-import { type InputProps } from './input'
 import { Badge } from '@/components/ui/badge'
 import { X } from 'lucide-react'
 
-type MultipleTagProps = Omit<InputProps, 'value' | 'onChange'> & {
+type MultipleTagProps = Omit<
+  React.ComponentProps<'input'>,
+  'value' | 'onChange'
+> & {
   value: string[]
-  onChange: React.Dispatch<React.SetStateAction<string[]>>
+  onChange: (value: string[]) => void
 }
 
-export function MultipleTag({
+function MultipleTag({
   value: currentTags,
   className,
   placeholder,
@@ -50,7 +52,7 @@ export function MultipleTag({
   return (
     <div
       className={cn(
-        'flex min-h-10 w-full flex-wrap gap-2 rounded-md border border-neutral-200 bg-white px-3 py-2 text-sm ring-offset-white disabled:cursor-not-allowed disabled:opacity-50 has-[:focus-visible]:outline-none has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-neutral-950 has-[:focus-visible]:ring-offset-2 dark:border-neutral-800 dark:bg-neutral-950 dark:ring-offset-neutral-950 dark:has-[:focus-visible]:ring-neutral-300',
+        'flex min-h-10 w-full flex-wrap gap-2 rounded-md border border-neutral-200 bg-white px-3 py-2 text-sm ring-offset-white disabled:cursor-not-allowed disabled:opacity-50 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-neutral-950 has-[:focus-visible]:ring-offset-2 has-[:focus-visible]:outline-none dark:border-neutral-800 dark:bg-neutral-950 dark:ring-offset-neutral-950 dark:has-[:focus-visible]:ring-neutral-300',
         className,
       )}
     >
@@ -59,18 +61,18 @@ export function MultipleTag({
           {tag}
           <button
             type="button"
-            className="ml-1 rounded-full outline-none ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2"
+            className="ring-offset-background focus:ring-ring ml-1 rounded-full outline-none focus:ring-2 focus:ring-offset-2"
             tabIndex={-1}
             onClick={() => {
               onChange(currentTags.filter((t) => t !== tag))
             }}
           >
-            <X className="h-3 w-3 text-muted-foreground hover:text-foreground" />
+            <X className="text-muted-foreground hover:text-foreground h-3 w-3" />
           </button>
         </Badge>
       ))}
       <input
-        className="flex-1 text-base outline-none placeholder:text-neutral-500 dark:placeholder:text-neutral-400 md:text-sm"
+        className="flex-1 text-base outline-none placeholder:text-neutral-500 md:text-sm dark:placeholder:text-neutral-400"
         value={pendingDataPoint}
         placeholder={currentTags.length === 0 ? placeholder : ''}
         onChange={(e) => setPendingDataPoint(e.target.value)}
@@ -84,3 +86,5 @@ export function MultipleTag({
     </div>
   )
 }
+
+export { MultipleTag }

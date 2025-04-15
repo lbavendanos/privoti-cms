@@ -80,7 +80,7 @@ export function SearchableSelect({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-full justify-between border-input bg-background px-3 font-normal outline-none outline-offset-0 hover:bg-background focus-visible:outline-[3px]"
+          className="border-input bg-background hover:bg-background w-full justify-between px-3 font-normal outline-offset-0 outline-none focus-visible:outline-[3px]"
         >
           <span
             className={cn(
@@ -114,7 +114,7 @@ export function SearchableSelect({
         </Button>
       </PopoverTrigger>
       <PopoverContent
-        className="w-full min-w-[var(--radix-popper-anchor-width)] border-input p-0"
+        className="border-input w-full min-w-[var(--radix-popper-anchor-width)] p-0"
         align="start"
       >
         <Command shouldFilter={shouldFilter}>
@@ -125,8 +125,8 @@ export function SearchableSelect({
               onValueChange={onSearchTermChange}
             />
             {isLoading && (
-              <div className="absolute right-3 top-1/2 flex -translate-y-1/2 transform items-center">
-                <Loader2 className="h-4 w-4 animate-spin text-muted-foreground/80" />
+              <div className="absolute top-1/2 right-3 flex -translate-y-1/2 transform items-center">
+                <Loader2 className="text-muted-foreground/80 h-4 w-4 animate-spin" />
               </div>
             )}
           </div>

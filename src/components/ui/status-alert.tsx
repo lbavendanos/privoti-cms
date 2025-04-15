@@ -76,13 +76,13 @@ export function StatusAlert({
       {getIcon()}
       <div className="grow space-y-1">
         {title && (
-          <h5 className="font-medium leading-none tracking-tight">{title}</h5>
+          <h5 className="leading-none font-medium tracking-tight">{title}</h5>
         )}
         {description && (
           <p className="text-sm leading-relaxed">{description}</p>
         )}
         {list && (
-          <ul className="list-inside list-disc text-sm text-muted-foreground">
+          <ul className="text-muted-foreground list-inside list-disc text-sm">
             {list.map((item) => (
               <li key={item}>{item}</li>
             ))}

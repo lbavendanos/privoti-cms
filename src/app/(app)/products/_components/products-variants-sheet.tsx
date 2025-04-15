@@ -8,29 +8,29 @@ import { type Option } from './products-options-input'
 import { type Variant } from './products-variants-input'
 import {
   Sheet,
+  SheetTitle,
   SheetClose,
-  SheetContent,
-  SheetDescription,
   SheetFooter,
   SheetHeader,
-  SheetTitle,
+  SheetContent,
+  SheetDescription,
 } from '@/components/ui/sheet'
 import {
   Form,
-  FormControl,
-  FormField,
   FormItem,
   FormLabel,
+  FormField,
+  FormControl,
   FormMessage,
 } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
   Select,
-  SelectContent,
   SelectItem,
-  SelectTrigger,
   SelectValue,
+  SelectTrigger,
+  SelectContent,
 } from '@/components/ui/select'
 import { CurrencyInput } from '@/components/ui/currency-input'
 
@@ -114,7 +114,7 @@ export function ProductsVariantsSheet({
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="sm:max-w-md">
+      <SheetContent>
         <SheetHeader>
           <SheetTitle>Create Variant</SheetTitle>
           <SheetDescription>
@@ -130,7 +130,7 @@ export function ProductsVariantsSheet({
               form.handleSubmit(handleSubmit)(e)
             }}
           >
-            <div className="flex flex-col gap-4 py-4">
+            <div className="flex flex-col gap-4 px-4 pt-0">
               <FormField
                 control={form.control}
                 name="name"
@@ -158,7 +158,7 @@ export function ProductsVariantsSheet({
                           defaultValue={field.value}
                         >
                           <FormControl>
-                            <SelectTrigger>
+                            <SelectTrigger className="w-full">
                               <SelectValue
                                 placeholder={`Select a ${option.name}`}
                               />

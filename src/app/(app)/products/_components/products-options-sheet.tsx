@@ -8,19 +8,19 @@ import { type Option } from './products-options-input'
 import {
   Sheet,
   SheetClose,
-  SheetContent,
-  SheetDescription,
+  SheetTitle,
   SheetFooter,
   SheetHeader,
-  SheetTitle,
+  SheetContent,
+  SheetDescription,
 } from '@/components/ui/sheet'
 import {
   Form,
-  FormControl,
-  FormField,
   FormItem,
   FormLabel,
+  FormField,
   FormMessage,
+  FormControl,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -86,7 +86,7 @@ export function ProductsOptionsSheet({
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="sm:max-w-md">
+      <SheetContent>
         <SheetHeader>
           <SheetTitle>Create Option</SheetTitle>
           <SheetDescription>
@@ -102,7 +102,7 @@ export function ProductsOptionsSheet({
               form.handleSubmit(handleSubmit)(e)
             }}
           >
-            <div className="flex flex-col gap-4 py-4">
+            <div className="flex flex-col gap-4 p-4 pt-0">
               <FormField
                 control={form.control}
                 name="name"

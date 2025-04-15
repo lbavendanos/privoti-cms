@@ -4,17 +4,17 @@ import { uuid } from '@/lib/utils'
 import { useState } from 'react'
 import {
   Table,
+  TableRow,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
-  TableRow,
 } from '@/components/ui/table'
 import {
   DropdownMenu,
-  DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuContent,
 } from '@/components/ui/dropdown-menu'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -49,7 +49,7 @@ export function ProductsOptionsInput({
             <TableRow className="relative">
               <TableHead className="w-2/12 md:w-3/12">Title</TableHead>
               <TableHead className="w-9/12 md:w-8/12">Variant</TableHead>
-              <TableHead className="sticky right-0 z-10 w-1/12 bg-white after:absolute after:inset-y-0 after:left-0 after:h-full after:w-px after:bg-border after:content-['']">
+              <TableHead className="after:bg-border sticky right-0 z-10 w-1/12 bg-white after:absolute after:inset-y-0 after:left-0 after:h-full after:w-px after:content-['']">
                 Action
               </TableHead>
             </TableRow>
@@ -65,14 +65,14 @@ export function ProductsOptionsInput({
                 }}
               >
                 <TableCell>{option.name}</TableCell>
-                <TableCell className="space-x-1 space-y-1">
+                <TableCell className="space-y-1 space-x-1">
                   {option.values.map((value) => (
                     <Badge key={value} variant="secondary">
                       {value}
                     </Badge>
                   ))}
                 </TableCell>
-                <TableCell className="sticky right-0 z-10 bg-white after:absolute after:inset-y-0 after:left-0 after:h-full after:w-px after:bg-border after:content-['']">
+                <TableCell className="after:bg-border sticky right-0 z-10 bg-white after:absolute after:inset-y-0 after:left-0 after:h-full after:w-px after:content-['']">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button
@@ -99,7 +99,7 @@ export function ProductsOptionsInput({
                         <Pencil /> Edit
                       </DropdownMenuItem>
                       <DropdownMenuItem
-                        className="cursor-pointer text-destructive focus:text-destructive"
+                        className="text-destructive focus:text-destructive cursor-pointer"
                         onClick={() =>
                           onChange(
                             currentOptions.filter(

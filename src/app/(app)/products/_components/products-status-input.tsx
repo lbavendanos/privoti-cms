@@ -2,10 +2,10 @@
 
 import {
   Select,
-  SelectContent,
   SelectItem,
-  SelectTrigger,
   SelectValue,
+  SelectTrigger,
+  SelectContent,
 } from '@/components/ui/select'
 
 function StatusDot({ className }: { className?: string }) {
@@ -38,26 +38,26 @@ export function ProductsStatusInput({
     <Select onValueChange={onChange} defaultValue={value} value={value}>
       <SelectTrigger
         {...props}
-        className="[&>span]:flex [&>span]:items-center [&>span]:gap-2 [&>span_svg]:shrink-0"
+        className="w-full [&>span]:flex [&>span]:items-center [&>span]:gap-2 [&>span_svg]:shrink-0"
       >
         <SelectValue placeholder="Select status" />
       </SelectTrigger>
-      <SelectContent className="[&_*[role=option]>span>svg]:shrink-0 [&_*[role=option]>span>svg]:text-muted-foreground/80 [&_*[role=option]>span]:end-2 [&_*[role=option]>span]:start-auto [&_*[role=option]>span]:flex [&_*[role=option]>span]:items-center [&_*[role=option]>span]:gap-2 [&_*[role=option]]:pe-8 [&_*[role=option]]:ps-2">
+      <SelectContent className="[&_*[role=option]>span>svg]:text-muted-foreground/80 [&_*[role=option]]:ps-2 [&_*[role=option]]:pe-8 [&_*[role=option]>span]:start-auto [&_*[role=option]>span]:end-2 [&_*[role=option]>span]:flex [&_*[role=option]>span]:items-center [&_*[role=option]>span]:gap-2 [&_*[role=option]>span>svg]:shrink-0">
         <SelectItem value="draft" className="cursor-pointer">
           <span className="flex items-center gap-2">
-            <StatusDot className="text-amber-500" />
+            <StatusDot className="size-2 text-amber-500" />
             <span className="truncate">Draft</span>
           </span>
         </SelectItem>
         <SelectItem value="active" className="cursor-pointer">
           <span className="flex items-center gap-2">
-            <StatusDot className="text-emerald-600" />
+            <StatusDot className="size-2 text-emerald-600" />
             <span className="truncate">Active</span>
           </span>
         </SelectItem>
         <SelectItem value="archived" className="cursor-pointer">
           <span className="flex items-center gap-2">
-            <StatusDot className="text-gray-500" />
+            <StatusDot className="size-2 text-gray-500" />
             <span className="truncate">Archived</span>
           </span>
         </SelectItem>

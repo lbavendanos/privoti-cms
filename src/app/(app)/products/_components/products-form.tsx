@@ -383,7 +383,7 @@ export function ProductsForm({ product }: ProductsFormProps) {
             description: (
               <StatusAlert
                 variant="error"
-                className="rounded-none border-0 p-0 text-foreground"
+                className="text-foreground rounded-none border-0 p-0"
                 description={response.message}
               />
             ),
@@ -397,7 +397,7 @@ export function ProductsForm({ product }: ProductsFormProps) {
             description: (
               <StatusAlert
                 variant="success"
-                className="rounded-none border-0 p-0 text-foreground"
+                className="text-foreground rounded-none border-0 p-0"
                 description={`Product ${product ? 'updated' : 'created'} successfully`}
               />
             ),
@@ -424,173 +424,192 @@ export function ProductsForm({ product }: ProductsFormProps) {
   return (
     <Form {...form}>
       <form className="relative" onSubmit={form.handleSubmit(handleSubmit)}>
-        <div className="container my-4 lg:my-6">
-          <div className="grid grid-cols-12 gap-6">
-            <div className="col-span-12 md:col-span-10 md:col-start-2">
-              <div className="flex items-center gap-4">
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="h-7 w-7"
-                  asChild
-                >
-                  <Link href="/products">
-                    <ChevronLeft className="h-4 w-4" />
-                    <span className="sr-only">Back</span>
-                  </Link>
-                </Button>
-                <h1 className="flex-1 shrink-0 whitespace-nowrap text-xl font-semibold tracking-tight sm:grow-0">
-                  {product ? product.title : 'Create Product'}
-                </h1>
-              </div>
+        <div className="@container mx-auto my-4 grid max-w-7xl grid-cols-12 gap-6 px-4 lg:my-6">
+          <div className="col-span-12 @md:col-span-10 @md:col-start-2">
+            <div className="flex items-center gap-4">
+              <Button variant="outline" size="icon" className="h-7 w-7" asChild>
+                <Link href="/products">
+                  <ChevronLeft className="h-4 w-4" />
+                  <span className="sr-only">Back</span>
+                </Link>
+              </Button>
+              <h1 className="flex-1 shrink-0 text-xl font-semibold tracking-tight whitespace-nowrap sm:grow-0">
+                {product ? product.title : 'Create Product'}
+              </h1>
             </div>
-            <div className="col-span-12 md:col-span-10 md:col-start-2 xl:col-span-7 xl:col-start-2">
-              <div className="flex flex-col gap-6">
-                <Card className="block xl:hidden">
-                  <CardHeader>
-                    <CardTitle>Status</CardTitle>
-                    <CardDescription>
-                      Set the status of the product to manage its visibility.
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
+          </div>
+          <div className="col-span-12 @md:col-span-10 @md:col-start-2 @5xl:col-span-7 @5xl:col-start-2">
+            <div className="flex flex-col gap-6">
+              <Card className="flex @5xl:hidden">
+                <CardHeader>
+                  <CardTitle>Status</CardTitle>
+                  <CardDescription>
+                    Set the status of the product to manage its visibility.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <FormField
+                    control={form.control}
+                    name="status"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <ProductsStatusInput {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Details</CardTitle>
+                  <CardDescription>
+                    Provide detailed information about the product, including
+                    specifications, features, and other relevant details.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid gap-6">
                     <FormField
                       control={form.control}
-                      name="status"
+                      name="title"
                       render={({ field }) => (
                         <FormItem>
+                          <FormLabel>Title</FormLabel>
                           <FormControl>
-                            <ProductsStatusInput {...field} />
+                            <Input placeholder="Winter Jacket" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Details</CardTitle>
-                    <CardDescription>
-                      Provide detailed information about the product, including
-                      specifications, features, and other relevant details.
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid gap-6">
-                      <FormField
-                        control={form.control}
-                        name="title"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Title</FormLabel>
-                            <FormControl>
-                              <Input placeholder="Winter Jacket" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="subtitle"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>
-                              Subtitle{' '}
-                              <span className="text-muted-foreground">
-                                (optional)
-                              </span>
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                placeholder="Comfortable, warm, and stylish"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="description"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>
-                              Description{' '}
-                              <span className="text-muted-foreground">
-                                (optional)
-                              </span>
-                            </FormLabel>
-                            <FormControl>
-                              <Textarea
-                                className="min-h-32"
-                                placeholder="This winter jacket is perfect for cold weather. It's comfortable, warm, and stylish."
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Assets</CardTitle>
-                    <CardDescription>
-                      Upload images, videos, or other media to showcase the
-                      product.
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
                     <FormField
                       control={form.control}
-                      name="media"
+                      name="subtitle"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>
-                            Media{' '}
+                            Subtitle{' '}
                             <span className="text-muted-foreground">
                               (optional)
                             </span>
                           </FormLabel>
                           <FormControl>
-                            <SortableFileInput {...field} />
+                            <Input
+                              placeholder="Comfortable, warm, and stylish"
+                              {...field}
+                            />
                           </FormControl>
-                          {form.formState.errors.media?.map?.(
-                            (media, index) => (
-                              <p
-                                key={index}
-                                className="text-sm font-medium text-destructive"
-                              >
-                                {media?.file?.message}
-                              </p>
-                            ),
-                          )}
+                          <FormMessage />
                         </FormItem>
                       )}
                     />
-                  </CardContent>
-                </Card>
+                    <FormField
+                      control={form.control}
+                      name="description"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            Description{' '}
+                            <span className="text-muted-foreground">
+                              (optional)
+                            </span>
+                          </FormLabel>
+                          <FormControl>
+                            <Textarea
+                              className="min-h-32"
+                              placeholder="This winter jacket is perfect for cold weather. It's comfortable, warm, and stylish."
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Assets</CardTitle>
+                  <CardDescription>
+                    Upload images, videos, or other media to showcase the
+                    product.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <FormField
+                    control={form.control}
+                    name="media"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          Media{' '}
+                          <span className="text-muted-foreground">
+                            (optional)
+                          </span>
+                        </FormLabel>
+                        <FormControl>
+                          <SortableFileInput {...field} />
+                        </FormControl>
+                        {form.formState.errors.media?.map?.((media, index) => (
+                          <p
+                            key={index}
+                            className="text-destructive text-sm font-medium"
+                          >
+                            {media?.file?.message}
+                          </p>
+                        ))}
+                      </FormItem>
+                    )}
+                  />
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Options</CardTitle>
+                  <CardDescription>
+                    Add options to the product, such as size, color, or
+                    material.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <FormField
+                    control={form.control}
+                    name="options"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <ProductsOptionsInput {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </CardContent>
+              </Card>
+              {form.watch('options').length > 0 && (
                 <Card>
                   <CardHeader>
-                    <CardTitle>Options</CardTitle>
+                    <CardTitle>Variants</CardTitle>
                     <CardDescription>
-                      Add options to the product, such as size, color, or
-                      material.
+                      Add variants to the product, such as different sizes or
+                      colors.
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <FormField
                       control={form.control}
-                      name="options"
+                      name="variants"
                       render={({ field }) => (
                         <FormItem>
                           <FormControl>
-                            <ProductsOptionsInput {...field} />
+                            <ProductsVariantsInput
+                              options={form.getValues('options')}
+                              {...field}
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -598,181 +617,151 @@ export function ProductsForm({ product }: ProductsFormProps) {
                     />
                   </CardContent>
                 </Card>
-                {form.watch('options').length > 0 && (
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Variants</CardTitle>
-                      <CardDescription>
-                        Add variants to the product, such as different sizes or
-                        colors.
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <FormField
-                        control={form.control}
-                        name="variants"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormControl>
-                              <ProductsVariantsInput
-                                options={form.getValues('options')}
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </CardContent>
-                  </Card>
-                )}
-              </div>
+              )}
             </div>
-            <div className="col-span-12 md:col-span-10 md:col-start-2 xl:col-span-3 xl:col-start-9">
-              <div className="flex flex-col gap-6">
-                <Card className="hidden xl:block">
-                  <CardHeader>
-                    <CardTitle>Status</CardTitle>
-                    <CardDescription>
-                      Set the status of the product to manage its visibility.
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
+          </div>
+          <div className="col-span-12 @md:col-span-10 @md:col-start-2 @5xl:col-span-3 @5xl:col-start-9">
+            <div className="flex flex-col gap-6">
+              <Card className="hidden @5xl:flex">
+                <CardHeader>
+                  <CardTitle>Status</CardTitle>
+                  <CardDescription>
+                    Set the status of the product to manage its visibility.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <FormField
+                    control={form.control}
+                    name="status"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <ProductsStatusInput {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Organize</CardTitle>
+                  <CardDescription>
+                    Categorize the product to make it easier to find.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid gap-6">
                     <FormField
                       control={form.control}
-                      name="status"
+                      name="category"
                       render={({ field }) => (
                         <FormItem>
+                          <FormLabel>
+                            Category{' '}
+                            <span className="text-muted-foreground">
+                              (optional)
+                            </span>
+                          </FormLabel>
                           <FormControl>
-                            <ProductsStatusInput {...field} />
+                            <ProductsCategoryInput {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Organize</CardTitle>
-                    <CardDescription>
-                      Categorize the product to make it easier to find.
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid gap-6">
-                      <FormField
-                        control={form.control}
-                        name="category"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>
-                              Category{' '}
-                              <span className="text-muted-foreground">
-                                (optional)
-                              </span>
-                            </FormLabel>
-                            <FormControl>
-                              <ProductsCategoryInput {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="type"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>
-                              Type{' '}
-                              <span className="text-muted-foreground">
-                                (optional)
-                              </span>
-                            </FormLabel>
-                            <FormControl>
-                              <ProductsTypeInput {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="vendor"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>
-                              Vendor{' '}
-                              <span className="text-muted-foreground">
-                                (optional)
-                              </span>
-                            </FormLabel>
-                            <FormControl>
-                              <ProductsVendorInput {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="collections"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>
-                              Collections{' '}
-                              <span className="text-muted-foreground">
-                                (optional)
-                              </span>
-                            </FormLabel>
-                            <FormControl>
-                              <ProductsCollectionsInput {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="tags"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>
-                              Tags{' '}
-                              <span className="text-muted-foreground">
-                                (optional)
-                              </span>
-                            </FormLabel>
-                            <FormControl>
-                              <MultipleTag
-                                placeholder="Winter, Jacket, Warm, Stylish"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
+                    <FormField
+                      control={form.control}
+                      name="type"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            Type{' '}
+                            <span className="text-muted-foreground">
+                              (optional)
+                            </span>
+                          </FormLabel>
+                          <FormControl>
+                            <ProductsTypeInput {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="vendor"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            Vendor{' '}
+                            <span className="text-muted-foreground">
+                              (optional)
+                            </span>
+                          </FormLabel>
+                          <FormControl>
+                            <ProductsVendorInput {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="collections"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            Collections{' '}
+                            <span className="text-muted-foreground">
+                              (optional)
+                            </span>
+                          </FormLabel>
+                          <FormControl>
+                            <ProductsCollectionsInput {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="tags"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            Tags{' '}
+                            <span className="text-muted-foreground">
+                              (optional)
+                            </span>
+                          </FormLabel>
+                          <FormControl>
+                            <MultipleTag
+                              placeholder="Winter, Jacket, Warm, Stylish"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           </div>
         </div>
         <div className="sticky bottom-0 z-10 border-t bg-white">
-          <div className="container py-4">
-            <div className="grid grid-cols-12 gap-6">
-              <div className="col-span-12 md:col-span-10 md:col-start-2">
-                <div className="flex justify-end gap-2">
-                  <Button variant="outline" asChild>
-                    <Link href="/products">Discard</Link>
-                  </Button>
-                  <LoadingButton type="submit" loading={isPending}>
-                    Save Product
-                  </LoadingButton>
-                </div>
+          <div className="@container mx-auto grid max-w-7xl grid-cols-12 gap-6 px-4 py-4">
+            <div className="col-span-12 @md:col-span-10 @md:col-start-2">
+              <div className="flex justify-end gap-2">
+                <Button variant="outline" asChild>
+                  <Link href="/products">Discard</Link>
+                </Button>
+                <LoadingButton type="submit" loading={isPending}>
+                  Save Product
+                </LoadingButton>
               </div>
             </div>
           </div>

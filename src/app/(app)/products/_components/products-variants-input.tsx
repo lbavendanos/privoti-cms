@@ -5,17 +5,17 @@ import { useState } from 'react'
 import { type Option } from './products-options-input'
 import {
   Table,
+  TableRow,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
-  TableRow,
 } from '@/components/ui/table'
 import {
   DropdownMenu,
-  DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuContent,
 } from '@/components/ui/dropdown-menu'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -63,7 +63,7 @@ export function ProductsVariantsInput({
               ))}
               <TableHead className="w-3/12">Price</TableHead>
               <TableHead className="w-3/12">Quantity</TableHead>
-              <TableHead className="sticky right-0 z-10 w-1/12 bg-white after:absolute after:inset-y-0 after:left-0 after:h-full after:w-px after:bg-border after:content-['']">
+              <TableHead className="after:bg-border sticky right-0 z-10 w-1/12 bg-white after:absolute after:inset-y-0 after:left-0 after:h-full after:w-px after:content-['']">
                 Action
               </TableHead>
             </TableRow>
@@ -97,7 +97,7 @@ export function ProductsVariantsInput({
                   }).format(variant.price)}
                 </TableCell>
                 <TableCell>{variant.quantity}</TableCell>
-                <TableCell className="sticky right-0 z-10 bg-white after:absolute after:inset-y-0 after:left-0 after:h-full after:w-px after:bg-border after:content-['']">
+                <TableCell className="after:bg-border sticky right-0 z-10 bg-white after:absolute after:inset-y-0 after:left-0 after:h-full after:w-px after:content-['']">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button
@@ -124,7 +124,7 @@ export function ProductsVariantsInput({
                         <Pencil /> Edit
                       </DropdownMenuItem>
                       <DropdownMenuItem
-                        className="cursor-pointer text-destructive focus:text-destructive"
+                        className="text-destructive focus:text-destructive cursor-pointer"
                         onClick={() =>
                           onChange(
                             currentVariants.filter(

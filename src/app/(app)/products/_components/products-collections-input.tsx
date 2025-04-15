@@ -45,7 +45,7 @@ export function ProductsCollectionsInput({
       placeholder="Winter Collection"
       emptyIndicator="No collections found"
       loadingIndicator={
-        <div className="w-full py-6 text-center text-sm text-muted-foreground">
+        <div className="text-muted-foreground w-full py-6 text-center text-sm">
           Loading...
         </div>
       }

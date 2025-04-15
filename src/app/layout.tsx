@@ -1,15 +1,20 @@
 import { cn, url } from '@/lib/utils'
 import type { Metadata } from 'next'
-import { Inter as FontSans } from 'next/font/google'
+import { Geist, Geist_Mono } from 'next/font/google'
 import { Toaster } from '@/components/ui/toaster'
 import { QueryProvider } from '@/components/query-provider'
 import { NoScriptMessage } from '@/components/ui/no-script-message'
 
 import './globals.css'
 
-const fontSans = FontSans({
+const geistSans = Geist({
+  variable: '--font-geist-sans',
   subsets: ['latin'],
-  variable: '--font-sans',
+})
+
+const geistMono = Geist_Mono({
+  variable: '--font-geist-mono',
+  subsets: ['latin'],
 })
 
 export function generateMetadata(): Metadata {
@@ -40,8 +45,9 @@ export default function RootLayout({
     <html lang={appLocale} suppressHydrationWarning>
       <body
         className={cn(
-          'flex min-h-screen flex-col bg-background font-sans antialiased',
-          fontSans.variable,
+          'bg-background flex min-h-screen flex-col font-sans antialiased',
+          geistSans.variable,
+          geistMono.variable,
         )}
       >
         <NoScriptMessage />

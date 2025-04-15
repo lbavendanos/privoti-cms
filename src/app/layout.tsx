@@ -3,7 +3,6 @@ import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { Toaster } from '@/components/ui/toaster'
 import { QueryProvider } from '@/components/query-provider'
-import { NoScriptMessage } from '@/components/ui/no-script-message'
 
 import './globals.css'
 
@@ -50,7 +49,6 @@ export default function RootLayout({
           geistMono.variable,
         )}
       >
-        <NoScriptMessage />
         <QueryProvider>{children}</QueryProvider>
         <Toaster />
       </body>

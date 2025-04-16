@@ -1,12 +1,12 @@
 import {
   Card,
+  CardTitle,
+  CardHeader,
   CardContent,
   CardDescription,
-  CardHeader,
-  CardTitle,
 } from '@/components/ui/card'
-import { ResetForm } from './reset-form'
 import { Suspense } from 'react'
+import { ResetForm } from './reset-form'
 
 export function Reset() {
   return (

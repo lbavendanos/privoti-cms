@@ -1,13 +1,13 @@
+import Link from 'next/link'
 import {
   Card,
+  CardTitle,
+  CardHeader,
   CardContent,
   CardDescription,
-  CardHeader,
-  CardTitle,
 } from '@/components/ui/card'
-import { LoginForm } from './login-form'
 import { Button } from '@/components/ui/button'
-import Link from 'next/link'
+import { LoginForm } from './login-form'
 
 export function Login() {
   return (

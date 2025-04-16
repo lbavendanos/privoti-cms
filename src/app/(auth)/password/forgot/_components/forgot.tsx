@@ -1,10 +1,10 @@
 import {
   Card,
-  CardContent,
-  CardDescription,
+  CardTitle,
   CardFooter,
   CardHeader,
-  CardTitle,
+  CardContent,
+  CardDescription,
 } from '@/components/ui/card'
 import { ForgotForm } from './forgot-form'
 import { LoginFooter } from '@/app/(auth)/login/_components/login-footer'

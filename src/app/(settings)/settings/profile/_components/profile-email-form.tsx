@@ -2,15 +2,15 @@
 
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
 import { useToast } from '@/hooks/use-toast'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { useCallback, useTransition } from 'react'
 import { sendEmailChangeVerificationNotification } from '@/core/actions/auth'
 import {
   Form,
   FormItem,
-  FormField,
   FormLabel,
+  FormField,
   FormControl,
   FormMessage,
 } from '@/components/ui/form'
@@ -51,7 +51,7 @@ export function ProfileEmailForm({ onSuccess }: { onSuccess?: () => void }) {
             description: (
               <StatusAlert
                 variant="error"
-                className="rounded-none border-0 p-0 text-foreground"
+                className="text-foreground rounded-none border-0 p-0"
                 description={response.message}
               />
             ),
@@ -63,7 +63,7 @@ export function ProfileEmailForm({ onSuccess }: { onSuccess?: () => void }) {
             description: (
               <StatusAlert
                 variant="info"
-                className="rounded-none border-0 p-0 text-foreground"
+                className="text-foreground rounded-none border-0 p-0"
                 description="Please check your inbox to confirm your new email address."
               />
             ),

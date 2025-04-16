@@ -55,7 +55,7 @@ export function ProfileNameForm({ onSuccess }: { onSuccess?: () => void }) {
             description: (
               <StatusAlert
                 variant="error"
-                className="rounded-none border-0 p-0 text-foreground"
+                className="text-foreground rounded-none border-0 p-0"
                 description={response.message}
               />
             ),
@@ -69,7 +69,7 @@ export function ProfileNameForm({ onSuccess }: { onSuccess?: () => void }) {
             description: (
               <StatusAlert
                 variant="success"
-                className="rounded-none border-0 p-0 text-foreground"
+                className="text-foreground rounded-none border-0 p-0"
                 description="Your name has been updated."
               />
             ),

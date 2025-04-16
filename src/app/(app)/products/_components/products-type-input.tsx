@@ -1,6 +1,6 @@
 'use client'
 
-import { useDebounce } from '@/hooks/use-debounce'
+import { useDebounce } from '@/lib/hooks/use-debounce'
 import { useProductTypes } from '@/core/hooks/product-type'
 import { keepPreviousData } from '@tanstack/react-query'
 import { useMemo, useState } from 'react'

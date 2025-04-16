@@ -1,7 +1,7 @@
 'use client'
 
 import { useVendors } from '@/core/hooks/vendor'
-import { useDebounce } from '@/hooks/use-debounce'
+import { useDebounce } from '@/lib/hooks/use-debounce'
 import { keepPreviousData } from '@tanstack/react-query'
 import { useMemo, useState } from 'react'
 import { SearchableSelect } from '@/components/ui/searchable-select'

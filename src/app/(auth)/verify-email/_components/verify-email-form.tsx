@@ -1,7 +1,7 @@
 'use client'
 
+import { toast } from '@/components/ui/toast'
 import { useForm } from 'react-hook-form'
-import { useToast } from '@/hooks/use-toast'
 import { sendEmailVerificationNotification } from '@/core/actions/auth'
 import { useCallback, useState, useTransition } from 'react'
 import { Form } from '@/components/ui/form'
@@ -9,8 +9,6 @@ import { StatusAlert } from '@/components/ui/status-alert'
 import { LoadingButton } from '@/components/ui/loading-button'
 
 export function VerifyEmailForm() {
-  const { toast } = useToast()
-
   const [isPending, startTransition] = useTransition()
   const [errorMessage, setErrorMessage] = useState<string>()
   const [successMessage, setSuccessMessage] = useState<string>()
@@ -25,10 +23,7 @@ export function VerifyEmailForm() {
       const response = await sendEmailVerificationNotification()
 
       if (response.isServerError) {
-        toast({
-          variant: 'destructive',
-          description: response.message,
-        })
+        toast.destructive(response.message)
       }
 
       if (response.isClientError) {
@@ -41,7 +36,7 @@ export function VerifyEmailForm() {
         )
       }
     })
-  }, [toast])
+  }, [])
 
   return (
     <Form {...form}>

@@ -1,8 +1,8 @@
 import { cn, url } from '@/lib/utils'
 import type { Metadata } from 'next'
-import { Geist, Geist_Mono } from 'next/font/google'
-import { Toaster } from '@/components/ui/toaster'
+import { Toaster } from '@/components/ui/sonner'
 import { QueryProvider } from '@/components/query-provider'
+import { Geist, Geist_Mono } from 'next/font/google'
 
 import './globals.css'
 

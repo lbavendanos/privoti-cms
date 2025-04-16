@@ -1,8 +1,8 @@
 'use client'
 
 import { z } from 'zod'
+import { toast } from '@/components/ui/toast'
 import { useForm } from 'react-hook-form'
-import { useToast } from '@/hooks/use-toast'
 import { useRouter } from 'next/navigation'
 import { blank, uuid } from '@/lib/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -30,7 +30,6 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { MultipleTag } from '@/components/ui/multiple-tag'
-import { StatusAlert } from '@/components/ui/status-alert'
 import { LoadingButton } from '@/components/ui/loading-button'
 import { SortableFileInput } from '@/components/ui/sortable-file-input'
 import { ProductsTypeInput } from './products-type-input'
@@ -348,7 +347,6 @@ type ProductsFormProps = {
 export function ProductsForm({ product }: ProductsFormProps) {
   const router = useRouter()
   const queryClient = useQueryClient()
-  const { toast } = useToast()
 
   const [isPending, startTransition] = useTransition()
 
@@ -372,36 +370,19 @@ export function ProductsForm({ product }: ProductsFormProps) {
           : await createProduct(formData)
 
         if (response.isServerError) {
-          toast({
-            variant: 'destructive',
-            description: response.message,
-          })
+          toast.destructive(response.message)
         }
 
         if (response.isClientError) {
-          toast({
-            description: (
-              <StatusAlert
-                variant="error"
-                className="text-foreground rounded-none border-0 p-0"
-                description={response.message}
-              />
-            ),
-          })
+          toast.error(response.message)
         }
 
         if (response.isSuccess) {
           form.reset(makeDefaultValues(response.data))
 
-          toast({
-            description: (
-              <StatusAlert
-                variant="success"
-                className="text-foreground rounded-none border-0 p-0"
-                description={`Product ${product ? 'updated' : 'created'} successfully`}
-              />
-            ),
-          })
+          toast.success(
+            `Product ${product ? 'updated' : 'created'} successfully`,
+          )
 
           if (response.data) {
             queryClient.setQueryData(
@@ -418,7 +399,7 @@ export function ProductsForm({ product }: ProductsFormProps) {
         }
       })
     },
-    [product, form, queryClient, router, toast],
+    [product, form, queryClient, router],
   )
 
   return (

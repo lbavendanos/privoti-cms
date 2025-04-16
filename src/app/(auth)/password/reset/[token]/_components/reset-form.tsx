@@ -1,8 +1,8 @@
 'use client'
 
 import { z } from 'zod'
+import { toast } from '@/components/ui/toast'
 import { useForm } from 'react-hook-form'
-import { useToast } from '@/hooks/use-toast'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { resetPassword } from '@/core/actions/auth'
 import { useQueryClient } from '@tanstack/react-query'
@@ -35,7 +35,6 @@ export function ResetForm() {
   const params = useParams<{ token: string }>()
   const searchParams = useSearchParams()
   const queryClient = useQueryClient()
-  const { toast } = useToast()
 
   const [isPending, startTransition] = useTransition()
   const [errorMessage, setErrorMessage] = useState<string>()
@@ -58,10 +57,7 @@ export function ResetForm() {
         const response = await resetPassword(values)
 
         if (response.isServerError) {
-          toast({
-            variant: 'destructive',
-            description: response.message,
-          })
+          toast.destructive(response.message)
         }
 
         if (response.isClientError) {
@@ -74,7 +70,7 @@ export function ResetForm() {
         }
       })
     },
-    [queryClient, router, toast],
+    [queryClient, router],
   )
 
   return (

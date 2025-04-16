@@ -2,8 +2,8 @@
 
 import { z } from 'zod'
 import { login } from '@/core/actions/auth'
+import { toast } from '@/components/ui/toast'
 import { useForm } from 'react-hook-form'
-import { useToast } from '@/hooks/use-toast'
 import { useRouter } from 'next/navigation'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQueryClient } from '@tanstack/react-query'
@@ -29,7 +29,6 @@ const formSchema = z.object({
 export function LoginForm() {
   const router = useRouter()
   const queryClient = useQueryClient()
-  const { toast } = useToast()
 
   const [isPending, startTransition] = useTransition()
   const [errorMessage, setErrorMessage] = useState<string>()
@@ -50,10 +49,7 @@ export function LoginForm() {
         const response = await login(values)
 
         if (response.isServerError) {
-          toast({
-            variant: 'destructive',
-            description: response.message,
-          })
+          toast.destructive(response.message)
         }
 
         if (response.isClientError) {
@@ -66,7 +62,7 @@ export function LoginForm() {
         }
       })
     },
-    [queryClient, router, toast],
+    [queryClient, router],
   )
 
   return (

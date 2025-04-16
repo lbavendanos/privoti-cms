@@ -1,6 +1,6 @@
 'use client'
 
-import { useToast } from '@/hooks/use-toast'
+import { toast } from '@/components/ui/toast'
 import { useProducts } from '@/core/hooks/product'
 import { useQueryClient } from '@tanstack/react-query'
 import { blank, debounce } from '@/lib/utils'
@@ -13,7 +13,6 @@ import {
 } from '@/core/actions/product'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { StatusAlert } from '@/components/ui/status-alert'
 import { ProductsTable } from './products-table'
 
 const DEFAULT_PER_PAGE = 15
@@ -24,7 +23,6 @@ export function Products() {
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const queryClient = useQueryClient()
-  const { toast } = useToast()
 
   const params: {
     q?: string
@@ -157,35 +155,15 @@ export function Products() {
         const response = await updateProduct(id, { status })
 
         if (response.isServerError) {
-          toast({
-            variant: 'destructive',
-            description: response.message,
-          })
+          toast.destructive(response.message)
         }
 
         if (response.isClientError) {
-          toast({
-            description: (
-              <StatusAlert
-                variant="error"
-                className="text-foreground rounded-none border-0 p-0"
-                description={response.message}
-              />
-            ),
-          })
+          toast.error(response.message)
         }
 
         if (response.isSuccess) {
-          toast({
-            description: (
-              <StatusAlert
-                variant="success"
-                className="text-foreground rounded-none border-0 p-0"
-                description="Product updated successfully."
-              />
-            ),
-          })
-
+          toast.success('Product updated successfully.')
           queryClient.setQueryData(
             ['product-detail', { id: `${id}` }],
             response.data,
@@ -194,7 +172,7 @@ export function Products() {
         }
       })
     },
-    [queryClient, toast],
+    [queryClient],
   )
 
   const handleDeleteRow = useCallback(
@@ -203,35 +181,15 @@ export function Products() {
         const response = await deleteProduct(id)
 
         if (response.isServerError) {
-          toast({
-            variant: 'destructive',
-            description: response.message,
-          })
+          toast.destructive(response.message)
         }
 
         if (response.isClientError) {
-          toast({
-            description: (
-              <StatusAlert
-                variant="error"
-                className="text-foreground rounded-none border-0 p-0"
-                description={response.message}
-              />
-            ),
-          })
+          toast.error(response.message)
         }
 
         if (response.isSuccess) {
-          toast({
-            description: (
-              <StatusAlert
-                variant="success"
-                className="text-foreground rounded-none border-0 p-0"
-                description="Product deleted successfully."
-              />
-            ),
-          })
-
+          toast.success('Product deleted successfully.')
           queryClient.invalidateQueries({
             queryKey: ['product-detail', { id: `${id}` }],
           })
@@ -239,7 +197,7 @@ export function Products() {
         }
       })
     },
-    [queryClient, toast],
+    [queryClient],
   )
 
   const handleDeleteRows = useCallback(
@@ -248,35 +206,15 @@ export function Products() {
         const response = await deleteProducts(ids)
 
         if (response.isServerError) {
-          toast({
-            variant: 'destructive',
-            description: response.message,
-          })
+          toast.destructive(response.message)
         }
 
         if (response.isClientError) {
-          toast({
-            description: (
-              <StatusAlert
-                variant="error"
-                className="text-foreground rounded-none border-0 p-0"
-                description={response.message}
-              />
-            ),
-          })
+          toast.error(response.message)
         }
 
         if (response.isSuccess) {
-          toast({
-            description: (
-              <StatusAlert
-                variant="success"
-                className="text-foreground rounded-none border-0 p-0"
-                description="Products deleted successfully."
-              />
-            ),
-          })
-
+          toast.success('Products deleted successfully.')
           ids.forEach((id) => {
             queryClient.invalidateQueries({
               queryKey: ['product-detail', { id: `${id}` }],
@@ -286,7 +224,7 @@ export function Products() {
         }
       })
     },
-    [queryClient, toast],
+    [queryClient],
   )
 
   return (

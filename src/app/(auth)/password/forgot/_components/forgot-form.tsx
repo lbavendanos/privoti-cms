@@ -1,8 +1,8 @@
 'use client'
 
 import { z } from 'zod'
+import { toast } from '@/components/ui/toast'
 import { useForm } from 'react-hook-form'
-import { useToast } from '@/hooks/use-toast'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { forgotPassword } from '@/core/actions/auth'
 import { useCallback, useState, useTransition } from 'react'
@@ -23,8 +23,6 @@ const formSchema = z.object({
 })
 
 export function ForgotForm() {
-  const { toast } = useToast()
-
   const [isPending, startTransition] = useTransition()
   const [errorMessage, setErrorMessage] = useState<string>()
   const [successMessage, setSuccessMessage] = useState<string>()
@@ -45,10 +43,7 @@ export function ForgotForm() {
         const response = await forgotPassword(values)
 
         if (response.isServerError) {
-          toast({
-            variant: 'destructive',
-            description: response.message,
-          })
+          toast.destructive(response.message)
         }
 
         if (response.isClientError) {
@@ -61,7 +56,7 @@ export function ForgotForm() {
         }
       })
     },
-    [form, toast],
+    [form],
   )
 
   return (

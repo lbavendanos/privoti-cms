@@ -1,9 +1,9 @@
 'use client'
 
 import { z } from 'zod'
+import { toast } from '@/components/ui/toast'
 import { useAuth } from '@/core/hooks/auth'
 import { useForm } from 'react-hook-form'
-import { useToast } from '@/hooks/use-toast'
 import { updateUser } from '@/core/actions/auth'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQueryClient } from '@tanstack/react-query'
@@ -17,7 +17,6 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { StatusAlert } from '@/components/ui/status-alert'
 import { LoadingButton } from '@/components/ui/loading-button'
 
 const formSchema = z.object({
@@ -25,9 +24,8 @@ const formSchema = z.object({
 })
 
 export function ProfileNameForm({ onSuccess }: { onSuccess?: () => void }) {
-  const queryClient = useQueryClient()
   const { user } = useAuth()
-  const { toast } = useToast()
+  const queryClient = useQueryClient()
 
   const [isPending, startTransition] = useTransition()
 
@@ -44,42 +42,21 @@ export function ProfileNameForm({ onSuccess }: { onSuccess?: () => void }) {
         const response = await updateUser(values)
 
         if (response.isServerError) {
-          toast({
-            variant: 'destructive',
-            description: response.message,
-          })
+          toast.destructive(response.message)
         }
 
         if (response.isClientError) {
-          toast({
-            description: (
-              <StatusAlert
-                variant="error"
-                className="text-foreground rounded-none border-0 p-0"
-                description={response.message}
-              />
-            ),
-          })
+          toast.error(response.message)
         }
 
         if (response.isSuccess) {
           queryClient.setQueryData(['auth'], response.data)
-
-          toast({
-            description: (
-              <StatusAlert
-                variant="success"
-                className="text-foreground rounded-none border-0 p-0"
-                description="Your name has been updated."
-              />
-            ),
-          })
-
+          toast.success('Your name has been updated.')
           onSuccess?.()
         }
       })
     },
-    [queryClient, toast, onSuccess],
+    [queryClient, onSuccess],
   )
 
   return (

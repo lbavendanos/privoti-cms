@@ -1,8 +1,8 @@
 'use client'
 
 import { z } from 'zod'
+import { toast } from '@/components/ui/toast'
 import { useForm } from 'react-hook-form'
-import { useToast } from '@/hooks/use-toast'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { updatePassword } from '@/core/actions/auth'
 import { useCallback, useTransition } from 'react'
@@ -14,7 +14,6 @@ import {
   FormControl,
   FormMessage,
 } from '@/components/ui/form'
-import { StatusAlert } from '@/components/ui/status-alert'
 import { LoadingButton } from '@/components/ui/loading-button'
 import { PasswordInput } from '@/components/ui/password-input'
 
@@ -26,8 +25,6 @@ const formSchema = z.object({
 })
 
 export function ProfilePasswordForm({ onSuccess }: { onSuccess?: () => void }) {
-  const { toast } = useToast()
-
   const [isPending, startTransition] = useTransition()
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -44,40 +41,20 @@ export function ProfilePasswordForm({ onSuccess }: { onSuccess?: () => void }) {
         const response = await updatePassword(values)
 
         if (response.isServerError) {
-          toast({
-            variant: 'destructive',
-            description: response.message,
-          })
+          toast.destructive(response.message)
         }
 
         if (response.isClientError) {
-          toast({
-            description: (
-              <StatusAlert
-                variant="error"
-                className="text-foreground rounded-none border-0 p-0"
-                description={response.message}
-              />
-            ),
-          })
+          toast.error(response.message)
         }
 
         if (response.isSuccess) {
-          toast({
-            description: (
-              <StatusAlert
-                variant="success"
-                className="text-foreground rounded-none border-0 p-0"
-                description="Your password has been updated."
-              />
-            ),
-          })
-
+          toast.success('Your password has been updated.')
           onSuccess?.()
         }
       })
     },
-    [toast, onSuccess],
+    [onSuccess],
   )
 
   return (

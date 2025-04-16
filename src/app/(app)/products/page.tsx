@@ -3,8 +3,8 @@ import { dehydrate } from '@tanstack/react-query'
 import { getProducts } from '@/core/actions/product'
 import { getQueryClient } from '@/lib/query'
 import type { Metadata } from 'next'
-import { HydrationBoundary } from '@tanstack/react-query'
 import { Products } from './_components/products'
+import { HydrationBoundary } from '@tanstack/react-query'
 
 export const metadata: Metadata = {
   title: 'Products',

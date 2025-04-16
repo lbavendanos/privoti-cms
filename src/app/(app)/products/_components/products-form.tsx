@@ -424,8 +424,8 @@ export function ProductsForm({ product }: ProductsFormProps) {
   return (
     <Form {...form}>
       <form className="relative" onSubmit={form.handleSubmit(handleSubmit)}>
-        <div className="@container mx-auto my-4 grid max-w-7xl grid-cols-12 gap-6 px-4 lg:my-6">
-          <div className="col-span-12 @md:col-span-10 @md:col-start-2">
+        <div className="@container mx-auto my-4 grid max-w-5xl grid-cols-12 gap-6 px-4 lg:my-6">
+          <div className="col-span-12">
             <div className="flex items-center gap-4">
               <Button variant="outline" size="icon" className="h-7 w-7" asChild>
                 <Link href="/products">
@@ -438,9 +438,9 @@ export function ProductsForm({ product }: ProductsFormProps) {
               </h1>
             </div>
           </div>
-          <div className="col-span-12 @md:col-span-10 @md:col-start-2 @5xl:col-span-7 @5xl:col-start-2">
+          <div className="col-span-12 @4xl:col-span-8">
             <div className="flex flex-col gap-6">
-              <Card className="flex @5xl:hidden">
+              <Card className="flex @4xl:hidden">
                 <CardHeader>
                   <CardTitle>Status</CardTitle>
                   <CardDescription>
@@ -620,9 +620,9 @@ export function ProductsForm({ product }: ProductsFormProps) {
               )}
             </div>
           </div>
-          <div className="col-span-12 @md:col-span-10 @md:col-start-2 @5xl:col-span-3 @5xl:col-start-9">
+          <div className="col-span-12 @4xl:col-span-4 @4xl:col-start-9">
             <div className="flex flex-col gap-6">
-              <Card className="hidden @5xl:flex">
+              <Card className="hidden @4xl:flex">
                 <CardHeader>
                   <CardTitle>Status</CardTitle>
                   <CardDescription>
@@ -753,16 +753,14 @@ export function ProductsForm({ product }: ProductsFormProps) {
           </div>
         </div>
         <div className="sticky bottom-0 z-10 border-t bg-white">
-          <div className="@container mx-auto grid max-w-7xl grid-cols-12 gap-6 px-4 py-4">
-            <div className="col-span-12 @md:col-span-10 @md:col-start-2">
-              <div className="flex justify-end gap-2">
-                <Button variant="outline" asChild>
-                  <Link href="/products">Discard</Link>
-                </Button>
-                <LoadingButton type="submit" loading={isPending}>
-                  Save Product
-                </LoadingButton>
-              </div>
+          <div className="@container mx-auto max-w-5xl px-4 py-4">
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" asChild>
+                <Link href="/products">Discard</Link>
+              </Button>
+              <LoadingButton type="submit" loading={isPending}>
+                Save Product
+              </LoadingButton>
             </div>
           </div>
         </div>

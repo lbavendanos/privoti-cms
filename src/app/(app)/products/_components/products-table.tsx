@@ -66,17 +66,21 @@ import {
   PlusIcon,
   TrashIcon,
   FilterIcon,
+  PencilIcon,
   CircleXIcon,
   Columns3Icon,
   EllipsisIcon,
   ChevronUpIcon,
+  CircleDotIcon,
   ListFilterIcon,
   ChevronDownIcon,
+  CircleCheckIcon,
   ChevronLastIcon,
   ChevronLeftIcon,
   CircleAlertIcon,
   ChevronFirstIcon,
   ChevronRightIcon,
+  CircleDashedIcon,
 } from 'lucide-react'
 
 type Item = Product
@@ -824,7 +828,10 @@ function RowActions({
       <DropdownMenuContent align="end">
         <DropdownMenuGroup>
           <DropdownMenuItem className="cursor-pointer" asChild>
-            <Link href={`/products/${row.original.id}`}>Edit</Link>
+            <Link href={`/products/${row.original.id}`}>
+              <PencilIcon size={16} aria-hidden="true" />
+              <span>Edit</span>
+            </Link>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
@@ -844,7 +851,16 @@ function RowActions({
                       }
                     }}
                   >
-                    {capitalize(status)}
+                    {status === 'active' && (
+                      <CircleCheckIcon size={16} aria-hidden="true" />
+                    )}
+                    {status === 'draft' && (
+                      <CircleDotIcon size={16} aria-hidden="true" />
+                    )}
+                    {status === 'archived' && (
+                      <CircleDashedIcon size={16} aria-hidden="true" />
+                    )}
+                    <span>{capitalize(status)}</span>
                   </DropdownMenuItem>
                 )
               }
@@ -854,10 +870,12 @@ function RowActions({
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuItem
-            className="text-destructive focus:text-destructive cursor-pointer"
+            variant="destructive"
+            className="cursor-pointer"
             onSelect={() => onDeleteSelect?.(row)}
           >
-            Delete
+            <TrashIcon size={16} aria-hidden="true" />
+            <span>Delete</span>
           </DropdownMenuItem>
         </DropdownMenuGroup>
       </DropdownMenuContent>

@@ -20,7 +20,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { ProductsOptionsSheet } from './products-options-sheet'
-import { Ellipsis, Pencil, PlusCircle, Trash2 } from 'lucide-react'
+import { Ellipsis, Pencil, PlusCircle, TrashIcon } from 'lucide-react'
 
 export type Option = {
   uuid: string
@@ -96,10 +96,12 @@ export function ProductsOptionsInput({
                           setOpen(true)
                         }}
                       >
-                        <Pencil /> Edit
+                        <Pencil size={16} aria-hidden="true" />
+                        <span>Edit</span>
                       </DropdownMenuItem>
                       <DropdownMenuItem
-                        className="text-destructive focus:text-destructive cursor-pointer"
+                        variant="destructive"
+                        className="cursor-pointer"
                         onClick={() =>
                           onChange(
                             currentOptions.filter(
@@ -108,8 +110,8 @@ export function ProductsOptionsInput({
                           )
                         }
                       >
-                        <Trash2 />
-                        Delete
+                        <TrashIcon size={16} aria-hidden="true" />
+                        <span>Delete</span>
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>

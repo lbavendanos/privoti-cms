@@ -57,9 +57,9 @@
     "eslint": "^9.29.0",
     "eslint-config-next": "15.4.0-canary.51",
     "eslint-config-prettier": "^10.1.5",
-    "eslint-plugin-prettier": "^5.5.0",
+    "eslint-plugin-prettier": "^5.5.1",
     "postcss": "^8.5.6",
-    "prettier": "^3.6.0",
+    "prettier": "^3.6.1",
     "prettier-plugin-tailwindcss": "^0.6.13",
     "tailwindcss": "^4.1.10",
     "typescript": "^5.8.3"

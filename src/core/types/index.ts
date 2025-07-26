@@ -19,6 +19,8 @@ export type Collection = {
   created_at?: string
 }
 
+export type ProductStatus = 'draft' | 'active' | 'archived'
+
 export type Product = {
   id: number
   title: string
@@ -27,7 +29,7 @@ export type Product = {
   description?: string
   thumbnail?: string
   stock: number
-  status: 'draft' | 'active' | 'archived'
+  status: ProductStatus
   tags?: string[]
   metadata?: Record<string, string>
   category_id?: number
@@ -123,5 +125,5 @@ export type Meta = {
 
 export type List<T> = {
   data: T[]
-  meta?: Meta
+  meta: Meta
 }

@@ -1,15 +1,13 @@
+import { core } from '@/lib/fetcher'
 import { useQuery } from '@tanstack/react-query'
-import { fetcher, filled } from '@/lib/utils'
 import type { List, ProductCategory } from '../types'
 
-export function useProductCategories(params: Record<string, string> = {}) {
-  const { data, isLoading } = useQuery({
-    queryKey: filled(params)
-      ? ['product-category-list', params]
-      : ['product-category-list'],
+export function useProductCategories(params: Record<string, unknown> = {}) {
+  return useQuery({
+    queryKey: ['product-category-list', params],
     queryFn: () =>
-      fetcher<List<ProductCategory>>('/api/products/categories', { params }),
+      core.fetch<List<ProductCategory>>('/api/c/products/categories', {
+        params,
+      }),
   })
-
-  return { data, isLoading }
 }

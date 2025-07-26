@@ -1,20 +1,30 @@
-import { fetcher, filled } from '@/lib/utils'
-import { useQuery } from '@tanstack/react-query'
+import { core } from '@/lib/fetcher'
+import { queryOptions, useQuery, useSuspenseQuery } from '@tanstack/react-query'
 import type { UseQueryOptions } from '@tanstack/react-query'
 import type { List, ProductType } from '../types'
 
-export function useProductTypes(
-  params: Record<string, string> = {},
+export function makeProductTypesQueryOptions(
+  params: Record<string, unknown> = {},
   options?: Omit<UseQueryOptions<List<ProductType>>, 'queryKey' | 'queryFn'>,
 ) {
-  const { data, isFetching } = useQuery({
-    queryKey: filled(params)
-      ? ['product-type-list', params]
-      : ['product-type-list'],
+  return queryOptions({
+    queryKey: ['product-type-list', params],
     queryFn: () =>
-      fetcher<List<ProductType>>('/api/products/types', { params }),
+      core.fetch<List<ProductType>>('/api/c/products/types', { params }),
     ...options,
   })
+}
 
-  return { data, isFetching }
+export function useProductTypes(
+  params: Record<string, unknown> = {},
+  options?: Omit<UseQueryOptions<List<ProductType>>, 'queryKey' | 'queryFn'>,
+) {
+  return useQuery(makeProductTypesQueryOptions(params, options))
+}
+
+export function useProductTypesSuspense(
+  params: Record<string, unknown> = {},
+  options?: Omit<UseQueryOptions<List<ProductType>>, 'queryKey' | 'queryFn'>,
+) {
+  return useSuspenseQuery(makeProductTypesQueryOptions(params, options))
 }

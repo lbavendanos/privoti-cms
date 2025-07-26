@@ -1,8 +1,6 @@
 import { clsx } from 'clsx'
-import { local } from './fetcher/local'
 import { twMerge } from 'tailwind-merge'
 import type { ClassValue } from 'clsx'
-import type { FetchConfig } from './fetcher/base'
 
 /**
  * Utility for constructing className strings conditionally and merging them with Tailwind CSS classes.
@@ -21,7 +19,7 @@ export function cn(...inputs: ClassValue[]): string {
  * @returns {URL} Returns the generated url.
  */
 export function url(path: string = '/'): URL {
-  return new URL(path, process.env.NEXT_PUBLIC_APP_URL)
+  return new URL(path, import.meta.env.VITE_APP_URL)
 }
 
 /**
@@ -31,7 +29,7 @@ export function url(path: string = '/'): URL {
  * @returns {URL} Returns the generated url.
  */
 export function storeUrl(path: string = '/'): URL {
-  return new URL(path, process.env.NEXT_PUBLIC_STORE_URL)
+  return new URL(path, import.meta.env.VITE_STORE_URL)
 }
 
 /**
@@ -99,8 +97,7 @@ export function blank(value: unknown): boolean {
 
   if (value instanceof Map || value instanceof Set) return value.size === 0
 
-  if (typeof value === 'object' && Object.keys(value as object).length === 0)
-    return true
+  if (typeof value === 'object' && Object.keys(value).length === 0) return true
 
   return false
 }
@@ -164,16 +161,38 @@ export function debounce<T extends (...args: Parameters<T>) => ReturnType<T>>(
 }
 
 /**
- * Fetches data from the specified path
+ * Get today's date with the time set to midnight.
  *
- * @template T - The type of the data to be fetched.
- * @param {string} path - The API endpoint path to fetch data from.
- * @param {FetchConfig} [config={}] - Optional configuration for the fetch request.
- * @returns {Promise<T>} - A promise that resolves to the fetched data of type T.
+ * @return {Date} Returns today's date with the time set to midnight.
  */
-export async function fetcher<T>(
-  path: string,
-  config: FetchConfig = {},
-): Promise<T> {
-  return local.fetch<T>(path, config)
+export function today(): Date {
+  const date = new Date()
+  date.setHours(0, 0, 0, 0)
+
+  return date
+}
+
+/**
+ * Format a date to a localized string.
+ *
+ * @param {Date | string | null} date - The date to format.
+ * @param {Intl.DateTimeFormatOptions} [options] - Optional formatting options.
+ * @return {string} Returns the formatted date string.
+ */
+export function formatDate(
+  date: Date | string | null,
+  options?: Intl.DateTimeFormatOptions,
+): string {
+  if (!date) return ''
+
+  const d = typeof date === 'string' ? new Date(date) : date
+
+  if (isNaN(d.getTime())) return ''
+
+  return d.toLocaleDateString(import.meta.env.VITE_APP_LOCALE, {
+    year: 'numeric',
+    month: 'long',
+    day: '2-digit',
+    ...options,
+  })
 }

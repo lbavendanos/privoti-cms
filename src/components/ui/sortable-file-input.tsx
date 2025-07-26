@@ -1,23 +1,17 @@
-'use client'
-
 import { uuid } from '@/lib/utils'
 import { useCallback } from 'react'
-import { CSS } from '@dnd-kit/utilities'
-import Image from 'next/image'
+import { closestCenter } from '@dnd-kit/core'
 import {
-  DndContext,
-  DragEndEvent,
-  MeasuringStrategy,
-  closestCenter,
-} from '@dnd-kit/core'
-import {
-  AnimateLayoutChanges,
-  SortableContext,
   arrayMove,
-  defaultAnimateLayoutChanges,
   useSortable,
+  defaultAnimateLayoutChanges,
 } from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
+import type { AnimateLayoutChanges } from '@dnd-kit/sortable'
+import type { DragEndEvent } from '@dnd-kit/core'
 import { Button } from './button'
+import { SortableContext } from '@dnd-kit/sortable'
+import { DndContext, MeasuringStrategy } from '@dnd-kit/core'
 import { GripVertical, Upload, X } from 'lucide-react'
 
 type FileItem = {
@@ -220,7 +214,7 @@ const SortableItem: React.FC<SortableItemProps> = ({ id, file, onDelete }) => {
       className="group relative flex touch-none flex-col items-center rounded border"
     >
       {file.type === 'image' && (
-        <Image
+        <img
           src={file.url}
           alt={file.name}
           width={200}

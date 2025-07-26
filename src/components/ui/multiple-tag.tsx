@@ -1,5 +1,3 @@
-'use client'
-
 import { cn } from '@/lib/utils'
 import { useCallback, useState } from 'react'
 import { Badge } from '@/components/ui/badge'

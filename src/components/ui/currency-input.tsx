@@ -1,5 +1,3 @@
-'use client'
-
 import { withMask } from 'use-mask-input'
 import { Input } from '@/components/ui/input'
 

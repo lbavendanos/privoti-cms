@@ -9,6 +9,7 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
+  CommandSeparator,
 } from '@/components/ui/command'
 import {
   Popover,
@@ -236,18 +237,51 @@ function FilterValueSelect<TData>({ column }: FilterValueProps<TData>) {
 function FilterValueDate<TData>({ column }: FilterValueProps<TData>) {
   const [filterValue, setFilterValue] = useFilterValue<TData, string[]>(column)
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
-    from: filterValue?.[0] ? new Date(filterValue[0]) : today(),
+    from: filterValue?.[0] ? new Date(filterValue[0]) : undefined,
     to: filterValue?.[1] ? new Date(filterValue[1]) : undefined,
   })
 
-  const handleSelect = useCallback(
-    (newDateRange: DateRange) => {
-      const from = newDateRange.from
-      const to =
-        newDateRange.to && from?.getTime() !== newDateRange.to.getTime()
-          ? newDateRange.to
-          : undefined
+  const referenceToday = useMemo(() => today(), [])
+  const presets = useMemo(
+    () => [
+      {
+        label: 'Today',
+        value: { from: referenceToday },
+      },
+      {
+        label: 'Last 7 days',
+        value: {
+          from: new Date(referenceToday.getTime() - 7 * 24 * 60 * 60 * 1000),
+          to: referenceToday,
+        },
+      },
+      {
+        label: 'Last 30 days',
+        value: {
+          from: new Date(referenceToday.getTime() - 30 * 24 * 60 * 60 * 1000),
+          to: referenceToday,
+        },
+      },
+      {
+        label: 'Last 90 days',
+        value: {
+          from: new Date(referenceToday.getTime() - 90 * 24 * 60 * 60 * 1000),
+          to: referenceToday,
+        },
+      },
+      {
+        label: 'Last 12 months',
+        value: {
+          from: new Date(referenceToday.getTime() - 365 * 24 * 60 * 60 * 1000),
+          to: referenceToday,
+        },
+      },
+    ],
+    [referenceToday],
+  )
 
+  const setRange = useCallback(
+    (from?: Date, to?: Date) => {
       setDateRange({ from, to })
       setFilterValue(
         from && to
@@ -260,18 +294,55 @@ function FilterValueDate<TData>({ column }: FilterValueProps<TData>) {
     [setFilterValue],
   )
 
+  const handleCalendarSelect = useCallback(
+    (newDateRange: DateRange) => {
+      const from = newDateRange.from
+      const to =
+        newDateRange.to && from?.getTime() !== newDateRange.to.getTime()
+          ? newDateRange.to
+          : undefined
+
+      setRange(from, to)
+    },
+    [setRange],
+  )
+
+  const handlePresetSelect = useCallback(
+    (presetValue: { from?: Date; to?: Date }) => {
+      setRange(presetValue.from, presetValue.to)
+    },
+    [setRange],
+  )
+
   return (
     <Command>
-      <CommandList className="max-h-fit">
-        <CommandGroup>
+      <CommandList className="max-h-fit max-w-[300px] p-4">
+        <CommandGroup className="pb-4">
           <Calendar
+            className="bg-transparent p-0 [--cell-size:--spacing(9.3)]"
             mode="range"
             defaultMonth={dateRange?.from}
             selected={dateRange}
-            onSelect={handleSelect}
+            onSelect={handleCalendarSelect}
             required
             autoFocus
           />
+        </CommandGroup>
+        <CommandSeparator />
+        <CommandGroup>
+          <div className="flex flex-wrap gap-2 pt-4">
+            {presets.map((preset) => (
+              <Button
+                key={preset.label}
+                variant="outline"
+                size="sm"
+                className="flex-1"
+                onClick={() => handlePresetSelect(preset.value)}
+              >
+                {preset.label}
+              </Button>
+            ))}
+          </div>
         </CommandGroup>
       </CommandList>
     </Command>

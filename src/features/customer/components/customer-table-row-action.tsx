@@ -18,7 +18,7 @@ import { EllipsisIcon, PencilIcon, TrashIcon } from 'lucide-react'
 
 export function CustomerTableRowAction({ customer }: { customer: Customer }) {
   const prompt = usePrompt()
-  const { mutate: deleteCustomer } = useDeleteCustomer(`${customer.id}`)
+  const { mutate: deleteCustomer } = useDeleteCustomer(customer.id)
 
   const handleDelete = useCallback(async () => {
     const isConfirmed = await prompt({

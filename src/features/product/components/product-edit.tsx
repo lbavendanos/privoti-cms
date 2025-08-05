@@ -6,8 +6,8 @@ const route = getRouteApi('/_authenticated/(app)/products/$productId')
 
 export function ProductEdit() {
   const { productId } = route.useParams()
-  const { data: product } = useProduct(productId)
-  const mutation = useUpdateProduct(`${product.id}`)
+  const { data: product } = useProduct(Number(productId))
+  const mutation = useUpdateProduct(product.id)
 
   return <ProductForm product={product} mutation={mutation} />
 }

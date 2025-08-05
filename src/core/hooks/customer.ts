@@ -20,7 +20,7 @@ export function makeCustomersQueryOptions(
 }
 
 export function makeCustomerQueryOptions(
-  id: string,
+  id: number,
   options?: Omit<UseQueryOptions<Customer>, 'queryKey' | 'queryFn'>,
 ) {
   return queryOptions({
@@ -40,7 +40,7 @@ export function useCustomers(
   return useSuspenseQuery(makeCustomersQueryOptions(params, options))
 }
 
-export function useCustomer(id: string) {
+export function useCustomer(id: number) {
   return useSuspenseQuery(makeCustomerQueryOptions(id))
 }
 
@@ -61,7 +61,7 @@ export function useCreateCustomer() {
     },
     onSuccess: (customer) => {
       queryClient.setQueryData(
-        ['customer-detail', { id: `${customer.id}` }],
+        ['customer-detail', { id: customer.id }],
         customer,
       )
       queryClient.invalidateQueries({ queryKey: ['customer-list'] })
@@ -69,32 +69,7 @@ export function useCreateCustomer() {
   })
 }
 
-export function useUpdateCustomers() {
-  const queryClient = useQueryClient()
-  const params = { _method: 'PUT' }
-
-  return useMutation({
-    mutationFn: async (payload: { items: Record<string, unknown>[] }) =>
-      core
-        .fetch<{ data: Customer[] }>('/api/c/customers', {
-          method: 'POST',
-          body: payload,
-          params,
-        })
-        .then(({ data }) => data),
-    onSuccess: (customers) => {
-      customers.forEach((customer) => {
-        queryClient.setQueryData(
-          ['customer-detail', { id: customer.id }],
-          customer,
-        )
-      })
-      queryClient.invalidateQueries({ queryKey: ['customer-list'] })
-    },
-  })
-}
-
-export function useDeleteCustomer(id: string) {
+export function useDeleteCustomer(id: number) {
   const queryClient = useQueryClient()
 
   return useMutation({
@@ -104,7 +79,7 @@ export function useDeleteCustomer(id: string) {
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['customer-detail', { id: `${id}` }],
+        queryKey: ['customer-detail', { id }],
       })
       queryClient.invalidateQueries({ queryKey: ['customer-list'] })
     },
@@ -125,7 +100,7 @@ export function useDeleteCustomers() {
     onSuccess: (ids) => {
       ids.forEach((id) => {
         queryClient.invalidateQueries({
-          queryKey: ['customer-detail', { id: `${id}` }],
+          queryKey: ['customer-detail', { id }],
         })
       })
       queryClient.invalidateQueries({ queryKey: ['customer-list'] })

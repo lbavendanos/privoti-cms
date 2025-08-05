@@ -7,7 +7,7 @@ export const Route = createFileRoute(
   '/_authenticated/(app)/products/$productId',
 )({
   loader: ({ context: { queryClient }, params: { productId } }) => {
-    queryClient.ensureQueryData(makeProductQueryOptions(productId))
+    queryClient.ensureQueryData(makeProductQueryOptions(Number(productId)))
   },
   pendingComponent: Loading,
   component: ProductEdit,

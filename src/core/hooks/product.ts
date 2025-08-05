@@ -20,7 +20,7 @@ export function makeProductsQueryOptions(
 }
 
 export function makeProductQueryOptions(
-  id: string,
+  id: number,
   options?: Omit<UseQueryOptions<Product>, 'queryKey' | 'queryFn'>,
 ) {
   return queryOptions({
@@ -37,7 +37,7 @@ export function useProducts(params: Record<string, unknown> = {}) {
   return useSuspenseQuery(makeProductsQueryOptions(params))
 }
 
-export function useProduct(id: string) {
+export function useProduct(id: number) {
   return useSuspenseQuery(makeProductQueryOptions(id))
 }
 
@@ -57,16 +57,13 @@ export function useCreateProduct() {
       return product
     },
     onSuccess: (product) => {
-      queryClient.setQueryData(
-        ['product-detail', { id: `${product.id}` }],
-        product,
-      )
+      queryClient.setQueryData(['product-detail', { id: product.id }], product)
       queryClient.invalidateQueries({ queryKey: ['product-list'] })
     },
   })
 }
 
-export function useUpdateProduct(id: string) {
+export function useUpdateProduct(id: number) {
   const queryClient = useQueryClient()
   const params = { _method: 'PUT' }
 
@@ -111,7 +108,7 @@ export function useUpdateProducts() {
   })
 }
 
-export function useDeleteProduct(id: string) {
+export function useDeleteProduct(id: number) {
   const queryClient = useQueryClient()
 
   return useMutation({
@@ -121,7 +118,7 @@ export function useDeleteProduct(id: string) {
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['product-detail', { id: `${id}` }],
+        queryKey: ['product-detail', { id }],
       })
       queryClient.invalidateQueries({ queryKey: ['product-list'] })
     },
@@ -132,7 +129,7 @@ export function useDeleteProducts() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (ids: number[] | string[]) =>
+    mutationFn: (ids: number[]) =>
       core
         .fetch('/api/c/products', {
           method: 'DELETE',
@@ -142,7 +139,7 @@ export function useDeleteProducts() {
     onSuccess: (ids) => {
       ids.forEach((id) => {
         queryClient.invalidateQueries({
-          queryKey: ['product-detail', { id: `${id}` }],
+          queryKey: ['product-detail', { id }],
         })
       })
       queryClient.invalidateQueries({ queryKey: ['product-list'] })

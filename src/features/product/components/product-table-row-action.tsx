@@ -21,8 +21,8 @@ import { TrashIcon, PencilIcon, EllipsisIcon } from 'lucide-react'
 
 export function ProductTableRowAction({ product }: { product: Product }) {
   const prompt = usePrompt()
-  const { mutate: updateProduct } = useUpdateProduct(`${product.id}`)
-  const { mutate: deleteProduct } = useDeleteProduct(`${product.id}`)
+  const { mutate: updateProduct } = useUpdateProduct(product.id)
+  const { mutate: deleteProduct } = useDeleteProduct(product.id)
 
   const handleStatusChange = useCallback(
     (status: string) => {

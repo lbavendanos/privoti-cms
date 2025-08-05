@@ -10,6 +10,22 @@ export type User = {
   created_at?: string
 }
 
+export type CustomerAccount = 'guest' | 'registered'
+
+export type Customer = {
+  id: number
+  first_name: string
+  last_name: string
+  name: string
+  email: string
+  avatar?: string
+  phone?: string
+  dob?: string
+  account: CustomerAccount
+  updated_at?: string
+  created_at?: string
+}
+
 export type Collection = {
   id: number
   title: string

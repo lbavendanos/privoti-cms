@@ -1,8 +1,8 @@
 import type { ProductStatus } from '@/core/types'
 import { CircleCheckIcon, CircleDashedIcon, CircleDotIcon } from 'lucide-react'
 
-export const PRODUCT_STATUS_DEFAULT: ProductStatus = 'draft'
 export const PRODUCT_STATUS_LIST = ['draft', 'active', 'archived'] as const
+export const PRODUCT_STATUS_DEFAULT: ProductStatus = 'draft'
 export const PRODUCT_STATUS_ICONS: Record<
   ProductStatus,
   typeof CircleCheckIcon | typeof CircleDotIcon | typeof CircleDashedIcon

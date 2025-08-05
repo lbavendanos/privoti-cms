@@ -1,16 +1,13 @@
 import { getRouteApi } from '@tanstack/react-router'
 import { clearEmptyFields } from '@/lib/utils'
 
-const route = getRouteApi('/_authenticated/(app)/products/')
+const route = getRouteApi('/_authenticated/(app)/customers/')
 
-export function useProductTableFilters() {
+export function useCustomerTableFilters() {
   const navigate = route.useNavigate()
   const filters = route.useSearch({
-    select: ({ title, status, type, vendor, created_at, updated_at }) => ({
-      title,
-      status,
-      type,
-      vendor,
+    select: ({ name, created_at, updated_at }) => ({
+      name,
       created_at,
       updated_at,
     }),

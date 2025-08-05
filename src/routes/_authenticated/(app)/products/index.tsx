@@ -8,29 +8,7 @@ import { ProductList } from '@/features/product/components/product-list'
 
 export const Route = createFileRoute('/_authenticated/(app)/products/')({
   validateSearch: productSearchSchema,
-  loaderDeps: ({
-    search: {
-      title,
-      status,
-      type,
-      vendor,
-      created_at,
-      updated_at,
-      order,
-      per_page,
-      page,
-    },
-  }) => ({
-    title,
-    status,
-    type,
-    vendor,
-    created_at,
-    updated_at,
-    order,
-    per_page,
-    page,
-  }),
+  loaderDeps: ({ search }) => search,
   loader: ({ context: { queryClient }, deps }) => {
     queryClient.ensureQueryData(makeProductsQueryOptions(deps))
     queryClient.ensureQueryData(

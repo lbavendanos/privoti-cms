@@ -1,11 +1,13 @@
 import { useDataTable } from '@/hooks/use-data-table'
-import { useProductTableSort } from '../hooks/use-product-table-sort'
+import { useTableSort } from '@/hooks/use-table-sort'
+import { useTablePagination } from '@/hooks/use-table-pagination'
 import { useProductTableColumns } from '../hooks/use-product-table-columns'
 import { useProductTableFilters } from '../hooks/use-product-table-filters'
-import { useProductTablePagination } from '../hooks/use-product-table-pagination'
 import type { Product, ProductType, Vendor } from '@/core/types'
 import { DataTable } from '@/components/data-table/data-table'
 import { ProductTableActionBar } from './product-table-action-bar'
+
+const routeId = '/_authenticated/(app)/products/'
 
 type ProductTableProps = {
   products: Product[]
@@ -22,8 +24,8 @@ export function ProductTable({
 }: ProductTableProps) {
   const { columns } = useProductTableColumns({ productTypes, vendors })
   const { filters, setFilters } = useProductTableFilters()
-  const { pagination, setPagination } = useProductTablePagination()
-  const { sorting, setSorting } = useProductTableSort()
+  const { pagination, setPagination } = useTablePagination(routeId)
+  const { sorting, setSorting } = useTableSort(routeId)
 
   const { table } = useDataTable<Product>({
     data: products,

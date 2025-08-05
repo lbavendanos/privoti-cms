@@ -1,15 +1,14 @@
+import { capitalize } from '@/lib/utils'
 import { memo, useMemo } from 'react'
-import { capitalize, formatDate } from '@/lib/utils'
+import { useTableColumns } from '@/hooks/use-table-columns'
 import { getProductStatusIcon, getProductStatusBadgeStyle } from '../lib/utils'
 import { PRODUCT_STATUS_LIST } from '../lib/constants'
 import type { Product, ProductStatus, ProductType, Vendor } from '@/core/types'
 import type { ColumnDef } from '@tanstack/react-table'
 import { Badge } from '@/components/ui/badge'
-import { Checkbox } from '@/components/ui/checkbox'
 import { ProductTableRowAction } from '../components/product-table-row-action'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
-  CalendarIcon,
   CircleDotDashedIcon,
   ContainerIcon,
   ShapesIcon,
@@ -27,35 +26,10 @@ export function useProductTableColumns({
   productTypes,
   vendors,
 }: UseProductTableColumnsProps) {
+  const { selectedColumn, dateColumns } = useTableColumns<Product>()
   const columns = useMemo<ColumnDef<Product>[]>(
     () => [
-      {
-        id: 'select',
-        header: ({ table }) => (
-          <Checkbox
-            aria-label="Select all"
-            className="translate-y-0.5"
-            checked={
-              table.getIsAllPageRowsSelected() ||
-              (table.getIsSomePageRowsSelected() && 'indeterminate')
-            }
-            onCheckedChange={(value) =>
-              table.toggleAllPageRowsSelected(!!value)
-            }
-          />
-        ),
-        cell: ({ row }) => (
-          <Checkbox
-            checked={row.getIsSelected()}
-            className="translate-y-0.5"
-            aria-label="Select row"
-            onCheckedChange={(value) => row.toggleSelected(!!value)}
-          />
-        ),
-        size: 40,
-        enableSorting: false,
-        enableHiding: false,
-      },
+      selectedColumn,
       {
         id: 'title',
         header: 'Product',
@@ -198,44 +172,6 @@ export function useProductTableColumns({
         enableHiding: true,
       },
       {
-        id: 'created_at',
-        header: 'Created At',
-        accessorKey: 'created_at',
-        cell: ({ row }) => {
-          const createdAt = row.getValue<string | null>('created_at')
-
-          return createdAt ? formatDate(createdAt) : '-'
-        },
-        meta: {
-          label: 'Created At',
-          variant: 'date',
-          icon: CalendarIcon,
-        },
-        size: 160,
-        enableColumnFilter: true,
-        enableSorting: true,
-        enableHiding: true,
-      },
-      {
-        id: 'updated_at',
-        header: 'Updated At',
-        accessorKey: 'updated_at',
-        cell: ({ row }) => {
-          const updatedAt = row.getValue<string | null>('updated_at')
-
-          return updatedAt ? formatDate(updatedAt) : '-'
-        },
-        meta: {
-          label: 'Updated At',
-          variant: 'date',
-          icon: CalendarIcon,
-        },
-        size: 160,
-        enableColumnFilter: true,
-        enableSorting: true,
-        enableHiding: true,
-      },
-      {
         id: 'actions',
         header: () => <span className="sr-only">Actions</span>,
         cell: ({ row }) => (
@@ -245,8 +181,9 @@ export function useProductTableColumns({
         enableHiding: false,
         enableSorting: false,
       },
+      ...dateColumns,
     ],
-    [productTypes, vendors],
+    [selectedColumn, dateColumns, productTypes, vendors],
   )
 
   return { columns }

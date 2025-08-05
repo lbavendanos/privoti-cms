@@ -88,16 +88,17 @@ export function delay(ms: number): Promise<void> {
  */
 export function blank(value: unknown): boolean {
   if (value === null || value === undefined) return true
-
-  if (typeof value === 'number' || typeof value === 'boolean') return false
-
-  if (typeof value === 'string' && value.trim() === '') return true
-
-  if (Array.isArray(value) && value.length === 0) return true
-
+  if (typeof value === 'boolean') return false
+  if (typeof value === 'number' && isNaN(value)) return true
+  if (typeof value === 'string') return value.trim() === ''
+  if (Array.isArray(value)) return value.length === 0
   if (value instanceof Map || value instanceof Set) return value.size === 0
-
-  if (typeof value === 'object' && Object.keys(value).length === 0) return true
+  if (
+    typeof value === 'object' &&
+    Object.getPrototypeOf(value) === Object.prototype &&
+    Object.keys(value).length === 0
+  )
+    return true
 
   return false
 }
@@ -195,4 +196,40 @@ export function formatDate(
     day: '2-digit',
     ...options,
   })
+}
+
+/**
+ * Pick fields from an object based on the provided keys.
+ *
+ * @param {T} source - The source object from which to pick fields.
+ * @param {Partial<Record<keyof T, unknown>>} keys - An object where
+ * keys are the fields to pick from the source object.
+ * @return {Partial<T>} Returns a new object containing only the fields
+ */
+export function pickFields<T extends Record<string, unknown>>(
+  source: T,
+  keys: Partial<Record<keyof T, unknown>>,
+): Partial<T> {
+  return Object.keys(keys).reduce((acc, key) => {
+    if (keys[key as keyof T]) {
+      acc[key as keyof T] = source[key as keyof T]
+    }
+    return acc
+  }, {} as Partial<T>)
+}
+
+/**
+ * Remove empty fields from an object.
+ *
+ * @param {T} search - The object from which to remove empty fields.
+ * @return {Partial<T>} Returns a new object without empty fields.
+ *
+ */
+export function clearEmptyFields<T extends Record<string, unknown>>(
+  search: T,
+): Partial<T> {
+  return Object.entries(search).reduce<Partial<T>>((acc, [key, value]) => {
+    if (!blank(value)) acc[key as keyof T] = value as T[keyof T]
+    return acc
+  }, {})
 }

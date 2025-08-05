@@ -22,8 +22,10 @@ import { Route as authPasswordForgotRouteImport } from './routes/(auth)/password
 import { Route as authAuthenticatedVerifyEmailRouteImport } from './routes/(auth)/_authenticated/verify-email'
 import { Route as authAuthenticatedConfirmEmailRouteImport } from './routes/(auth)/_authenticated/confirm-email'
 import { Route as AuthenticatedappProductsIndexRouteImport } from './routes/_authenticated/(app)/products/index'
+import { Route as AuthenticatedappCustomersIndexRouteImport } from './routes/_authenticated/(app)/customers/index'
 import { Route as AuthenticatedappProductsCreateRouteImport } from './routes/_authenticated/(app)/products/create'
 import { Route as AuthenticatedappProductsProductIdRouteImport } from './routes/_authenticated/(app)/products/$productId'
+import { Route as AuthenticatedappCustomersCustomerIdRouteImport } from './routes/_authenticated/(app)/customers/$customerId'
 import { Route as authPasswordResetTokenRouteImport } from './routes/(auth)/password.reset.$token'
 
 const authRouteImport = createFileRoute('/(auth)')()
@@ -89,6 +91,12 @@ const AuthenticatedappProductsIndexRoute =
     path: '/products/',
     getParentRoute: () => AuthenticatedappRouteRoute,
   } as any)
+const AuthenticatedappCustomersIndexRoute =
+  AuthenticatedappCustomersIndexRouteImport.update({
+    id: '/customers/',
+    path: '/customers/',
+    getParentRoute: () => AuthenticatedappRouteRoute,
+  } as any)
 const AuthenticatedappProductsCreateRoute =
   AuthenticatedappProductsCreateRouteImport.update({
     id: '/products/create',
@@ -99,6 +107,12 @@ const AuthenticatedappProductsProductIdRoute =
   AuthenticatedappProductsProductIdRouteImport.update({
     id: '/products/$productId',
     path: '/products/$productId',
+    getParentRoute: () => AuthenticatedappRouteRoute,
+  } as any)
+const AuthenticatedappCustomersCustomerIdRoute =
+  AuthenticatedappCustomersCustomerIdRouteImport.update({
+    id: '/customers/$customerId',
+    path: '/customers/$customerId',
     getParentRoute: () => AuthenticatedappRouteRoute,
   } as any)
 const authPasswordResetTokenRoute = authPasswordResetTokenRouteImport.update({
@@ -116,8 +130,10 @@ export interface FileRoutesByFullPath {
   '/password/forgot': typeof authPasswordForgotRoute
   '/settings/profile': typeof AuthenticatedSettingsProfileRoute
   '/password/reset/$token': typeof authPasswordResetTokenRoute
+  '/customers/$customerId': typeof AuthenticatedappCustomersCustomerIdRoute
   '/products/$productId': typeof AuthenticatedappProductsProductIdRoute
   '/products/create': typeof AuthenticatedappProductsCreateRoute
+  '/customers': typeof AuthenticatedappCustomersIndexRoute
   '/products': typeof AuthenticatedappProductsIndexRoute
 }
 export interface FileRoutesByTo {
@@ -129,8 +145,10 @@ export interface FileRoutesByTo {
   '/password/forgot': typeof authPasswordForgotRoute
   '/settings/profile': typeof AuthenticatedSettingsProfileRoute
   '/password/reset/$token': typeof authPasswordResetTokenRoute
+  '/customers/$customerId': typeof AuthenticatedappCustomersCustomerIdRoute
   '/products/$productId': typeof AuthenticatedappProductsProductIdRoute
   '/products/create': typeof AuthenticatedappProductsCreateRoute
+  '/customers': typeof AuthenticatedappCustomersIndexRoute
   '/products': typeof AuthenticatedappProductsIndexRoute
 }
 export interface FileRoutesById {
@@ -147,8 +165,10 @@ export interface FileRoutesById {
   '/_authenticated/settings/profile': typeof AuthenticatedSettingsProfileRoute
   '/_authenticated/(app)/': typeof AuthenticatedappIndexRoute
   '/(auth)/password/reset/$token': typeof authPasswordResetTokenRoute
+  '/_authenticated/(app)/customers/$customerId': typeof AuthenticatedappCustomersCustomerIdRoute
   '/_authenticated/(app)/products/$productId': typeof AuthenticatedappProductsProductIdRoute
   '/_authenticated/(app)/products/create': typeof AuthenticatedappProductsCreateRoute
+  '/_authenticated/(app)/customers/': typeof AuthenticatedappCustomersIndexRoute
   '/_authenticated/(app)/products/': typeof AuthenticatedappProductsIndexRoute
 }
 export interface FileRouteTypes {
@@ -162,8 +182,10 @@ export interface FileRouteTypes {
     | '/password/forgot'
     | '/settings/profile'
     | '/password/reset/$token'
+    | '/customers/$customerId'
     | '/products/$productId'
     | '/products/create'
+    | '/customers'
     | '/products'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -175,8 +197,10 @@ export interface FileRouteTypes {
     | '/password/forgot'
     | '/settings/profile'
     | '/password/reset/$token'
+    | '/customers/$customerId'
     | '/products/$productId'
     | '/products/create'
+    | '/customers'
     | '/products'
   id:
     | '__root__'
@@ -192,8 +216,10 @@ export interface FileRouteTypes {
     | '/_authenticated/settings/profile'
     | '/_authenticated/(app)/'
     | '/(auth)/password/reset/$token'
+    | '/_authenticated/(app)/customers/$customerId'
     | '/_authenticated/(app)/products/$productId'
     | '/_authenticated/(app)/products/create'
+    | '/_authenticated/(app)/customers/'
     | '/_authenticated/(app)/products/'
   fileRoutesById: FileRoutesById
 }
@@ -288,6 +314,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedappProductsIndexRouteImport
       parentRoute: typeof AuthenticatedappRouteRoute
     }
+    '/_authenticated/(app)/customers/': {
+      id: '/_authenticated/(app)/customers/'
+      path: '/customers'
+      fullPath: '/customers'
+      preLoaderRoute: typeof AuthenticatedappCustomersIndexRouteImport
+      parentRoute: typeof AuthenticatedappRouteRoute
+    }
     '/_authenticated/(app)/products/create': {
       id: '/_authenticated/(app)/products/create'
       path: '/products/create'
@@ -302,6 +335,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedappProductsProductIdRouteImport
       parentRoute: typeof AuthenticatedappRouteRoute
     }
+    '/_authenticated/(app)/customers/$customerId': {
+      id: '/_authenticated/(app)/customers/$customerId'
+      path: '/customers/$customerId'
+      fullPath: '/customers/$customerId'
+      preLoaderRoute: typeof AuthenticatedappCustomersCustomerIdRouteImport
+      parentRoute: typeof AuthenticatedappRouteRoute
+    }
     '/(auth)/password/reset/$token': {
       id: '/(auth)/password/reset/$token'
       path: '/password/reset/$token'
@@ -314,16 +354,21 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedappRouteRouteChildren {
   AuthenticatedappIndexRoute: typeof AuthenticatedappIndexRoute
+  AuthenticatedappCustomersCustomerIdRoute: typeof AuthenticatedappCustomersCustomerIdRoute
   AuthenticatedappProductsProductIdRoute: typeof AuthenticatedappProductsProductIdRoute
   AuthenticatedappProductsCreateRoute: typeof AuthenticatedappProductsCreateRoute
+  AuthenticatedappCustomersIndexRoute: typeof AuthenticatedappCustomersIndexRoute
   AuthenticatedappProductsIndexRoute: typeof AuthenticatedappProductsIndexRoute
 }
 
 const AuthenticatedappRouteRouteChildren: AuthenticatedappRouteRouteChildren = {
   AuthenticatedappIndexRoute: AuthenticatedappIndexRoute,
+  AuthenticatedappCustomersCustomerIdRoute:
+    AuthenticatedappCustomersCustomerIdRoute,
   AuthenticatedappProductsProductIdRoute:
     AuthenticatedappProductsProductIdRoute,
   AuthenticatedappProductsCreateRoute: AuthenticatedappProductsCreateRoute,
+  AuthenticatedappCustomersIndexRoute: AuthenticatedappCustomersIndexRoute,
   AuthenticatedappProductsIndexRoute: AuthenticatedappProductsIndexRoute,
 }
 

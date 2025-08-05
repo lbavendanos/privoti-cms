@@ -1,9 +1,9 @@
 import { toast } from '@/components/ui/toast'
+import { pickFields } from '@/lib/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useCallback } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { isFetchError } from '@/lib/fetcher'
-import { getDirtyFields } from '../lib/utils'
 import { productFormSchema } from '../schemas/product-form-schema'
 import { useProductFormData } from '../hooks/use-product-form-data'
 import { useProductFormDefault } from '../hooks/use-product-form-default'
@@ -63,8 +63,8 @@ export function ProductForm({ product, mutation }: ProductFormProps) {
 
   const handleSubmit = useCallback(
     (values: ProductFormSchema) => {
-      const dirtyValues = getDirtyFields(dirtyFields, values)
-      const formData = makeFormData(dirtyValues as Required<typeof dirtyValues>)
+      const dirtyValues = pickFields(values, dirtyFields)
+      const formData = makeFormData(dirtyValues)
 
       mutate(formData, {
         onSuccess: (response) => {

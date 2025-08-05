@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { makeProductQueryOptions } from '@/core/hooks/product'
 import { Loading } from '@/components/loading'
-import { ProductEdit } from '@/features/product/components/product-edit'
+import { ProductDetail } from '@/features/product/components/product-detail'
 
 export const Route = createFileRoute(
   '/_authenticated/(app)/products/$productId',
@@ -10,5 +10,5 @@ export const Route = createFileRoute(
     queryClient.ensureQueryData(makeProductQueryOptions(Number(productId)))
   },
   pendingComponent: Loading,
-  component: ProductEdit,
+  component: ProductDetail,
 })

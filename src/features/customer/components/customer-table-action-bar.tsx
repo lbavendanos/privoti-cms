@@ -2,6 +2,7 @@ import { toast } from '@/components/ui/toast'
 import { usePrompt } from '@/hooks/use-prompt'
 import { useCallback } from 'react'
 import { isFetchError } from '@/lib/fetcher'
+import { useDeleteCustomers } from '@/core/hooks/customer'
 import type { Table } from '@tanstack/react-table'
 import type { Customer } from '@/core/types'
 import {
@@ -18,8 +19,8 @@ type CustomerTableActionBarProps = {
 
 export function CustomerTableActionBar({ table }: CustomerTableActionBarProps) {
   const prompt = usePrompt()
-  // const { mutate: deleteCustomers, isPending: isDeletePending } =
-  //   useDeleteCustomers()
+  const { mutate: deleteCustomers, isPending: isDeletePending } =
+    useDeleteCustomers()
 
   const handleDelete = useCallback(async () => {
     const selectedRows = table.getSelectedRowModel().rows
@@ -41,23 +42,23 @@ export function CustomerTableActionBar({ table }: CustomerTableActionBarProps) {
       return
     }
 
-    // deleteCustomers(selectedCustomerIds, {
-    //   onSuccess: () => {
-    //     toast.success(
-    //       `Deleted ${selectedRows.length} selected ${
-    //         selectedRows.length > 1 ? 'customers' : 'customer'
-    //       }.`,
-    //     )
-    //   },
-    //   onError: (error) => {
-    //     if (isFetchError(error)) {
-    //       if (error.status === 422) {
-    //         toast.error(error.message)
-    //       }
-    //     }
-    //   },
-    // })
-  }, [table, prompt])
+    deleteCustomers(selectedCustomerIds, {
+      onSuccess: () => {
+        toast.success(
+          `Deleted ${selectedRows.length} selected ${
+            selectedRows.length > 1 ? 'customers' : 'customer'
+          }.`,
+        )
+      },
+      onError: (error) => {
+        if (isFetchError(error)) {
+          if (error.status === 422) {
+            toast.error(error.message)
+          }
+        }
+      },
+    })
+  }, [table, prompt, deleteCustomers])
 
   return (
     <DataTableActionBar table={table}>
@@ -70,7 +71,7 @@ export function CustomerTableActionBar({ table }: CustomerTableActionBarProps) {
         <DataTableActionBarAction
           size="icon"
           tooltip="Delete customers"
-          isPending={false}
+          isPending={isDeletePending}
           onClick={handleDelete}
         >
           <Trash2Icon />

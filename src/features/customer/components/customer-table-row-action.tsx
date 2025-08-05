@@ -2,6 +2,7 @@ import { toast } from '@/components/ui/toast'
 import { usePrompt } from '@/hooks/use-prompt'
 import { useCallback } from 'react'
 import { isFetchError } from '@/lib/fetcher'
+import { useDeleteCustomer } from '@/core/hooks/customer'
 import type { Customer } from '@/core/types'
 import {
   DropdownMenu,
@@ -17,6 +18,7 @@ import { EllipsisIcon, PencilIcon, TrashIcon } from 'lucide-react'
 
 export function CustomerTableRowAction({ customer }: { customer: Customer }) {
   const prompt = usePrompt()
+  const { mutate: deleteCustomer } = useDeleteCustomer(`${customer.id}`)
 
   const handleDelete = useCallback(async () => {
     const isConfirmed = await prompt({
@@ -35,19 +37,19 @@ export function CustomerTableRowAction({ customer }: { customer: Customer }) {
       return
     }
 
-    // deleteCustomer(undefined, {
-    //   onSuccess: () => {
-    //     toast.success('Customer deleted successfully.')
-    //   },
-    //   onError: (error) => {
-    //     if (isFetchError(error)) {
-    //       if (error.status === 422) {
-    //         toast.error(error.message)
-    //       }
-    //     }
-    //   },
-    // })
-  }, [customer.name, prompt])
+    deleteCustomer(undefined, {
+      onSuccess: () => {
+        toast.success('Customer deleted successfully.')
+      },
+      onError: (error) => {
+        if (isFetchError(error)) {
+          if (error.status === 422) {
+            toast.error(error.message)
+          }
+        }
+      },
+    })
+  }, [customer.name, prompt, deleteCustomer])
 
   return (
     <DropdownMenu>

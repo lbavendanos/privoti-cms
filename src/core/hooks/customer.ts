@@ -93,3 +93,42 @@ export function useUpdateCustomers() {
     },
   })
 }
+
+export function useDeleteCustomer(id: string) {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: () =>
+      core.fetch(`/api/c/customers/${id}`, {
+        method: 'DELETE',
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['customer-detail', { id: `${id}` }],
+      })
+      queryClient.invalidateQueries({ queryKey: ['customer-list'] })
+    },
+  })
+}
+
+export function useDeleteCustomers() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (ids: number[] | string[]) =>
+      core
+        .fetch('/api/c/customers', {
+          method: 'DELETE',
+          body: { ids } as unknown as BodyInit,
+        })
+        .then(() => ids),
+    onSuccess: (ids) => {
+      ids.forEach((id) => {
+        queryClient.invalidateQueries({
+          queryKey: ['customer-detail', { id: `${id}` }],
+        })
+      })
+      queryClient.invalidateQueries({ queryKey: ['customer-list'] })
+    },
+  })
+}

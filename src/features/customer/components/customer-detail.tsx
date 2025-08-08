@@ -1,27 +1,21 @@
+import { capitalize } from '@/lib/utils'
 import { useCustomer } from '@/core/hooks/customer'
 import { getRouteApi } from '@tanstack/react-router'
-import { capitalize, formatDate } from '@/lib/utils'
 import { getCustomerAccountBadgeStyle } from '../lib/utils'
 import {
   Card,
-  CardAction,
   CardContent,
   CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
 import { Link } from '@tanstack/react-router'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
-import { ChevronLeft, EllipsisIcon } from 'lucide-react'
+import { ChevronLeft } from 'lucide-react'
+import { CustomerProfileSection } from './customer-profile-section'
 
 const route = getRouteApi('/_authenticated/(app)/customers/$customerId')
 
@@ -106,64 +100,7 @@ export function CustomerDetail() {
         </div>
         <div className="col-span-12 @4xl:col-span-4 @4xl:col-start-9">
           <div className="flex flex-col gap-6">
-            <Card className="relative">
-              <CardAction className="absolute top-4 right-4">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      className="rounded-full shadow-none"
-                    >
-                      <EllipsisIcon size={16} aria-hidden="true" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent>
-                    <DropdownMenuItem>
-                      Edit contact information
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>Manage addresses</DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </CardAction>
-              <CardHeader>
-                <CardTitle>Customer</CardTitle>
-                <CardDescription>
-                  Manage customer information, including contact details and
-                  addresses.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid gap-6">
-                  <div className="grid gap-2">
-                    <p className="text-sm leading-none font-medium">Email</p>
-                    <p className="text-muted-foreground text-sm">
-                      {customer.email}
-                    </p>
-                  </div>
-                  <div className="grid gap-2">
-                    <p className="text-sm leading-none font-medium">Phone</p>
-                    <p className="text-muted-foreground text-sm">
-                      {customer.phone ?? '-'}
-                    </p>
-                  </div>
-                  <div className="grid gap-2">
-                    <p className="text-sm leading-none font-medium">
-                      Date of Birth
-                    </p>
-                    <p className="text-muted-foreground text-sm">
-                      {customer.dob ? formatDate(customer.dob) : '-'}
-                    </p>
-                  </div>
-                  <div className="grid gap-2">
-                    <p className="text-sm leading-none font-medium">
-                      Default Address
-                    </p>
-                    <p className="text-muted-foreground text-sm">-</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <CustomerProfileSection customer={customer} />
           </div>
         </div>
       </div>

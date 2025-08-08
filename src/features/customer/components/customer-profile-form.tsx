@@ -3,9 +3,9 @@ import { toast } from '@/components/ui/toast'
 import { useCallback } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { isFetchError } from '@/lib/fetcher'
-import { useCreateCustomer } from '@/core/hooks/customer'
 import { useForm, useFormState } from 'react-hook-form'
 import { cn, formatDate, pickFields } from '@/lib/utils'
+import { useCreateCustomer, useUpdateCustomer } from '@/core/hooks/customer'
 import type { Customer } from '@/core/types'
 import {
   Form,
@@ -62,7 +62,11 @@ export function CustomerProfileForm({
   onSuccess,
   onCancel,
 }: CustomerProfileFormProps) {
-  const { mutate, isPending } = useCreateCustomer()
+  const { mutate, isPending } = customer
+    ? // eslint-disable-next-line
+      useUpdateCustomer(customer.id)
+    : // eslint-disable-next-line
+      useCreateCustomer()
 
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
@@ -153,7 +157,7 @@ export function CustomerProfileForm({
                   <span className="text-muted-foreground">(optional)</span>
                 </FormLabel>
                 <FormControl>
-                  <Input placeholder="987654321" {...field} />
+                  <Input {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -208,7 +212,7 @@ export function CustomerProfileForm({
               Cancel
             </Button>
             <LoadingButton type="submit" loading={isPending}>
-              Create customer
+              {customer ? 'Update customer' : 'Create customer'}
             </LoadingButton>
           </div>
         </div>

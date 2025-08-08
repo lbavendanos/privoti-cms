@@ -71,7 +71,7 @@ export function ProductForm({ product, mutation }: ProductFormProps) {
           form.reset(makeFormDefault(response))
 
           toast.success(
-            `Product ${product ? 'updated' : 'created'} successfully`,
+            `Product has been ${product ? 'updated' : 'created'} successfully`,
           )
 
           if (!product) {

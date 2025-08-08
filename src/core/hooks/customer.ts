@@ -69,6 +69,26 @@ export function useCreateCustomer() {
   })
 }
 
+export function useUpdateCustomer(id: number) {
+  const queryClient = useQueryClient()
+  const params = { _method: 'PUT' }
+
+  return useMutation({
+    mutationFn: async (payload: Record<string, unknown> | FormData) =>
+      core
+        .fetch<{ data: Customer }>(`/api/c/customers/${id}`, {
+          method: 'POST',
+          body: payload,
+          params,
+        })
+        .then(({ data }) => data),
+    onSuccess: (customer) => {
+      queryClient.setQueryData(['customer-detail', { id }], customer)
+      queryClient.invalidateQueries({ queryKey: ['customer-list'] })
+    },
+  })
+}
+
 export function useDeleteCustomer(id: number) {
   const queryClient = useQueryClient()
 

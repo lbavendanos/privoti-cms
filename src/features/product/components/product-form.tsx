@@ -4,9 +4,8 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useCallback } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { isFetchError } from '@/lib/fetcher'
+import { useProductForm } from '../hooks/use-product-form'
 import { productFormSchema } from '../schemas/product-form-schema'
-import { useProductFormData } from '../hooks/use-product-form-data'
-import { useProductFormDefault } from '../hooks/use-product-form-default'
 import { useForm, useFormState } from 'react-hook-form'
 import { useCreateProduct, useUpdateProduct } from '@/core/hooks/product'
 import type { Product } from '@/core/types'
@@ -48,8 +47,7 @@ type ProductFormProps = {
 
 export function ProductForm({ product }: ProductFormProps) {
   const navigate = useNavigate()
-  const { makeFormDefault } = useProductFormDefault()
-  const { makeFormData } = useProductFormData()
+  const { makeDefaultValues, makeFormData } = useProductForm()
   const { mutate, isPending } = product
     ? // eslint-disable-next-line
       useUpdateProduct(product.id)
@@ -58,7 +56,7 @@ export function ProductForm({ product }: ProductFormProps) {
 
   const form = useForm<ProductFormSchema>({
     resolver: zodResolver(productFormSchema),
-    defaultValues: makeFormDefault(product),
+    defaultValues: makeDefaultValues(product),
   })
   const { dirtyFields } = useFormState({ control: form.control })
 
@@ -69,7 +67,7 @@ export function ProductForm({ product }: ProductFormProps) {
 
       mutate(formData, {
         onSuccess: (response) => {
-          form.reset(makeFormDefault(response))
+          form.reset(makeDefaultValues(response))
 
           toast.success(
             `Product has been ${product ? 'updated' : 'created'} successfully`,
@@ -97,7 +95,7 @@ export function ProductForm({ product }: ProductFormProps) {
       form,
       dirtyFields,
       makeFormData,
-      makeFormDefault,
+      makeDefaultValues,
       mutate,
       navigate,
     ],

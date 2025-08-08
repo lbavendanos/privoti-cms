@@ -8,9 +8,9 @@ import { productFormSchema } from '../schemas/product-form-schema'
 import { useProductFormData } from '../hooks/use-product-form-data'
 import { useProductFormDefault } from '../hooks/use-product-form-default'
 import { useForm, useFormState } from 'react-hook-form'
+import { useCreateProduct, useUpdateProduct } from '@/core/hooks/product'
 import type { Product } from '@/core/types'
 import type { ProductFormSchema } from '../schemas/product-form-schema'
-import type { useCreateProduct, useUpdateProduct } from '@/core/hooks/product'
 import { Link } from '@tanstack/react-router'
 import {
   Card,
@@ -44,16 +44,17 @@ import { ChevronLeft } from 'lucide-react'
 
 type ProductFormProps = {
   product?: Product
-  mutation:
-    | ReturnType<typeof useCreateProduct>
-    | ReturnType<typeof useUpdateProduct>
 }
 
-export function ProductForm({ product, mutation }: ProductFormProps) {
+export function ProductForm({ product }: ProductFormProps) {
   const navigate = useNavigate()
   const { makeFormDefault } = useProductFormDefault()
   const { makeFormData } = useProductFormData()
-  const { mutate, isPending } = mutation
+  const { mutate, isPending } = product
+    ? // eslint-disable-next-line
+      useUpdateProduct(product.id)
+    : // eslint-disable-next-line
+      useCreateProduct()
 
   const form = useForm<ProductFormSchema>({
     resolver: zodResolver(productFormSchema),
@@ -440,7 +441,7 @@ export function ProductForm({ product, mutation }: ProductFormProps) {
                 <Link to="/products">Discard</Link>
               </Button>
               <LoadingButton type="submit" loading={isPending}>
-                Save Product
+                {product ? 'Update' : 'Create'} product
               </LoadingButton>
             </div>
           </div>

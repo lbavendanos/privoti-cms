@@ -7,7 +7,6 @@ const route = getRouteApi('/_authenticated/(app)/products/$productId')
 export function ProductDetail() {
   const { productId } = route.useParams()
   const { data: product } = useProduct(Number(productId))
-  const mutation = useUpdateProduct(product.id)
 
-  return <ProductForm product={product} mutation={mutation} />
+  return <ProductForm product={product} />
 }

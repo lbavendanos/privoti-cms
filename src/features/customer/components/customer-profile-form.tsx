@@ -212,7 +212,7 @@ export function CustomerProfileForm({
               Cancel
             </Button>
             <LoadingButton type="submit" loading={isPending}>
-              {customer ? 'Update customer' : 'Create customer'}
+              {customer ? 'Update' : 'Create'} customer
             </LoadingButton>
           </div>
         </div>

@@ -108,7 +108,10 @@ export function DataTable<TData>({
                     >
                       {cell.column.id !== 'select' &&
                       cell.column.id !== 'actions' ? (
-                        <Link {...rowNavigation(row)}>
+                        <Link
+                          {...rowNavigation(row)}
+                          className="flex items-center"
+                        >
                           {flexRender(
                             cell.column.columnDef.cell,
                             cell.getContext(),

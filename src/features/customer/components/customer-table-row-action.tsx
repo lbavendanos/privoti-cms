@@ -10,7 +10,6 @@ import {
   DropdownMenuGroup,
   DropdownMenuTrigger,
   DropdownMenuContent,
-  DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu'
 import { Link } from '@tanstack/react-router'
 import { Button } from '@/components/ui/button'
@@ -74,7 +73,6 @@ export function CustomerTableRowAction({ customer }: { customer: Customer }) {
               <span>Edit</span>
             </Link>
           </DropdownMenuItem>
-          <DropdownMenuSeparator />
           <DropdownMenuItem
             variant="destructive"
             className="cursor-pointer"

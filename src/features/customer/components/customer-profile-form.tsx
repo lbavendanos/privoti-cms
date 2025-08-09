@@ -3,10 +3,12 @@ import { toast } from '@/components/ui/toast'
 import { useCallback } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { isFetchError } from '@/lib/fetcher'
+import { isMobilePhone } from 'validator'
 import { useForm, useFormState } from 'react-hook-form'
 import { cn, formatDate, pickFields } from '@/lib/utils'
 import { useCreateCustomer, useUpdateCustomer } from '@/core/hooks/customer'
 import type { Customer } from '@/core/types'
+import type { CountryCode } from '@/components/ui/phone-input'
 import {
   Form,
   FormControl,
@@ -23,6 +25,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
+import { PhoneInput } from '@/components/ui/phone-input'
 import { LoadingButton } from '@/components/ui/loading-button'
 import { CalendarIcon } from 'lucide-react'
 
@@ -30,7 +33,12 @@ export const formSchema = z.object({
   first_name: z.string().min(1, 'First name is required'),
   last_name: z.string().min(1, 'Last name is required'),
   email: z.email('Invalid email address'),
-  phone: z.string().optional(),
+  phone: z
+    .string()
+    .refine((value) => isMobilePhone(value, import.meta.env.VITE_APP_LOCALE), {
+      message: 'Invalid phone number',
+    })
+    .optional(),
   dob: z.date().optional(),
 })
 
@@ -62,6 +70,7 @@ export function CustomerProfileForm({
   onSuccess,
   onCancel,
 }: CustomerProfileFormProps) {
+  const appCountryCode = import.meta.env.VITE_APP_COUNTRY_CODE as CountryCode
   const { mutate, isPending } = customer
     ? // eslint-disable-next-line
       useUpdateCustomer(customer.id)
@@ -74,7 +83,7 @@ export function CustomerProfileForm({
       first_name: customer?.first_name ?? '',
       last_name: customer?.last_name ?? '',
       email: customer?.email ?? '',
-      phone: customer?.phone ?? '',
+      phone: customer?.phone?.national ?? '',
       dob: customer?.dob ? new Date(customer.dob) : undefined,
     },
   })
@@ -157,7 +166,7 @@ export function CustomerProfileForm({
                   <span className="text-muted-foreground">(optional)</span>
                 </FormLabel>
                 <FormControl>
-                  <Input {...field} />
+                  <PhoneInput countryCode={appCountryCode} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

@@ -69,7 +69,7 @@ export function CustomerProfileSection({
           <div className="grid gap-2">
             <p className="text-sm leading-none font-medium">Phone</p>
             <p className="text-muted-foreground text-sm">
-              {customer.phone ?? '-'}
+              {customer.phone?.national ?? '-'}
             </p>
           </div>
           <div className="grid gap-2">

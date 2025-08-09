@@ -12,6 +12,12 @@ export type User = {
 
 export type CustomerAccount = 'guest' | 'registered'
 
+export type CustomerPhone = {
+  e164: string
+  international: string
+  national: string
+}
+
 export type Customer = {
   id: number
   first_name: string
@@ -19,7 +25,7 @@ export type Customer = {
   name: string
   email: string
   avatar?: string
-  phone?: string
+  phone?: CustomerPhone
   dob?: string
   account: CustomerAccount
   updated_at?: string

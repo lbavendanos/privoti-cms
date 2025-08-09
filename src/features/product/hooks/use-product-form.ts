@@ -5,7 +5,7 @@ import type { Product } from '@/core/types'
 import type { ProductFormSchema } from '../schemas/product-form-schema'
 
 export function useProductForm() {
-  const makeDefaultValues = useCallback(
+  const createDefaultValues = useCallback(
     (product?: Product | null): ProductFormSchema => {
       return {
         status: product ? product.status : PRODUCT_STATUS_DEFAULT,
@@ -67,7 +67,7 @@ export function useProductForm() {
     [],
   )
 
-  const makeFormData = useCallback(
+  const createFormData = useCallback(
     (values: Partial<ProductFormSchema>): FormData => {
       const formData = new FormData()
 
@@ -188,5 +188,5 @@ export function useProductForm() {
     [],
   )
 
-  return { makeDefaultValues, makeFormData }
+  return { createDefaultValues, createFormData }
 }

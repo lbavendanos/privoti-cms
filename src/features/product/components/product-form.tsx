@@ -47,7 +47,7 @@ type ProductFormProps = {
 
 export function ProductForm({ product }: ProductFormProps) {
   const navigate = useNavigate()
-  const { makeDefaultValues, makeFormData } = useProductForm()
+  const { createDefaultValues, createFormData } = useProductForm()
   const { mutate, isPending } = product
     ? // eslint-disable-next-line
       useUpdateProduct(product.id)
@@ -56,18 +56,18 @@ export function ProductForm({ product }: ProductFormProps) {
 
   const form = useForm<ProductFormSchema>({
     resolver: zodResolver(productFormSchema),
-    defaultValues: makeDefaultValues(product),
+    defaultValues: createDefaultValues(product),
   })
   const { dirtyFields } = useFormState({ control: form.control })
 
   const handleSubmit = useCallback(
     (values: ProductFormSchema) => {
       const dirtyValues = pickFields(values, dirtyFields)
-      const formData = makeFormData(dirtyValues)
+      const formData = createFormData(dirtyValues)
 
       mutate(formData, {
         onSuccess: (response) => {
-          form.reset(makeDefaultValues(response))
+          form.reset(createDefaultValues(response))
 
           toast.success(
             `Product has been ${product ? 'updated' : 'created'} successfully`,
@@ -94,8 +94,8 @@ export function ProductForm({ product }: ProductFormProps) {
       product,
       form,
       dirtyFields,
-      makeFormData,
-      makeDefaultValues,
+      createFormData,
+      createDefaultValues,
       mutate,
       navigate,
     ],

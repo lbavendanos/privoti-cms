@@ -6,8 +6,9 @@ const route = getRouteApi('/_authenticated/(app)/customers/')
 export function useCustomerTableFilters() {
   const navigate = route.useNavigate()
   const filters = route.useSearch({
-    select: ({ name, created_at, updated_at }) => ({
+    select: ({ name, account, created_at, updated_at }) => ({
       name,
+      account,
       created_at,
       updated_at,
     }),

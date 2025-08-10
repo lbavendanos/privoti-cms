@@ -1,7 +1,5 @@
-import { capitalize } from '@/lib/utils'
 import { useCustomer } from '@/core/hooks/customer'
 import { getRouteApi } from '@tanstack/react-router'
-import { getCustomerAccountBadgeStyle } from '../lib/utils'
 import {
   Card,
   CardContent,
@@ -11,10 +9,10 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { Link } from '@tanstack/react-router'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { ChevronLeft } from 'lucide-react'
+import { CustomerAccountBadge } from './customer-account-badge'
 import { CustomerProfileSection } from './customer-profile-section'
 
 const route = getRouteApi('/_authenticated/(app)/customers/$customerId')
@@ -41,9 +39,7 @@ export function CustomerDetail() {
             <h1 className="flex-1 shrink-0 text-xl font-semibold tracking-tight whitespace-nowrap sm:grow-0">
               {customer.name}
             </h1>
-            <Badge className={getCustomerAccountBadgeStyle(customer.account)}>
-              {capitalize(customer.account)}
-            </Badge>
+            <CustomerAccountBadge account={customer.account} />
           </div>
         </div>
         <div className="col-span-12 @4xl:col-span-8">

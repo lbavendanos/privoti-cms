@@ -1,14 +1,11 @@
 import { capitalize } from '@/lib/utils'
 import { memo, useMemo } from 'react'
 import { useTableColumns } from '@/hooks/use-table-columns'
-import {
-  getCustomerAccountBadgeStyle,
-  getCustomerAccountIcon,
-} from '../lib/utils'
+import { getCustomerAccountIcon } from '../lib/utils'
 import { CUSTOMER_ACCOUNT_LIST } from '../lib/constants'
 import type { ColumnDef } from '@tanstack/react-table'
 import type { Customer, CustomerAccount } from '@/core/types'
-import { Badge } from '@/components/ui/badge'
+import { CustomerAccountBadge } from '../components/customer-account-badge'
 import { CustomerTableRowAction } from '../components/customer-table-row-action'
 import { TextIcon, UserIcon } from 'lucide-react'
 
@@ -48,15 +45,11 @@ export function useCustomerTableColumns() {
         id: 'account',
         header: 'Account',
         accessorKey: 'account',
-        cell: ({ row }) => {
-          const account = row.getValue<CustomerAccount>('account')
-
-          return (
-            <Badge className={getCustomerAccountBadgeStyle(account)}>
-              {capitalize(account)}
-            </Badge>
-          )
-        },
+        cell: ({ row }) => (
+          <CustomerAccountBadge
+            account={row.getValue<CustomerAccount>('account')}
+          />
+        ),
         meta: {
           label: 'Account',
           variant: 'select',

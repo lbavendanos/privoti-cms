@@ -16,6 +16,7 @@ export type CustomerPhone = {
   e164: string
   international: string
   national: string
+  mobile_dialing: string
 }
 
 export type Customer = {

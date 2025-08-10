@@ -35,10 +35,14 @@ export const formSchema = z.object({
   email: z.email('Invalid email address'),
   phone: z
     .string()
-    .refine((value) => isMobilePhone(value, import.meta.env.VITE_APP_LOCALE), {
-      message: 'Invalid phone number',
-    })
-    .optional(),
+    .optional()
+    .refine(
+      (value) =>
+        !value || isMobilePhone(value, import.meta.env.VITE_APP_LOCALE),
+      {
+        message: 'Invalid phone number',
+      },
+    ),
   dob: z.date().optional(),
 })
 
@@ -83,7 +87,7 @@ export function CustomerProfileForm({
       first_name: customer?.first_name ?? '',
       last_name: customer?.last_name ?? '',
       email: customer?.email ?? '',
-      phone: customer?.phone?.national ?? '',
+      phone: customer?.phone?.mobile_dialing ?? '',
       dob: customer?.dob ? new Date(customer.dob) : undefined,
     },
   })

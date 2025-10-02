@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Button } from '@/components/ui/button'
 import { CustomerProfileDialog } from './customer-profile-dialog'
+import { CustomerAddressDialog } from './customer-address-dialog'
 import { EllipsisIcon } from 'lucide-react'
 
 type CustomerProfileSectionProps = {
@@ -26,7 +27,8 @@ type CustomerProfileSectionProps = {
 export function CustomerProfileSection({
   customer,
 }: CustomerProfileSectionProps) {
-  const [open, setOpen] = useState(false)
+  const [isProfileOpen, setIsProfileOpen] = useState(false)
+  const [isAddressOpen, setIsAddressOpen] = useState(false)
 
   return (
     <Card className="relative">
@@ -42,17 +44,24 @@ export function CustomerProfileSection({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
-            <DropdownMenuItem onSelect={() => setOpen(true)}>
+            <DropdownMenuItem onSelect={() => setIsProfileOpen(true)}>
               Edit contact information
             </DropdownMenuItem>
-            <DropdownMenuItem>Manage addresses</DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => setIsAddressOpen(true)}>
+              Manage addresses
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </CardAction>
       <CustomerProfileDialog
         customer={customer}
-        open={open}
-        onOpenChange={setOpen}
+        open={isProfileOpen}
+        onOpenChange={setIsProfileOpen}
+      />
+      <CustomerAddressDialog
+        customer={customer}
+        open={isAddressOpen}
+        onOpenChange={setIsAddressOpen}
       />
       <CardHeader>
         <CardTitle>Customer</CardTitle>

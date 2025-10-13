@@ -19,18 +19,12 @@ export function ProductCollectionsInput({
   ...props
 }: ProductCollectionsInputProps) {
   const handleSearch = useCallback(async (value: string) => {
-    const { data: collections } = await core.fetch<List<Collection>>(
+    const { data: collectionList } = await core.fetch<List<Collection>>(
       '/api/c/collections',
-      {
-        params: {
-          q: value,
-          fields: 'id,title',
-          name: 'collections',
-        },
-      },
+      { params: { title: value } },
     )
 
-    return collections.map((collection) => ({
+    return collectionList.map((collection) => ({
       label: collection.title,
       value: `${collection.id}`,
     }))

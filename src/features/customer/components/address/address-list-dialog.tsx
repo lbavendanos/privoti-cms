@@ -292,12 +292,10 @@ function AddressActionMenu({
             <span>Default</span>
           </DropdownMenuItem>
         )}
-        {!address.default && (
-          <DropdownMenuItem variant="destructive" onSelect={handleDelete}>
-            <TrashIcon size={16} aria-hidden="true" />
-            <span>Delete</span>
-          </DropdownMenuItem>
-        )}
+        <DropdownMenuItem variant="destructive" onSelect={handleDelete}>
+          <TrashIcon size={16} aria-hidden="true" />
+          <span>Delete</span>
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   )

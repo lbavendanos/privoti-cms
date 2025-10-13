@@ -1,6 +1,7 @@
 import type { CustomerAccount } from '@/core/types'
-import { UserCheckIcon, UserIcon, UserStarIcon } from 'lucide-react'
+import { UserIcon, UserStarIcon } from 'lucide-react'
 
+export const CUSTOMER_ADDRESS_LIMIT = 5
 export const CUSTOMER_ACCOUNT_LIST = ['guest', 'registered'] as const
 export const CUSTOMER_ACOOUNT_DEFAULT: CustomerAccount = 'guest'
 export const CUSTOMER_ACCOUNT_ICONS: Record<

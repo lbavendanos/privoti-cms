@@ -12,7 +12,7 @@ export type User = {
 
 export type CustomerAccount = 'guest' | 'registered'
 
-export type CustomerPhone = {
+export type Phone = {
   e164: string
   international: string
   national: string
@@ -26,9 +26,25 @@ export type Customer = {
   name: string
   email: string
   avatar?: string
-  phone?: CustomerPhone
+  phone?: Phone
   dob?: string
   account: CustomerAccount
+  updated_at?: string
+  created_at?: string
+}
+
+export type CustomerAddress = {
+  id: number
+  first_name: string
+  last_name: string
+  phone: Phone
+  address1: string
+  address2?: string
+  district: string
+  city: string
+  state: string
+  default: boolean
+  customer_id: number
   updated_at?: string
   created_at?: string
 }

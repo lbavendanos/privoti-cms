@@ -1,0 +1,102 @@
+[
+  {
+    "inei": "010000",
+    "name": "amazonas"
+  },
+  {
+    "inei": "020000",
+    "name": "ancash"
+  },
+  {
+    "inei": "030000",
+    "name": "apurimac"
+  },
+  {
+    "inei": "040000",
+    "name": "arequipa"
+  },
+  {
+    "inei": "050000",
+    "name": "ayacucho"
+  },
+  {
+    "inei": "060000",
+    "name": "cajamarca"
+  },
+  {
+    "inei": "070000",
+    "name": "callao"
+  },
+  {
+    "inei": "080000",
+    "name": "cusco"
+  },
+  {
+    "inei": "090000",
+    "name": "huancavelica"
+  },
+  {
+    "inei": "100000",
+    "name": "huanuco"
+  },
+  {
+    "inei": "110000",
+    "name": "ica"
+  },
+  {
+    "inei": "120000",
+    "name": "junin"
+  },
+  {
+    "inei": "130000",
+    "name": "la libertad"
+  },
+  {
+    "inei": "140000",
+    "name": "lambayeque"
+  },
+  {
+    "inei": "150000",
+    "name": "lima"
+  },
+  {
+    "inei": "160000",
+    "name": "loreto"
+  },
+  {
+    "inei": "170000",
+    "name": "madre de dios"
+  },
+  {
+    "inei": "180000",
+    "name": "moquegua"
+  },
+  {
+    "inei": "190000",
+    "name": "pasco"
+  },
+  {
+    "inei": "200000",
+    "name": "piura"
+  },
+  {
+    "inei": "210000",
+    "name": "puno"
+  },
+  {
+    "inei": "220000",
+    "name": "san martin"
+  },
+  {
+    "inei": "230000",
+    "name": "tacna"
+  },
+  {
+    "inei": "240000",
+    "name": "tumbes"
+  },
+  {
+    "inei": "250000",
+    "name": "ucayali"
+  }
+]

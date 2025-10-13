@@ -10,7 +10,7 @@ export default [
   ...tanstackConfig,
   ...pluginRouter.configs['flat/recommended'],
   ...pluginQuery.configs['flat/recommended'],
-  ...pluginReactHooks.configs['flat/recommended'],
+  pluginReactHooks.configs.flat['recommended-latest'],
   eslintPluginPrettierRecommended,
   {
     rules: {

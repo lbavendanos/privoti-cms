@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button'
-import { LoaderCircle } from 'lucide-react'
+import { Spinner } from './spinner'
 
 type LoadingButtonProps = React.ComponentProps<typeof Button> & {
   loading?: boolean
@@ -13,13 +13,7 @@ function LoadingButton({
 }: LoadingButtonProps) {
   return (
     <Button {...props} disabled={loading || disabled}>
-      {loading && (
-        <LoaderCircle
-          className="-ms-1 animate-spin"
-          size={16}
-          aria-hidden="true"
-        />
-      )}
+      {loading && <Spinner />}
       {children}
     </Button>
   )

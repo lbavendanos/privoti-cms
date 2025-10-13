@@ -1,0 +1,836 @@
+{
+  "amazonas": [
+    {
+      "inei": "010100",
+      "name": "chachapoyas"
+    },
+    {
+      "inei": "010200",
+      "name": "bagua"
+    },
+    {
+      "inei": "010300",
+      "name": "bongara"
+    },
+    {
+      "inei": "010400",
+      "name": "condorcanqui"
+    },
+    {
+      "inei": "010500",
+      "name": "luya"
+    },
+    {
+      "inei": "010600",
+      "name": "rodriguez de mendoza"
+    },
+    {
+      "inei": "010700",
+      "name": "utcubamba"
+    }
+  ],
+  "ancash": [
+    {
+      "inei": "020100",
+      "name": "huaraz"
+    },
+    {
+      "inei": "020200",
+      "name": "aija"
+    },
+    {
+      "inei": "020300",
+      "name": "antonio raymondi"
+    },
+    {
+      "inei": "020400",
+      "name": "asuncion"
+    },
+    {
+      "inei": "020500",
+      "name": "bolognesi"
+    },
+    {
+      "inei": "020600",
+      "name": "carhuaz"
+    },
+    {
+      "inei": "020700",
+      "name": "carlos fermin fitzcarrald"
+    },
+    {
+      "inei": "020800",
+      "name": "casma"
+    },
+    {
+      "inei": "020900",
+      "name": "corongo"
+    },
+    {
+      "inei": "021000",
+      "name": "huari"
+    },
+    {
+      "inei": "021100",
+      "name": "huarmey"
+    },
+    {
+      "inei": "021200",
+      "name": "huaylas"
+    },
+    {
+      "inei": "021300",
+      "name": "mariscal luzuriaga"
+    },
+    {
+      "inei": "021400",
+      "name": "ocros"
+    },
+    {
+      "inei": "021500",
+      "name": "pallasca"
+    },
+    {
+      "inei": "021600",
+      "name": "pomabamba"
+    },
+    {
+      "inei": "021700",
+      "name": "recuay"
+    },
+    {
+      "inei": "021800",
+      "name": "santa"
+    },
+    {
+      "inei": "021900",
+      "name": "sihuas"
+    },
+    {
+      "inei": "022000",
+      "name": "yungay"
+    }
+  ],
+  "apurimac": [
+    {
+      "inei": "030100",
+      "name": "abancay"
+    },
+    {
+      "inei": "030200",
+      "name": "andahuaylas"
+    },
+    {
+      "inei": "030300",
+      "name": "antabamba"
+    },
+    {
+      "inei": "030400",
+      "name": "aymaraes"
+    },
+    {
+      "inei": "030500",
+      "name": "cotabambas"
+    },
+    {
+      "inei": "030600",
+      "name": "chincheros"
+    },
+    {
+      "inei": "030700",
+      "name": "grau"
+    }
+  ],
+  "arequipa": [
+    {
+      "inei": "040100",
+      "name": "arequipa"
+    },
+    {
+      "inei": "040200",
+      "name": "camana"
+    },
+    {
+      "inei": "040300",
+      "name": "caraveli"
+    },
+    {
+      "inei": "040400",
+      "name": "castilla"
+    },
+    {
+      "inei": "040500",
+      "name": "caylloma"
+    },
+    {
+      "inei": "040600",
+      "name": "condesuyos"
+    },
+    {
+      "inei": "040700",
+      "name": "islay"
+    },
+    {
+      "inei": "040800",
+      "name": "la union"
+    }
+  ],
+  "ayacucho": [
+    {
+      "inei": "050100",
+      "name": "huamanga"
+    },
+    {
+      "inei": "050200",
+      "name": "cangallo"
+    },
+    {
+      "inei": "050300",
+      "name": "huanca sancos"
+    },
+    {
+      "inei": "050400",
+      "name": "huanta"
+    },
+    {
+      "inei": "050500",
+      "name": "la mar"
+    },
+    {
+      "inei": "050600",
+      "name": "lucanas"
+    },
+    {
+      "inei": "050700",
+      "name": "parinacochas"
+    },
+    {
+      "inei": "050800",
+      "name": "paucar del sara sara"
+    },
+    {
+      "inei": "050900",
+      "name": "sucre"
+    },
+    {
+      "inei": "051000",
+      "name": "victor fajardo"
+    },
+    {
+      "inei": "051100",
+      "name": "vilcas huaman"
+    }
+  ],
+  "cajamarca": [
+    {
+      "inei": "060100",
+      "name": "cajamarca"
+    },
+    {
+      "inei": "060200",
+      "name": "cajabamba"
+    },
+    {
+      "inei": "060300",
+      "name": "celendin"
+    },
+    {
+      "inei": "060400",
+      "name": "chota"
+    },
+    {
+      "inei": "060500",
+      "name": "contumaza"
+    },
+    {
+      "inei": "060600",
+      "name": "cutervo"
+    },
+    {
+      "inei": "060700",
+      "name": "hualgayoc"
+    },
+    {
+      "inei": "060800",
+      "name": "jaen"
+    },
+    {
+      "inei": "060900",
+      "name": "san ignacio"
+    },
+    {
+      "inei": "061000",
+      "name": "san marcos"
+    },
+    {
+      "inei": "061100",
+      "name": "san miguel"
+    },
+    {
+      "inei": "061200",
+      "name": "san pablo"
+    },
+    {
+      "inei": "061300",
+      "name": "santa cruz"
+    }
+  ],
+  "callao": [
+    {
+      "inei": "070100",
+      "name": "callao"
+    }
+  ],
+  "cusco": [
+    {
+      "inei": "080100",
+      "name": "cusco"
+    },
+    {
+      "inei": "080200",
+      "name": "acomayo"
+    },
+    {
+      "inei": "080300",
+      "name": "anta"
+    },
+    {
+      "inei": "080400",
+      "name": "calca"
+    },
+    {
+      "inei": "080500",
+      "name": "canas"
+    },
+    {
+      "inei": "080600",
+      "name": "canchis"
+    },
+    {
+      "inei": "080700",
+      "name": "chumbivilcas"
+    },
+    {
+      "inei": "080800",
+      "name": "espinar"
+    },
+    {
+      "inei": "080900",
+      "name": "la convencion"
+    },
+    {
+      "inei": "081000",
+      "name": "paruro"
+    },
+    {
+      "inei": "081100",
+      "name": "paucartambo"
+    },
+    {
+      "inei": "081200",
+      "name": "quispicanchi"
+    },
+    {
+      "inei": "081300",
+      "name": "urubamba"
+    }
+  ],
+  "huancavelica": [
+    {
+      "inei": "090100",
+      "name": "huancavelica"
+    },
+    {
+      "inei": "090200",
+      "name": "acobamba"
+    },
+    {
+      "inei": "090300",
+      "name": "angaraes"
+    },
+    {
+      "inei": "090400",
+      "name": "castrovirreyna"
+    },
+    {
+      "inei": "090500",
+      "name": "churcampa"
+    },
+    {
+      "inei": "090600",
+      "name": "huaytara"
+    },
+    {
+      "inei": "090700",
+      "name": "tayacaja"
+    }
+  ],
+  "huanuco": [
+    {
+      "inei": "100100",
+      "name": "huanuco"
+    },
+    {
+      "inei": "100200",
+      "name": "ambo"
+    },
+    {
+      "inei": "100300",
+      "name": "dos de mayo"
+    },
+    {
+      "inei": "100400",
+      "name": "huacaybamba"
+    },
+    {
+      "inei": "100500",
+      "name": "huamalies"
+    },
+    {
+      "inei": "100600",
+      "name": "leoncio prado"
+    },
+    {
+      "inei": "100700",
+      "name": "marañon"
+    },
+    {
+      "inei": "100800",
+      "name": "pachitea"
+    },
+    {
+      "inei": "100900",
+      "name": "puerto inca"
+    },
+    {
+      "inei": "101000",
+      "name": "lauricocha"
+    },
+    {
+      "inei": "101100",
+      "name": "yarowilca"
+    }
+  ],
+  "ica": [
+    {
+      "inei": "110100",
+      "name": "ica"
+    },
+    {
+      "inei": "110200",
+      "name": "chincha"
+    },
+    {
+      "inei": "110300",
+      "name": "nazca"
+    },
+    {
+      "inei": "110400",
+      "name": "palpa"
+    },
+    {
+      "inei": "110500",
+      "name": "pisco"
+    }
+  ],
+  "junin": [
+    {
+      "inei": "120100",
+      "name": "huancayo"
+    },
+    {
+      "inei": "120200",
+      "name": "concepcion"
+    },
+    {
+      "inei": "120300",
+      "name": "chanchamayo"
+    },
+    {
+      "inei": "120400",
+      "name": "jauja"
+    },
+    {
+      "inei": "120500",
+      "name": "junin"
+    },
+    {
+      "inei": "120600",
+      "name": "satipo"
+    },
+    {
+      "inei": "120700",
+      "name": "tarma"
+    },
+    {
+      "inei": "120800",
+      "name": "yauli"
+    },
+    {
+      "inei": "120900",
+      "name": "chupaca"
+    }
+  ],
+  "la libertad": [
+    {
+      "inei": "130100",
+      "name": "trujillo"
+    },
+    {
+      "inei": "130200",
+      "name": "ascope"
+    },
+    {
+      "inei": "130300",
+      "name": "bolivar"
+    },
+    {
+      "inei": "130400",
+      "name": "chepen"
+    },
+    {
+      "inei": "130500",
+      "name": "julcan"
+    },
+    {
+      "inei": "130600",
+      "name": "otuzco"
+    },
+    {
+      "inei": "130700",
+      "name": "pacasmayo"
+    },
+    {
+      "inei": "130800",
+      "name": "pataz"
+    },
+    {
+      "inei": "130900",
+      "name": "sanchez carrion"
+    },
+    {
+      "inei": "131000",
+      "name": "santiago de chuco"
+    },
+    {
+      "inei": "131100",
+      "name": "gran chimu"
+    },
+    {
+      "inei": "131200",
+      "name": "viru"
+    }
+  ],
+  "lambayeque": [
+    {
+      "inei": "140100",
+      "name": "chiclayo"
+    },
+    {
+      "inei": "140200",
+      "name": "ferreñafe"
+    },
+    {
+      "inei": "140300",
+      "name": "lambayeque"
+    }
+  ],
+  "lima": [
+    {
+      "inei": "150100",
+      "name": "lima"
+    },
+    {
+      "inei": "150200",
+      "name": "barranca"
+    },
+    {
+      "inei": "150300",
+      "name": "cajatambo"
+    },
+    {
+      "inei": "150400",
+      "name": "canta"
+    },
+    {
+      "inei": "150500",
+      "name": "cañete"
+    },
+    {
+      "inei": "150600",
+      "name": "huaral"
+    },
+    {
+      "inei": "150700",
+      "name": "huarochiri"
+    },
+    {
+      "inei": "150800",
+      "name": "huaura"
+    },
+    {
+      "inei": "150900",
+      "name": "oyon"
+    },
+    {
+      "inei": "151000",
+      "name": "yauyos"
+    }
+  ],
+  "loreto": [
+    {
+      "inei": "160100",
+      "name": "maynas"
+    },
+    {
+      "inei": "160200",
+      "name": "alto amazonas"
+    },
+    {
+      "inei": "160300",
+      "name": "loreto"
+    },
+    {
+      "inei": "160400",
+      "name": "mariscal ramon castilla"
+    },
+    {
+      "inei": "160500",
+      "name": "requena"
+    },
+    {
+      "inei": "160600",
+      "name": "ucayali"
+    },
+    {
+      "inei": "160700",
+      "name": "datem del marañon"
+    },
+    {
+      "inei": "160800",
+      "name": "putumayo"
+    }
+  ],
+  "madre de dios": [
+    {
+      "inei": "170100",
+      "name": "tambopata"
+    },
+    {
+      "inei": "170200",
+      "name": "manu"
+    },
+    {
+      "inei": "170300",
+      "name": "tahuamanu"
+    }
+  ],
+  "moquegua": [
+    {
+      "inei": "180100",
+      "name": "mariscal nieto"
+    },
+    {
+      "inei": "180200",
+      "name": "general sanchez cerro"
+    },
+    {
+      "inei": "180300",
+      "name": "ilo"
+    }
+  ],
+  "pasco": [
+    {
+      "inei": "190100",
+      "name": "pasco"
+    },
+    {
+      "inei": "190200",
+      "name": "daniel alcides carrion"
+    },
+    {
+      "inei": "190300",
+      "name": "oxapampa"
+    }
+  ],
+  "piura": [
+    {
+      "inei": "200100",
+      "name": "piura"
+    },
+    {
+      "inei": "200200",
+      "name": "ayabaca"
+    },
+    {
+      "inei": "200300",
+      "name": "huancabamba"
+    },
+    {
+      "inei": "200400",
+      "name": "morropon"
+    },
+    {
+      "inei": "200500",
+      "name": "paita"
+    },
+    {
+      "inei": "200600",
+      "name": "sullana"
+    },
+    {
+      "inei": "200700",
+      "name": "talara"
+    },
+    {
+      "inei": "200800",
+      "name": "sechura"
+    }
+  ],
+  "puno": [
+    {
+      "inei": "210100",
+      "name": "puno"
+    },
+    {
+      "inei": "210200",
+      "name": "azangaro"
+    },
+    {
+      "inei": "210300",
+      "name": "carabaya"
+    },
+    {
+      "inei": "210400",
+      "name": "chucuito"
+    },
+    {
+      "inei": "210500",
+      "name": "el collao"
+    },
+    {
+      "inei": "210600",
+      "name": "huancane"
+    },
+    {
+      "inei": "210700",
+      "name": "lampa"
+    },
+    {
+      "inei": "210800",
+      "name": "melgar"
+    },
+    {
+      "inei": "210900",
+      "name": "moho"
+    },
+    {
+      "inei": "211000",
+      "name": "san antonio de putina"
+    },
+    {
+      "inei": "211100",
+      "name": "san roman"
+    },
+    {
+      "inei": "211200",
+      "name": "sandia"
+    },
+    {
+      "inei": "211300",
+      "name": "yunguyo"
+    }
+  ],
+  "san martin": [
+    {
+      "inei": "220100",
+      "name": "moyobamba"
+    },
+    {
+      "inei": "220200",
+      "name": "bellavista"
+    },
+    {
+      "inei": "220300",
+      "name": "el dorado"
+    },
+    {
+      "inei": "220400",
+      "name": "huallaga"
+    },
+    {
+      "inei": "220500",
+      "name": "lamas"
+    },
+    {
+      "inei": "220600",
+      "name": "mariscal caceres"
+    },
+    {
+      "inei": "220700",
+      "name": "picota"
+    },
+    {
+      "inei": "220800",
+      "name": "rioja"
+    },
+    {
+      "inei": "220900",
+      "name": "san martin"
+    },
+    {
+      "inei": "221000",
+      "name": "tocache"
+    }
+  ],
+  "tacna": [
+    {
+      "inei": "230100",
+      "name": "tacna"
+    },
+    {
+      "inei": "230200",
+      "name": "candarave"
+    },
+    {
+      "inei": "230300",
+      "name": "jorge basadre"
+    },
+    {
+      "inei": "230400",
+      "name": "tarata"
+    }
+  ],
+  "tumbes": [
+    {
+      "inei": "240100",
+      "name": "tumbes"
+    },
+    {
+      "inei": "240200",
+      "name": "contralmirante villar"
+    },
+    {
+      "inei": "240300",
+      "name": "zarumilla"
+    }
+  ],
+  "ucayali": [
+    {
+      "inei": "250100",
+      "name": "coronel portillo"
+    },
+    {
+      "inei": "250200",
+      "name": "atalaya"
+    },
+    {
+      "inei": "250300",
+      "name": "padre abad"
+    },
+    {
+      "inei": "250400",
+      "name": "purus"
+    }
+  ]
+}

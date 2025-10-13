@@ -124,6 +124,18 @@ export function capitalize(str: string) {
 }
 
 /**
+ * Uppercase the first character of each word in a string
+ *
+ * @param str - The string to capitalize.
+ * @returns The capitalized string.
+ */
+export function ucwords(str: string) {
+  return String(str)
+    .toLowerCase()
+    .replace(/(?:^|\s|["'([{])+\S/g, (l) => l.toUpperCase())
+}
+
+/**
  * Generate a UUID.
  *
  * @returns {string} Returns a UUID.

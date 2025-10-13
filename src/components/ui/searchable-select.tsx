@@ -28,6 +28,8 @@ type SearchableSelectProps = {
   options?: Option[]
   value?: Option | null
   placeholder?: string
+  disabled?: boolean
+  modal?: boolean
   shouldFilter?: boolean
   isLoading?: boolean
   searchTerm?: string
@@ -42,6 +44,8 @@ export function SearchableSelect({
   options,
   value: currentOption,
   placeholder,
+  disabled,
+  modal,
   shouldFilter,
   isLoading,
   searchTerm,
@@ -71,13 +75,14 @@ export function SearchableSelect({
   )
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover modal={modal} open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
           id={id}
           variant="outline"
           role="combobox"
           aria-expanded={open}
+          disabled={disabled}
           className="border-input bg-background hover:bg-background w-full justify-between px-3 font-normal outline-offset-0 outline-none focus-visible:outline-[3px]"
         >
           <span

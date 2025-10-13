@@ -23,7 +23,7 @@ export function ProductTypeInput({
   const debouncedSearchTerm = useDebounce(searchTerm, 500)
 
   const { data, isFetching } = useProductTypes(
-    debouncedSearchTerm ? { q: debouncedSearchTerm } : {},
+    debouncedSearchTerm ? { name: debouncedSearchTerm } : {},
     { placeholderData: keepPreviousData },
   )
 

@@ -23,7 +23,7 @@ export function ProductVendorInput({
   const debouncedSearchTerm = useDebounce(searchTerm, 500)
 
   const { data, isFetching } = useVendors(
-    debouncedSearchTerm ? { q: debouncedSearchTerm } : {},
+    debouncedSearchTerm ? { name: debouncedSearchTerm } : {},
     { placeholderData: keepPreviousData },
   )
 

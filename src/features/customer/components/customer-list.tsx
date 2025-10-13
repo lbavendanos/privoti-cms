@@ -5,7 +5,7 @@ import { useDeferredValue, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { CustomerEmpty } from './customer-empty'
 import { CustomerTable } from './customer-table'
-import { CustomerProfileDialog } from './customer-profile-dialog'
+import { ProfileDialog } from './profile/profile-dialog'
 import { PlusIcon } from 'lucide-react'
 
 const route = getRouteApi('/_authenticated/(app)/customers/')
@@ -42,7 +42,7 @@ export function CustomerList() {
             />
             Add customer
           </Button>
-          <CustomerProfileDialog open={open} onOpenChange={setOpen} />
+          <ProfileDialog open={open} onOpenChange={setOpen} />
         </div>
         <CustomerTable customers={customers} customerCount={customerCount} />
       </div>

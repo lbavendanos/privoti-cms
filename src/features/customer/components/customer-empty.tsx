@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { CustomerProfileDialog } from './customer-profile-dialog'
+import { ProfileDialog } from './profile/profile-dialog'
 
 export function CustomerEmpty() {
   const [open, setOpen] = useState(false)
@@ -19,7 +19,7 @@ export function CustomerEmpty() {
           <Button className="mt-4" onClick={() => setOpen(true)}>
             Add customer
           </Button>
-          <CustomerProfileDialog open={open} onOpenChange={setOpen} />
+          <ProfileDialog open={open} onOpenChange={setOpen} />
         </div>
       </div>
     </div>

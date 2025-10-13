@@ -17,17 +17,15 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Button } from '@/components/ui/button'
-import { AddressListDialog } from './address/address-list-dialog'
-import { CustomerProfileDialog } from './customer-profile-dialog'
+import { ProfileDialog } from './profile-dialog'
+import { AddressListDialog } from '../address/address-list-dialog'
 import { EllipsisIcon } from 'lucide-react'
 
-type CustomerProfileSectionProps = {
+type ProfileSectionProps = {
   customer: Customer
 }
 
-export function CustomerProfileSection({
-  customer,
-}: CustomerProfileSectionProps) {
+export function ProfileSection({ customer }: ProfileSectionProps) {
   const {
     data: { data: addresses },
   } = useCustomerAddresses(customer.id)
@@ -63,7 +61,7 @@ export function CustomerProfileSection({
           </DropdownMenuContent>
         </DropdownMenu>
       </CardAction>
-      <CustomerProfileDialog
+      <ProfileDialog
         customer={customer}
         open={isProfileOpen}
         onOpenChange={setIsProfileOpen}

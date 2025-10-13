@@ -11,9 +11,9 @@ import {
 import { Link } from '@tanstack/react-router'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
-import { ChevronLeft } from 'lucide-react'
+import { ProfileSection } from './profile/profile-section'
 import { CustomerAccountBadge } from './customer-account-badge'
-import { CustomerProfileSection } from './customer-profile-section'
+import { ChevronLeft } from 'lucide-react'
 
 const route = getRouteApi('/_authenticated/(app)/customers/$customerId')
 
@@ -96,7 +96,7 @@ export function CustomerDetail() {
         </div>
         <div className="col-span-12 @4xl:col-span-4 @4xl:col-start-9">
           <div className="flex flex-col gap-6">
-            <CustomerProfileSection customer={customer} />
+            <ProfileSection customer={customer} />
           </div>
         </div>
       </div>

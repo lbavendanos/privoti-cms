@@ -6,19 +6,19 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { CustomerProfileForm } from './customer-profile-form'
+import { ProfileForm } from './profile-form'
 
-type CustomerProfileDialogProps = {
+type ProfileDialogProps = {
   customer?: Customer
   open: boolean
   onOpenChange: (open: boolean) => void
 }
 
-export function CustomerProfileDialog({
+export function ProfileDialog({
   customer,
   open,
   onOpenChange,
-}: CustomerProfileDialogProps) {
+}: ProfileDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
@@ -32,7 +32,7 @@ export function CustomerProfileDialog({
               : 'Fill in the customer details below to create a new customer.'}
           </DialogDescription>
         </DialogHeader>
-        <CustomerProfileForm
+        <ProfileForm
           customer={customer}
           onSuccess={() => onOpenChange(false)}
           onCancel={() => onOpenChange(false)}

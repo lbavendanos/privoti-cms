@@ -63,17 +63,17 @@ function normalizeFormValues(
   )
 }
 
-type CustomerProfileFormProps = {
+type ProfileFormProps = {
   customer?: Customer
   onSuccess?: () => void
   onCancel?: () => void
 }
 
-export function CustomerProfileForm({
+export function ProfileForm({
   customer,
   onSuccess,
   onCancel,
-}: CustomerProfileFormProps) {
+}: ProfileFormProps) {
   const appCountryCode = import.meta.env.VITE_APP_COUNTRY_CODE as CountryCode
   const { mutate, isPending } = customer
     ? // eslint-disable-next-line

@@ -26,9 +26,9 @@ import {
 } from 'lucide-react'
 
 interface Category {
-  id: string
+  id: number
   name: string
-  parentId: string | null
+  parentId: number | null
   parentName?: string
 }
 
@@ -38,14 +38,12 @@ interface ProductCategoryInputProps {
   onChange?: (category: Category | null) => void
 }
 
-const params = { all: '1', fields: 'id,name,parent_id' }
-
 export function ProductCategoryInput({
   id,
   value: currentCategory,
   onChange,
 }: ProductCategoryInputProps) {
-  const { data, isLoading } = useProductCategories(params)
+  const { data, isLoading } = useProductCategories({ per_page: 1000 })
 
   const [currentParent, setCurrentParent] = useState<Category | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
@@ -55,15 +53,15 @@ export function ProductCategoryInput({
   const categories: Category[] = useMemo(
     () =>
       data?.data.map((c) => ({
-        id: `${c.id}`,
+        id: c.id,
         name: c.name,
-        parentId: c.parent_id ? `${c.parent_id}` : null,
+        parentId: c.parent_id ?? null,
       })) ?? [],
     [data],
   )
 
   const findCategory = useCallback(
-    (categoryId: string) => {
+    (categoryId: number) => {
       return categories.find((c) => c.id === categoryId)
     },
     [categories],
@@ -213,7 +211,7 @@ export function ProductCategoryInput({
               {filteredCategories.map((category) => (
                 <CommandItem
                   key={category.id}
-                  value={category.id}
+                  value={`${category.id}`}
                   className="cursor-pointer p-0"
                   onSelect={() => handleSelectCategory(category)}
                 >

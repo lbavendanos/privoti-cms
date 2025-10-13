@@ -1,5 +1,6 @@
-import { useState } from 'react'
 import { formatDate } from '@/lib/utils'
+import { useMemo, useState } from 'react'
+import { useCustomerAddresses } from '@/core/hooks/customer-address'
 import type { Customer } from '@/core/types'
 import {
   Card,
@@ -27,8 +28,17 @@ type CustomerProfileSectionProps = {
 export function CustomerProfileSection({
   customer,
 }: CustomerProfileSectionProps) {
+  const {
+    data: { data: addresses },
+  } = useCustomerAddresses(customer.id)
+
   const [isProfileOpen, setIsProfileOpen] = useState(false)
   const [isAddressesOpen, setIsAddressesOpen] = useState(false)
+
+  const defaultAddress = useMemo(
+    () => addresses.find((address) => address.default === true),
+    [addresses],
+  )
 
   return (
     <Card className="relative">
@@ -89,7 +99,9 @@ export function CustomerProfileSection({
           </div>
           <div className="grid gap-2">
             <p className="text-sm leading-none font-medium">Default Address</p>
-            <p className="text-muted-foreground text-sm">-</p>
+            <p className="text-muted-foreground text-sm">
+              {defaultAddress ? defaultAddress.address1 : '-'}
+            </p>
           </div>
         </div>
       </CardContent>

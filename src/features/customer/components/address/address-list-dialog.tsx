@@ -5,7 +5,7 @@ import { useCallback, useMemo, useState } from 'react'
 import {
   useCustomerAddresses,
   useDeleteCustomerAddressOptimistic,
-  useUpdateCustomerAddressDefaultOptimistic,
+  useUpdateCustomerAddress,
 } from '@/core/hooks/customer-address'
 import { CUSTOMER_ADDRESS_LIMIT } from '../../lib/constants'
 import type { Customer, CustomerAddress } from '@/core/types'
@@ -29,6 +29,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyTitle,
+} from '@/components/ui/empty'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { AddressDialog } from './address-dialog'
@@ -64,7 +71,12 @@ export function AddressListDialog({
     useState<CustomerAddress | null>(null)
   const [isAddressOpen, setIsAddressOpen] = useState(false)
 
-  const handleView = useCallback((address: CustomerAddress) => {
+  const handleCreate = useCallback(() => {
+    setAddressSelected(null)
+    setIsAddressOpen(true)
+  }, [])
+
+  const handleEdit = useCallback((address: CustomerAddress) => {
     setAddressSelected(address)
     setIsAddressOpen(true)
   }, [])
@@ -72,90 +84,110 @@ export function AddressListDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Addresses</DialogTitle>
-          <DialogDescription>
-            Manage the customer's addresses below.
-          </DialogDescription>
-        </DialogHeader>
-        <div className="flex flex-col gap-y-4">
-          <p className="text-muted-foreground text-sm">
-            {remainingAddressSlots > 0
-              ? `You have ${remainingAddressSlots} ${remainingAddressSlots > 1 ? 'addresses' : 'address'} available to add.`
-              : 'You have reached the address limit.'}
-          </p>
-          {addresses.length > 0 ? (
-            <ItemGroup className="gap-y-2">
-              {addresses.map((address) => (
-                <div key={address.id} className="relative">
-                  <Item variant="outline" asChild>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="h-fit w-full justify-start"
-                      disabled={address.id === -1}
-                      onClick={() => {
-                        handleView(address)
-                      }}
-                    >
-                      <ItemContent>
-                        <ItemTitle>
-                          {address.first_name} {address.last_name}
-                        </ItemTitle>
-                        <div className="flex flex-col items-start gap-y-1">
-                          <span className="text-muted-foreground text-sm leading-none">
-                            {address.address1}
-                            {address.address2 && ` - ${address.address2}`}
-                          </span>
-                          <span className="text-muted-foreground text-sm leading-none">
-                            {address.district}, {address.city}, {address.state}
-                          </span>
-                          <span className="text-muted-foreground text-sm leading-none">
-                            {address.phone.mobile_dialing}
-                          </span>
-                        </div>
-                      </ItemContent>
-                    </Button>
-                  </Item>
-                  <ItemActions className="absolute top-0 right-0 gap-0.5">
-                    {address.default && (
-                      <Badge className="h-5 min-w-5 rounded-full px-1">
-                        <Check />
-                      </Badge>
-                    )}
-                    <AddressActionMenu
-                      customer={customer}
-                      address={address}
-                      onView={handleView}
-                    />
-                  </ItemActions>
-                </div>
-              ))}
-            </ItemGroup>
-          ) : (
-            <p className="text-sm">No addresses available.</p>
-          )}
-          <div className="flex justify-end gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-            >
-              Cancel
-            </Button>
-            {remainingAddressSlots > 0 && (
-              <Button
-                type="button"
-                onClick={() => {
-                  setAddressSelected(null)
-                  setIsAddressOpen(true)
-                }}
-              >
-                Create new address
-              </Button>
-            )}
-          </div>
-        </div>
+        {addresses.length > 0 ? (
+          <>
+            <DialogHeader>
+              <DialogTitle>Addresses</DialogTitle>
+              <DialogDescription>
+                {remainingAddressSlots > 0 ? (
+                  <>
+                    You have <strong>{remainingAddressSlots}</strong>{' '}
+                    {remainingAddressSlots > 1 ? 'addresses' : 'address'}{' '}
+                    available to add.
+                  </>
+                ) : (
+                  'You have reached the address limit.'
+                )}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="flex flex-col gap-y-4">
+              <ItemGroup className="gap-y-2">
+                {addresses.map((address) => (
+                  <div key={address.id} className="relative">
+                    <Item variant="outline" asChild>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-fit w-full justify-start"
+                        onClick={() => {
+                          handleEdit(address)
+                        }}
+                      >
+                        <ItemContent>
+                          <ItemTitle>
+                            {address.first_name} {address.last_name}
+                          </ItemTitle>
+                          <div className="flex flex-col items-start gap-y-1">
+                            <span className="text-muted-foreground text-sm leading-none">
+                              {address.address1}
+                              {address.address2 && ` - ${address.address2}`}
+                            </span>
+                            <span className="text-muted-foreground text-sm leading-none">
+                              {address.district}, {address.city},{' '}
+                              {address.state}
+                            </span>
+                            <span className="text-muted-foreground text-sm leading-none">
+                              {address.phone.mobile_dialing}
+                            </span>
+                          </div>
+                        </ItemContent>
+                      </Button>
+                    </Item>
+                    <ItemActions className="absolute top-0 right-0 gap-0.5">
+                      {address.default && (
+                        <Badge className="h-5 min-w-5 rounded-full px-1">
+                          <Check />
+                        </Badge>
+                      )}
+                      <AddressActionMenu
+                        customer={customer}
+                        address={address}
+                        onEdit={handleEdit}
+                      />
+                    </ItemActions>
+                  </div>
+                ))}
+              </ItemGroup>
+              <div className="flex justify-end gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => onOpenChange(false)}
+                >
+                  Cancel
+                </Button>
+                {remainingAddressSlots > 0 && (
+                  <Button type="button" onClick={handleCreate}>
+                    Create new address
+                  </Button>
+                )}
+              </div>
+            </div>
+          </>
+        ) : (
+          <>
+            <DialogHeader className="hidden">
+              <DialogTitle>Addresses</DialogTitle>
+              <DialogDescription>
+                You have not added any addresses yet.
+              </DialogDescription>
+            </DialogHeader>
+            <Empty>
+              <EmptyHeader>
+                <EmptyTitle>No Addresses Yet</EmptyTitle>
+                <EmptyDescription>
+                  You haven&apos;t created any addresses yet. Get started by
+                  creating your first address.
+                </EmptyDescription>
+              </EmptyHeader>
+              <EmptyContent>
+                <Button type="button" onClick={handleCreate}>
+                  Create new address
+                </Button>
+              </EmptyContent>
+            </Empty>
+          </>
+        )}
         <AddressDialog
           customer={customer}
           address={addressSelected}
@@ -170,17 +202,17 @@ export function AddressListDialog({
 type AddressActionMenuProps = {
   customer: Customer
   address: CustomerAddress
-  onView?: (address: CustomerAddress) => void
+  onEdit?: (address: CustomerAddress) => void
 }
 
 function AddressActionMenu({
   customer,
   address,
-  onView,
+  onEdit,
 }: AddressActionMenuProps) {
   const prompt = usePrompt()
 
-  const { mutate: updateAddress } = useUpdateCustomerAddressDefaultOptimistic(
+  const { mutate: updateAddress } = useUpdateCustomerAddress(
     customer.id,
     address.id,
   )
@@ -190,17 +222,21 @@ function AddressActionMenu({
   )
 
   const handleDefault = useCallback(() => {
-    updateAddress(undefined, {
-      onError: (error) => {
-        if (isFetchError(error)) {
-          if (error.status === 422) {
-            toast.error(error.message)
+    updateAddress(
+      { default: true },
+      {
+        onSuccess: () => {
+          toast.success('Address has been set as default.')
+        },
+        onError: (error) => {
+          if (isFetchError(error)) {
+            if (error.status === 422) {
+              toast.error(error.message)
+            }
           }
-        }
+        },
       },
-    })
-
-    toast.success('Address has been set as default.')
+    )
   }, [updateAddress])
 
   const handleDelete = useCallback(async () => {
@@ -238,16 +274,15 @@ function AddressActionMenu({
       <DropdownMenuTrigger asChild>
         <Button
           size="icon"
-          variant="ghost"
           className="rounded-full shadow-none"
-          disabled={address.id === -1}
+          variant="ghost"
           aria-label="Open menu"
         >
           <EllipsisIcon size={16} aria-hidden="true" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
-        <DropdownMenuItem onSelect={() => onView?.(address)}>
+        <DropdownMenuItem onSelect={() => onEdit?.(address)}>
           <PencilIcon size={16} aria-hidden="true" />
           <span>Edit</span>
         </DropdownMenuItem>

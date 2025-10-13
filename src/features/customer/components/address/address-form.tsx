@@ -7,8 +7,8 @@ import { isFetchError } from '@/lib/fetcher'
 import { isMobilePhone } from 'validator'
 import { useForm, useFormState } from 'react-hook-form'
 import {
-  useCreateCustomerAddressOptimistic,
-  useUpdateCustomerAddressOptimistic,
+  useCreateCustomerAddress,
+  useUpdateCustomerAddress,
 } from '@/core/hooks/customer-address'
 import type { CountryCode } from '@/components/ui/phone-input'
 import type { Customer, CustomerAddress } from '@/core/types'
@@ -79,9 +79,9 @@ export function AddressForm({
   const appCountryCode = import.meta.env.VITE_APP_COUNTRY_CODE as CountryCode
   const { mutate, isPending } = address
     ? // eslint-disable-next-line
-      useUpdateCustomerAddressOptimistic(customer.id, address.id)
+      useUpdateCustomerAddress(customer.id, address.id)
     : // eslint-disable-next-line
-      useCreateCustomerAddressOptimistic(customer.id)
+      useCreateCustomerAddress(customer.id)
 
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
@@ -104,6 +104,12 @@ export function AddressForm({
       const formValues = normalizeFormValues(dirtyValues)
 
       mutate(formValues, {
+        onSuccess: () => {
+          toast.success(
+            `Address has been ${address ? 'updated' : 'created'} successfully.`,
+          )
+          onSuccess?.()
+        },
         onError: (error) => {
           if (isFetchError(error)) {
             if (error.status === 422) {
@@ -112,11 +118,6 @@ export function AddressForm({
           }
         },
       })
-
-      toast.success(
-        `Address has been ${address ? 'updated' : 'created'} successfully.`,
-      )
-      onSuccess?.()
     },
     [address, dirtyFields, mutate, onSuccess],
   )

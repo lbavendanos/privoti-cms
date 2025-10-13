@@ -64,31 +64,6 @@ export function useCreateCustomerAddress(customerId: number) {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async (payload: Record<string, unknown>) => {
-      const { data: address } = await core.fetch<{ data: CustomerAddress }>(
-        `/api/c/customers/${customerId}/addresses`,
-        {
-          method: 'POST',
-          body: payload,
-        },
-      )
-
-      return address
-    },
-    onSuccess: (address) => {
-      queryClient.setQueryData(
-        ['customer-address-detail', { address: address.id, customerId }],
-        address,
-      )
-      queryClient.invalidateQueries({
-        queryKey: ['customer-address-list', { customerId }],
-      })
-    },
-  })
-}
-
-export function useCreateCustomerAddressOptimistic(customerId: number) {
-  return useMutation({
     mutationFn: (payload: Record<string, unknown>) =>
       core
         .fetch<{ data: CustomerAddress }>(
@@ -99,42 +74,19 @@ export function useCreateCustomerAddressOptimistic(customerId: number) {
           },
         )
         .then(({ data }) => data),
-    onMutate: async (payload, context) => {
-      await context.client.cancelQueries({
+    onSuccess: () => {
+      queryClient.invalidateQueries({
         queryKey: ['customer-address-list', { customerId }],
       })
-
-      const previousAddressList = context.client.getQueryData<
-        List<CustomerAddress>
-      >(['customer-address-list', { customerId }])
-
-      context.client.setQueryData(
-        ['customer-address-list', { customerId }],
-        (oldList: List<CustomerAddress>) => ({
-          ...oldList,
-          data: [...oldList.data, { id: -1, ...payload } as CustomerAddress],
-        }),
-      )
-
-      return { previousAddressList }
     },
-    onError: (_, __, onMutateResult, context) => {
-      context.client.setQueryData(
-        ['customer-address-list', { customerId }],
-        onMutateResult?.previousAddressList,
-      )
-    },
-    onSettled: (_, __, ___, ____, context) =>
-      context.client.invalidateQueries({
-        queryKey: ['customer-address-list', { customerId }],
-      }),
   })
 }
 
-export function useUpdateCustomerAddressOptimistic(
+export function useUpdateCustomerAddress(
   customerId: number,
   addressId: number,
 ) {
+  const queryClient = useQueryClient()
   const params = { _method: 'PUT' }
 
   return useMutation({
@@ -149,91 +101,30 @@ export function useUpdateCustomerAddressOptimistic(
           },
         )
         .then(({ data }) => data),
-    onMutate: async (payload, context) => {
-      await context.client.cancelQueries({
+    onSuccess: () => {
+      queryClient.invalidateQueries({
         queryKey: ['customer-address-list', { customerId }],
       })
-
-      const previousAddressList = context.client.getQueryData<
-        List<CustomerAddress>
-      >(['customer-address-list', { customerId }])
-
-      context.client.setQueryData(
-        ['customer-address-list', { customerId }],
-        (oldList: List<CustomerAddress>) => ({
-          ...oldList,
-          data: oldList.data.map((address) =>
-            address.id === addressId ? { ...address, ...payload } : address,
-          ),
-        }),
-      )
-
-      return { previousAddressList }
     },
-    onError: (_, __, onMutateResult, context) => {
-      context.client.setQueryData(
-        ['customer-address-list', { customerId }],
-        onMutateResult?.previousAddressList,
-      )
-    },
-    onSettled: (_, __, ___, ____, context) =>
-      context.client.invalidateQueries({
-        queryKey: ['customer-address-list', { customerId }],
-      }),
   })
 }
 
-export function useUpdateCustomerAddressDefaultOptimistic(
+export function useDeleteCustomerAddress(
   customerId: number,
   addressId: number,
 ) {
-  const payload = { default: true }
-  const params = { _method: 'PUT' }
+  const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: () =>
-      core
-        .fetch<{ data: CustomerAddress }>(
-          `/api/c/customers/${customerId}/addresses/${addressId}`,
-          {
-            method: 'POST',
-            body: payload,
-            params,
-          },
-        )
-        .then(({ data }) => data),
-    onMutate: async (_, context) => {
-      await context.client.cancelQueries({
+      core.fetch(`/api/c/customers/${customerId}/addresses/${addressId}`, {
+        method: 'DELETE',
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
         queryKey: ['customer-address-list', { customerId }],
       })
-
-      const previousAddressList = context.client.getQueryData<
-        List<CustomerAddress>
-      >(['customer-address-list', { customerId }])
-
-      context.client.setQueryData(
-        ['customer-address-list', { customerId }],
-        (oldList: List<CustomerAddress>) => ({
-          ...oldList,
-          data: oldList.data.map((address) => ({
-            ...address,
-            default: address.id === addressId,
-          })),
-        }),
-      )
-
-      return { previousAddressList }
     },
-    onError: (_, __, onMutateResult, context) => {
-      context.client.setQueryData(
-        ['customer-address-list', { customerId }],
-        onMutateResult?.previousAddressList,
-      )
-    },
-    onSettled: (_, __, ___, ____, context) =>
-      context.client.invalidateQueries({
-        queryKey: ['customer-address-list', { customerId }],
-      }),
   })
 }
 

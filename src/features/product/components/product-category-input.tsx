@@ -26,9 +26,9 @@ import {
 } from 'lucide-react'
 
 interface Category {
-  id: number
+  id: string
   name: string
-  parentId: number | null
+  parentId: string | null
   parentName?: string
 }
 
@@ -53,15 +53,15 @@ export function ProductCategoryInput({
   const categories: Category[] = useMemo(
     () =>
       data?.data.map((c) => ({
-        id: c.id,
+        id: `${c.id}`,
         name: c.name,
-        parentId: c.parent_id ?? null,
+        parentId: c.parent_id ? `${c.parent_id}` : null,
       })) ?? [],
     [data],
   )
 
   const findCategory = useCallback(
-    (categoryId: number) => {
+    (categoryId: string) => {
       return categories.find((c) => c.id === categoryId)
     },
     [categories],

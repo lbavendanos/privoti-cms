@@ -21,7 +21,7 @@ export function ProductCollectionsInput({
   const handleSearch = useCallback(async (value: string) => {
     const { data: collectionList } = await core.fetch<List<Collection>>(
       '/api/c/collections',
-      { params: { title: value } },
+      value ? { params: { title: value } } : {},
     )
 
     return collectionList.map((collection) => ({

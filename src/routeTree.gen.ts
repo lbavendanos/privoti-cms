@@ -8,8 +8,6 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { createFileRoute } from '@tanstack/react-router'
-
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as authLoginRouteImport } from './routes/(auth)/login'
@@ -28,20 +26,14 @@ import { Route as AuthenticatedappProductsProductIdRouteImport } from './routes/
 import { Route as AuthenticatedappCustomersCustomerIdRouteImport } from './routes/_authenticated/(app)/customers/$customerId'
 import { Route as authPasswordResetTokenRouteImport } from './routes/(auth)/password.reset.$token'
 
-const authRouteImport = createFileRoute('/(auth)')()
-
-const authRoute = authRouteImport.update({
-  id: '/(auth)',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
 const authLoginRoute = authLoginRouteImport.update({
-  id: '/login',
+  id: '/(auth)/login',
   path: '/login',
-  getParentRoute: () => authRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedSettingsRouteRoute =
   AuthenticatedSettingsRouteRouteImport.update({
@@ -54,8 +46,8 @@ const AuthenticatedappRouteRoute = AuthenticatedappRouteRouteImport.update({
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const authAuthenticatedRouteRoute = authAuthenticatedRouteRouteImport.update({
-  id: '/_authenticated',
-  getParentRoute: () => authRoute,
+  id: '/(auth)/_authenticated',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedappIndexRoute = AuthenticatedappIndexRouteImport.update({
   id: '/',
@@ -69,9 +61,9 @@ const AuthenticatedSettingsProfileRoute =
     getParentRoute: () => AuthenticatedSettingsRouteRoute,
   } as any)
 const authPasswordForgotRoute = authPasswordForgotRouteImport.update({
-  id: '/password/forgot',
+  id: '/(auth)/password/forgot',
   path: '/password/forgot',
-  getParentRoute: () => authRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
 const authAuthenticatedVerifyEmailRoute =
   authAuthenticatedVerifyEmailRouteImport.update({
@@ -116,19 +108,19 @@ const AuthenticatedappCustomersCustomerIdRoute =
     getParentRoute: () => AuthenticatedappRouteRoute,
   } as any)
 const authPasswordResetTokenRoute = authPasswordResetTokenRouteImport.update({
-  id: '/password/reset/$token',
+  id: '/(auth)/password/reset/$token',
   path: '/password/reset/$token',
-  getParentRoute: () => authRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof AuthenticatedappIndexRoute
   '/settings': typeof AuthenticatedSettingsRouteRouteWithChildren
   '/login': typeof authLoginRoute
   '/confirm-email': typeof authAuthenticatedConfirmEmailRoute
   '/verify-email': typeof authAuthenticatedVerifyEmailRoute
   '/password/forgot': typeof authPasswordForgotRoute
   '/settings/profile': typeof AuthenticatedSettingsProfileRoute
+  '/': typeof AuthenticatedappIndexRoute
   '/password/reset/$token': typeof authPasswordResetTokenRoute
   '/customers/$customerId': typeof AuthenticatedappCustomersCustomerIdRoute
   '/products/$productId': typeof AuthenticatedappProductsProductIdRoute
@@ -137,13 +129,13 @@ export interface FileRoutesByFullPath {
   '/products': typeof AuthenticatedappProductsIndexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof AuthenticatedappIndexRoute
   '/settings': typeof AuthenticatedSettingsRouteRouteWithChildren
   '/login': typeof authLoginRoute
   '/confirm-email': typeof authAuthenticatedConfirmEmailRoute
   '/verify-email': typeof authAuthenticatedVerifyEmailRoute
   '/password/forgot': typeof authPasswordForgotRoute
   '/settings/profile': typeof AuthenticatedSettingsProfileRoute
+  '/': typeof AuthenticatedappIndexRoute
   '/password/reset/$token': typeof authPasswordResetTokenRoute
   '/customers/$customerId': typeof AuthenticatedappCustomersCustomerIdRoute
   '/products/$productId': typeof AuthenticatedappProductsProductIdRoute
@@ -154,7 +146,6 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
-  '/(auth)': typeof authRouteWithChildren
   '/(auth)/_authenticated': typeof authAuthenticatedRouteRouteWithChildren
   '/_authenticated/(app)': typeof AuthenticatedappRouteRouteWithChildren
   '/_authenticated/settings': typeof AuthenticatedSettingsRouteRouteWithChildren
@@ -174,13 +165,13 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | '/'
     | '/settings'
     | '/login'
     | '/confirm-email'
     | '/verify-email'
     | '/password/forgot'
     | '/settings/profile'
+    | '/'
     | '/password/reset/$token'
     | '/customers/$customerId'
     | '/products/$productId'
@@ -189,13 +180,13 @@ export interface FileRouteTypes {
     | '/products'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/'
     | '/settings'
     | '/login'
     | '/confirm-email'
     | '/verify-email'
     | '/password/forgot'
     | '/settings/profile'
+    | '/'
     | '/password/reset/$token'
     | '/customers/$customerId'
     | '/products/$productId'
@@ -205,7 +196,6 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/_authenticated'
-    | '/(auth)'
     | '/(auth)/_authenticated'
     | '/_authenticated/(app)'
     | '/_authenticated/settings'
@@ -225,18 +215,14 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
-  authRoute: typeof authRouteWithChildren
+  authAuthenticatedRouteRoute: typeof authAuthenticatedRouteRouteWithChildren
+  authLoginRoute: typeof authLoginRoute
+  authPasswordForgotRoute: typeof authPasswordForgotRoute
+  authPasswordResetTokenRoute: typeof authPasswordResetTokenRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/(auth)': {
-      id: '/(auth)'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof authRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/_authenticated': {
       id: '/_authenticated'
       path: ''
@@ -249,7 +235,7 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof authLoginRouteImport
-      parentRoute: typeof authRoute
+      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/settings': {
       id: '/_authenticated/settings'
@@ -260,17 +246,17 @@ declare module '@tanstack/react-router' {
     }
     '/_authenticated/(app)': {
       id: '/_authenticated/(app)'
-      path: '/'
-      fullPath: '/'
+      path: ''
+      fullPath: ''
       preLoaderRoute: typeof AuthenticatedappRouteRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/(auth)/_authenticated': {
       id: '/(auth)/_authenticated'
-      path: '/'
-      fullPath: '/'
+      path: ''
+      fullPath: ''
       preLoaderRoute: typeof authAuthenticatedRouteRouteImport
-      parentRoute: typeof authRoute
+      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/(app)/': {
       id: '/_authenticated/(app)/'
@@ -291,7 +277,7 @@ declare module '@tanstack/react-router' {
       path: '/password/forgot'
       fullPath: '/password/forgot'
       preLoaderRoute: typeof authPasswordForgotRouteImport
-      parentRoute: typeof authRoute
+      parentRoute: typeof rootRouteImport
     }
     '/(auth)/_authenticated/verify-email': {
       id: '/(auth)/_authenticated/verify-email'
@@ -347,7 +333,7 @@ declare module '@tanstack/react-router' {
       path: '/password/reset/$token'
       fullPath: '/password/reset/$token'
       preLoaderRoute: typeof authPasswordResetTokenRouteImport
-      parentRoute: typeof authRoute
+      parentRoute: typeof rootRouteImport
     }
   }
 }
@@ -420,25 +406,12 @@ const authAuthenticatedRouteRouteWithChildren =
     authAuthenticatedRouteRouteChildren,
   )
 
-interface authRouteChildren {
-  authAuthenticatedRouteRoute: typeof authAuthenticatedRouteRouteWithChildren
-  authLoginRoute: typeof authLoginRoute
-  authPasswordForgotRoute: typeof authPasswordForgotRoute
-  authPasswordResetTokenRoute: typeof authPasswordResetTokenRoute
-}
-
-const authRouteChildren: authRouteChildren = {
+const rootRouteChildren: RootRouteChildren = {
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   authAuthenticatedRouteRoute: authAuthenticatedRouteRouteWithChildren,
   authLoginRoute: authLoginRoute,
   authPasswordForgotRoute: authPasswordForgotRoute,
   authPasswordResetTokenRoute: authPasswordResetTokenRoute,
-}
-
-const authRouteWithChildren = authRoute._addFileChildren(authRouteChildren)
-
-const rootRouteChildren: RootRouteChildren = {
-  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
-  authRoute: authRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

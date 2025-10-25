@@ -1,5 +1,5 @@
 import { uuid } from '@/lib/utils'
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import {
   Table,
   TableRow,
@@ -17,7 +17,7 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
-import { ProductOptionsSheet } from './product-options-sheet'
+import { ProductOptionsDialog } from './product-options-dialog'
 import { Ellipsis, Pencil, PlusCircle, TrashIcon } from 'lucide-react'
 
 export type Option = {
@@ -39,6 +39,11 @@ export function ProductOptionsInput({
   const [selectedOption, setSelectedOption] = useState<Option | null>(null)
   const [open, setOpen] = useState(false)
 
+  const handleSelectOption = useCallback((option: Option) => {
+    setSelectedOption(option)
+    setOpen(true)
+  }, [])
+
   return (
     <div className="grid gap-6">
       {currentOptions.length > 0 && (
@@ -54,16 +59,14 @@ export function ProductOptionsInput({
           </TableHeader>
           <TableBody>
             {currentOptions.map((option) => (
-              <TableRow
-                key={option.uuid}
-                className="relative cursor-pointer"
-                onClick={() => {
-                  setSelectedOption(option)
-                  setOpen(true)
-                }}
-              >
-                <TableCell>{option.name}</TableCell>
-                <TableCell className="space-y-1 space-x-1">
+              <TableRow key={option.uuid} className="relative cursor-pointer">
+                <TableCell onClick={() => handleSelectOption(option)}>
+                  {option.name}
+                </TableCell>
+                <TableCell
+                  className="space-y-1 space-x-1"
+                  onClick={() => handleSelectOption(option)}
+                >
                   {option.values.map((value) => (
                     <Badge key={value} variant="secondary">
                       {value}
@@ -89,10 +92,7 @@ export function ProductOptionsInput({
                     <DropdownMenuContent>
                       <DropdownMenuItem
                         className="cursor-pointer"
-                        onClick={() => {
-                          setSelectedOption(option)
-                          setOpen(true)
-                        }}
+                        onClick={() => handleSelectOption(option)}
                       >
                         <Pencil size={16} aria-hidden="true" />
                         <span>Edit</span>
@@ -135,7 +135,7 @@ export function ProductOptionsInput({
           Add Option
         </Button>
       </div>
-      <ProductOptionsSheet
+      <ProductOptionsDialog
         value={selectedOption ?? { uuid: uuid(), name: '', values: [] }}
         open={open}
         onOpenChange={setOpen}

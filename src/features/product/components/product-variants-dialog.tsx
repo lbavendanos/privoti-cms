@@ -5,14 +5,14 @@ import { useCallback, useEffect } from 'react'
 import { type Option } from './product-options-input'
 import { type Variant } from './product-variants-input'
 import {
-  Sheet,
-  SheetTitle,
-  SheetClose,
-  SheetFooter,
-  SheetHeader,
-  SheetContent,
-  SheetDescription,
-} from '@/components/ui/sheet'
+  Dialog,
+  DialogTitle,
+  DialogClose,
+  DialogFooter,
+  DialogHeader,
+  DialogContent,
+  DialogDescription,
+} from '@/components/ui/dialog'
 import {
   Form,
   FormItem,
@@ -62,7 +62,7 @@ const formSchema = z.object({
     .min(1, { message: 'At least one option is required.' }),
 })
 
-type ProductVariantsSheetProps = {
+type ProductVariantsDialogProps = {
   value: Variant
   options: Option[]
   open: boolean
@@ -70,13 +70,13 @@ type ProductVariantsSheetProps = {
   onChange: (value: Variant) => void
 }
 
-export function ProductVariantsSheet({
+export function ProductVariantsDialog({
   options,
   value: currentVariant,
   open,
   onChange,
   onOpenChange,
-}: ProductVariantsSheetProps) {
+}: ProductVariantsDialogProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -111,16 +111,17 @@ export function ProductVariantsSheet({
   }, [currentVariant, open, form])
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent>
-        <SheetHeader>
-          <SheetTitle>Create Variant</SheetTitle>
-          <SheetDescription>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Create Variant</DialogTitle>
+          <DialogDescription>
             Create a new variant for your product.
-          </SheetDescription>
-        </SheetHeader>
+          </DialogDescription>
+        </DialogHeader>
         <Form {...form}>
           <form
+            className="flex flex-col gap-4"
             onSubmit={(e) => {
               e.stopPropagation()
               e.preventDefault()
@@ -128,92 +129,90 @@ export function ProductVariantsSheet({
               form.handleSubmit(handleSubmit)(e)
             }}
           >
-            <div className="flex flex-col gap-4 px-4 pt-0">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Name</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            {options.map((option, index) => (
               <FormField
+                key={option.uuid}
                 control={form.control}
-                name="name"
+                name={`options.${index}.value`}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Name</FormLabel>
+                    <FormLabel>{option.name}</FormLabel>
                     <FormControl>
-                      <Input {...field} />
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger className="w-full">
+                            <SelectValue
+                              placeholder={`Select a ${option.name}`}
+                            />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {option.values.map((value) => (
+                            <SelectItem key={value} value={value}>
+                              {value}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              {options.map((option, index) => (
-                <FormField
-                  key={option.uuid}
-                  control={form.control}
-                  name={`options.${index}.value`}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{option.name}</FormLabel>
-                      <FormControl>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger className="w-full">
-                              <SelectValue
-                                placeholder={`Select a ${option.name}`}
-                              />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {option.values.map((value) => (
-                              <SelectItem key={value} value={value}>
-                                {value}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              ))}
-              <FormField
-                control={form.control}
-                name="price"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Price</FormLabel>
-                    <FormControl>
-                      <CurrencyInput {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="quantity"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Quantity</FormLabel>
-                    <FormControl>
-                      <Input type="number" placeholder="0" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            <SheetFooter className="gap-y-2">
-              <SheetClose asChild>
+            ))}
+            <FormField
+              control={form.control}
+              name="price"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Price</FormLabel>
+                  <FormControl>
+                    <CurrencyInput {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="quantity"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Quantity</FormLabel>
+                  <FormControl>
+                    <Input type="number" placeholder="0" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <DialogFooter className="gap-y-2">
+              <DialogClose asChild>
                 <Button type="button" variant="secondary">
                   Cancel
                 </Button>
-              </SheetClose>
+              </DialogClose>
               <Button type="submit">Save</Button>
-            </SheetFooter>
+            </DialogFooter>
           </form>
         </Form>
-      </SheetContent>
-    </Sheet>
+      </DialogContent>
+    </Dialog>
   )
 }

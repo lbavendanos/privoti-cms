@@ -1,5 +1,5 @@
 import { uuid } from '@/lib/utils'
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { type Option } from './product-options-input'
 import {
   Table,
@@ -18,7 +18,7 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
-import { ProductVariantsSheet } from './product-variants-sheet'
+import { ProductVariantsDialog } from './product-variants-dialog'
 import { Ellipsis, Pencil, PlusCircle, TrashIcon } from 'lucide-react'
 
 export type Variant = {
@@ -47,6 +47,11 @@ export function ProductVariantsInput({
   const [selectedVariant, setSelectedVariant] = useState<Variant | null>(null)
   const [open, setOpen] = useState(false)
 
+  const handleSelectVariant = useCallback((variant: Variant) => {
+    setSelectedVariant(variant)
+    setOpen(true)
+  }, [])
+
   return (
     <div className="grid gap-6">
       {currentVariants.length > 0 && (
@@ -68,17 +73,16 @@ export function ProductVariantsInput({
           </TableHeader>
           <TableBody>
             {currentVariants.map((variant) => (
-              <TableRow
-                key={variant.uuid}
-                className="relative cursor-pointer"
-                onClick={() => {
-                  setSelectedVariant(variant)
-                  setOpen(true)
-                }}
-              >
-                <TableCell>{variant.name}</TableCell>
+              <TableRow key={variant.uuid} className="relative cursor-pointer">
+                <TableCell onClick={() => handleSelectVariant(variant)}>
+                  {variant.name}
+                </TableCell>
                 {options.map((o, oIndex) => (
-                  <TableCell key={o.uuid} className="w-2/12">
+                  <TableCell
+                    key={o.uuid}
+                    className="w-2/12"
+                    onClick={() => handleSelectVariant(variant)}
+                  >
                     {variant.options[oIndex] ? (
                       <Badge variant="secondary">
                         {variant.options[oIndex].value}
@@ -88,13 +92,15 @@ export function ProductVariantsInput({
                     )}
                   </TableCell>
                 ))}
-                <TableCell>
+                <TableCell onClick={() => handleSelectVariant(variant)}>
                   {new Intl.NumberFormat(appLocale, {
                     style: 'currency',
                     currency: appCurrency,
                   }).format(variant.price)}
                 </TableCell>
-                <TableCell>{variant.quantity}</TableCell>
+                <TableCell onClick={() => handleSelectVariant(variant)}>
+                  {variant.quantity}
+                </TableCell>
                 <TableCell className="after:bg-border sticky right-0 z-10 bg-white after:absolute after:inset-y-0 after:left-0 after:h-full after:w-px after:content-['']">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -114,10 +120,7 @@ export function ProductVariantsInput({
                     <DropdownMenuContent>
                       <DropdownMenuItem
                         className="cursor-pointer"
-                        onClick={() => {
-                          setSelectedVariant(variant)
-                          setOpen(true)
-                        }}
+                        onClick={() => handleSelectVariant(variant)}
                       >
                         <Pencil size={16} aria-hidden="true" />
                         <span>Edit</span>
@@ -160,7 +163,7 @@ export function ProductVariantsInput({
           Add Variant
         </Button>
       </div>
-      <ProductVariantsSheet
+      <ProductVariantsDialog
         options={options}
         value={
           selectedVariant ?? {

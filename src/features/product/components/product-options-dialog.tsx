@@ -4,14 +4,14 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useCallback, useEffect } from 'react'
 import { type Option } from './product-options-input'
 import {
-  Sheet,
-  SheetClose,
-  SheetTitle,
-  SheetFooter,
-  SheetHeader,
-  SheetContent,
-  SheetDescription,
-} from '@/components/ui/sheet'
+  Dialog,
+  DialogClose,
+  DialogTitle,
+  DialogFooter,
+  DialogHeader,
+  DialogContent,
+  DialogDescription,
+} from '@/components/ui/dialog'
 import {
   Form,
   FormItem,
@@ -40,19 +40,19 @@ const formSchema = z.object({
   values: z.array(z.string()),
 })
 
-type ProductOptionsSheetProps = {
+type ProductOptionsDialogProps = {
   value: Option
   open: boolean
   onChange: (value: Option) => void
   onOpenChange: (open: boolean) => void
 }
 
-export function ProductOptionsSheet({
+export function ProductOptionsDialog({
   value: currentOption,
   open,
   onChange,
   onOpenChange,
-}: ProductOptionsSheetProps) {
+}: ProductOptionsDialogProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -83,16 +83,17 @@ export function ProductOptionsSheet({
   }, [currentOption, open, form])
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent>
-        <SheetHeader>
-          <SheetTitle>Create Option</SheetTitle>
-          <SheetDescription>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Create Option</DialogTitle>
+          <DialogDescription>
             Create a new option for your product.
-          </SheetDescription>
-        </SheetHeader>
+          </DialogDescription>
+        </DialogHeader>
         <Form {...form}>
           <form
+            className="flex flex-col gap-4"
             onSubmit={(e) => {
               e.stopPropagation()
               e.preventDefault()
@@ -100,45 +101,43 @@ export function ProductOptionsSheet({
               form.handleSubmit(handleSubmit)(e)
             }}
           >
-            <div className="flex flex-col gap-4 p-4 pt-0">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Title</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Color" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="values"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Variations (comma-separated)</FormLabel>
-                    <FormControl>
-                      <MultipleTag placeholder="Red, Blue, Green" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            <SheetFooter className="gap-y-2">
-              <SheetClose asChild>
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Title</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Color" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="values"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Variations (comma-separated)</FormLabel>
+                  <FormControl>
+                    <MultipleTag placeholder="Red, Blue, Green" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <DialogFooter className="gap-y-2">
+              <DialogClose asChild>
                 <Button type="button" variant="secondary">
                   Cancel
                 </Button>
-              </SheetClose>
+              </DialogClose>
               <Button type="submit">Save</Button>
-            </SheetFooter>
+            </DialogFooter>
           </form>
         </Form>
-      </SheetContent>
-    </Sheet>
+      </DialogContent>
+    </Dialog>
   )
 }

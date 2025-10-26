@@ -270,34 +270,32 @@ export function ProductForm({ product }: ProductFormProps) {
                   />
                 </CardContent>
               </Card>
-              {form.watch('options').length > 0 && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Variants</CardTitle>
-                    <CardDescription>
-                      Add variants to the product, such as different sizes or
-                      colors.
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <FormField
-                      control={form.control}
-                      name="variants"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormControl>
-                            <ProductVariantsInput
-                              options={form.getValues('options')}
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </CardContent>
-                </Card>
-              )}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Variants</CardTitle>
+                  <CardDescription>
+                    Add variants to the product, such as different sizes or
+                    colors.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <FormField
+                    control={form.control}
+                    name="variants"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <ProductVariantsInput
+                            options={form.watch('options')}
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </CardContent>
+              </Card>
             </div>
           </div>
           <div className="col-span-12 @4xl:col-span-4 @4xl:col-start-9">

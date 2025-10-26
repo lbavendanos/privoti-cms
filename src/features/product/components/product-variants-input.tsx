@@ -154,6 +154,7 @@ export function ProductVariantsInput({
           size="sm"
           variant="ghost"
           className="gap-1"
+          disabled={options.length === 0}
           onClick={() => {
             setSelectedVariant(null)
             setOpen(true)
